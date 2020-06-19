@@ -42,3 +42,13 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+## License
+
+Dota Hero Hunt is licensed under the GNU Affero General Public License. See `LICENSE` and `COPYING.md` in the root of this repository.
+
+![image](https://www.gnu.org/graphics/agplv3-with-text-162x68.png)
+
+## Contact
+
+You can reach me via <hello@michaelsong.me>
