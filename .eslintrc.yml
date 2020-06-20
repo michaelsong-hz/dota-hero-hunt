@@ -27,7 +27,7 @@ plugins:
   - "@typescript-eslint"
 
 rules:
-  no-console: error
+  no-console: warn
   no-multiple-empty-lines: error
   # Prevent relative imports above the current directory
   no-restricted-imports:
