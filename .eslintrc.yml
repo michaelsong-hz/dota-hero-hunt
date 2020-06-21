@@ -32,7 +32,7 @@ rules:
   # Prevent relative imports above the current directory
   no-restricted-imports:
     - error
-    - patterns: [../*]
+    - patterns: [../.*]
   # Prevent wildcards from being used
   import/no-namespace: error
   import/order:

@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Link, Switch, Route } from "react-router-dom";
 
-import Game from "components/Game";
+import GamePage from "components/Game/GamePage";
 import Home from "components/Home";
 
 function App(): JSX.Element {
@@ -21,7 +21,7 @@ function App(): JSX.Element {
 
         <Switch>
           <Route path="/play/:sessionId">
-            <Game />
+            <GamePage />
           </Route>
           <Route path="/">
             <Home />
