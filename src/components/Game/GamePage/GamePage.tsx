@@ -1,9 +1,21 @@
+import { isUndefined, isNullOrUndefined } from "util";
+
 import Peer from "peerjs";
-import React, { useEffect } from "react";
+import React, {
+  useEffect,
+  useState,
+  Dispatch,
+  SetStateAction,
+  useReducer,
+} from "react";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import { useParams } from "react-router-dom";
+
+import gameReducer, { GameReducerConstants } from "reducers/GameReducer";
+
+import HeroIcon from "../HeroIcon";
 
 const heroes = [
   { name: "Abaddon", url: "Abaddon_minimap_icon.png" },
@@ -128,18 +140,11 @@ const heroes = [
   { name: "Zeus", url: "Zeus_minimap_icon.png" },
 ];
 
-function Game(): JSX.Element {
+function GamePage(): JSX.Element {
   const { sessionId } = useParams();
 
   const playerName = localStorage.getItem("playerName");
   const userId = `${sessionId}_${playerName}`;
-
-  let peerToConnectTo = "";
-  if (playerName === "Michael") {
-    peerToConnectTo = `${sessionId}_Swag`;
-  } else {
-    peerToConnectTo = `${sessionId}_Michael`;
-  }
 
   const currentHeroes = [
     [32, 63, 34, 118, 43, 38, 17, 91, 96, 5, 93, 79],
@@ -153,98 +158,136 @@ function Game(): JSX.Element {
     // [48, 83, 64, 94, 58, 10, 3, 84, 42, 14, 59, 102],
   ];
 
-  let conn: Peer.DataConnection;
+  const [peer, setPeer] = useState<Peer>();
+  const [hostConnection, setHostConnection] = useState<Peer.DataConnection>();
+  const [state, dispatch] = useReducer(gameReducer, { clientConnections: [] });
+
+  const [selectedIcons, setSelectedIcons]: [
+    Set<number>,
+    Dispatch<SetStateAction<Set<number>>>
+  ] = useState(new Set());
 
   useEffect(() => {
-    console.log("sessionId", sessionId);
-    console.log("userId", userId);
+    if (isUndefined(peer)) {
+      console.log("sessionId", sessionId);
+      console.log("userId", userId);
 
-    const peer = new Peer(userId, {
-      host: "localhost",
-      port: 9000,
-      path: "/play",
-    });
+      const currentPeer = new Peer();
 
-    peer.on("open", () => {
-      console.log("peer open");
-      if (playerName === "Swag") {
-        conn = peer.connect(peerToConnectTo);
+      currentPeer.on("open", () => {
+        console.log("peer open", currentPeer.id);
+        if (!isNullOrUndefined(playerName)) {
+          const currentHostConnection = currentPeer.connect(playerName);
 
-        conn.on("open", () => {
-          console.log("sending hello");
-          conn.send("hi!");
-        });
-        conn.on("data", (data) => {
+          currentHostConnection.on("open", () => {
+            console.log("sending hello");
+            currentHostConnection.send({
+              type: "debug",
+              message: "hi!",
+            });
+          });
+          currentHostConnection.on("data", (data: any) => {
+            console.log(data);
+            if (data.type === "playeraction") {
+              // TODO: Error handling, checking received data
+              const currentSelectedIcons = new Set(selectedIcons);
+              currentSelectedIcons.add(data.selected);
+              setSelectedIcons(currentSelectedIcons);
+              console.log("updated selected icons", currentSelectedIcons);
+            }
+          });
+
+          currentHostConnection.on("error", (err: any) => {
+            console.log("connection error", err);
+          });
+
+          setHostConnection(currentHostConnection);
+        }
+      });
+
+      currentPeer.on("connection", (incomingConn) => {
+        incomingConn.on("data", (data) => {
           console.log(data);
+          if (data.type === "playeraction") {
+            // TODO: Error handling, checking received data
+            const currentSelectedIcons = new Set(selectedIcons);
+            currentSelectedIcons.add(data.selected);
+            setSelectedIcons(currentSelectedIcons);
+            console.log("updated selected icons", currentSelectedIcons);
+
+            state.clientConnections.forEach((clientConnection) => {
+              clientConnection.send({
+                type: "playeraction",
+                name: data.playerName,
+                selected: data.selected,
+              });
+            });
+          }
+        });
+        incomingConn.on("open", () => {
+          incomingConn.send({
+            type: "debug",
+            message: "hello",
+          });
         });
 
-        conn.on("error", (err) => {
-          console.log("connection error", err);
+        dispatch({
+          type: GameReducerConstants.REGISTER_CLIENT,
+          newConnection: incomingConn,
         });
-      }
-    });
-
-    peer.on("connection", (incomingConn) => {
-      incomingConn.on("data", (data) => {
-        // Will print 'hi!'
-        console.log(data);
+        console.log("client connections", incomingConn);
       });
-      incomingConn.on("open", () => {
-        incomingConn.send("hello!");
-      });
-      conn = incomingConn;
-    });
 
-    peer.on("error", (err) => {
-      console.log("peer connection error", err);
-    });
-    // client = new W3CWebSocket("ws://127.0.0.1:8000");
-    // client.onopen = () => {
-    //   console.log("WebSocket Client Connected");
-    //   // Let server know the client's player name
-    //   client.send(
-    //     JSON.stringify({
-    //       sessionId: sessionId,
-    //       name: playerName,
-    //       type: "connection",
-    //     })
-    //   );
-    // };
-    // client.onmessage = (message) => {
-    //   console.log(message);
-    //   const dataFromServer = JSON.parse(message.data as string);
-    //   const stateToChange: any = {};
-    //   if (dataFromServer.type === "playeraction") {
-    //     console.log("update from", dataFromServer.data.from);
-    //     console.log("update data", dataFromServer.data.update);
-    //   }
-    //   if (dataFromServer.type === "gameevent") {
-    //     stateToChange.currentUsers = Object.values(dataFromServer.data.users);
-    //   } else if (dataFromServer.type === "contentchange") {
-    //     stateToChange.text = dataFromServer.data.editorContent;
-    //   }
-    //   stateToChange.userActivity = dataFromServer.data.userActivity;
-    // };
-  });
+      currentPeer.on("error", (err) => {
+        console.log("peer connection error", err);
+      });
+      setPeer(currentPeer);
+    }
+  }, [
+    peer,
+    sessionId,
+    userId,
+    playerName,
+    selectedIcons,
+    state.clientConnections,
+  ]);
 
   function appendUrl(heroString: string): string {
-    return `https://dota-hero-minimap-icons.s3.amazonaws.com/${heroString}`;
+    return `https://d1wyehvpr5fwo.cloudfront.net/${heroString}`;
   }
 
-  function handleClick(hero: number) {
-    console.log("clicked", hero);
-    conn.send(`network event clicked ${hero}`);
+  function handleClick(heroNumber: number) {
+    console.log("clicked", heroNumber);
+    if (!isUndefined(hostConnection)) {
+      hostConnection.send({
+        type: "playeraction",
+        playerName: playerName,
+        selected: heroNumber,
+      });
+    } else {
+      state.clientConnections.forEach((clientConnection) => {
+        clientConnection.send({
+          type: "playeraction",
+          playerName: playerName,
+          selected: heroNumber,
+        });
+      });
+    }
   }
 
   function createHeroImagesRow(rowNumber: number): JSX.Element[] {
     const heroImagesRow: JSX.Element[] = [];
 
     for (let i = 0; i < currentHeroes[rowNumber].length; i++) {
+      const heroNumber = currentHeroes[rowNumber][i];
       heroImagesRow.push(
-        <img
-          src={appendUrl(heroes[currentHeroes[rowNumber][i]].url)}
-          onClick={() => handleClick(currentHeroes[rowNumber][i])}
-        ></img>
+        <HeroIcon
+          key={`heroIcon${i}`}
+          src={appendUrl(heroes[heroNumber].url)}
+          onClick={() => handleClick(heroNumber)}
+          heroNumber={heroNumber}
+          selectedIcons={selectedIcons}
+        />
       );
     }
     return heroImagesRow;
@@ -254,7 +297,7 @@ function Game(): JSX.Element {
     const heroImages: JSX.Element[] = [];
     for (let i = 0; i < currentHeroes.length; i++) {
       heroImages.push(
-        <Row>
+        <Row key={`heroIconRow${i}`}>
           <Col>{createHeroImagesRow(i)}</Col>
         </Row>
       );
@@ -271,4 +314,4 @@ function Game(): JSX.Element {
   );
 }
 
-export default Game;
+export default GamePage;
