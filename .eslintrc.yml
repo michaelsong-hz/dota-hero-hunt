@@ -24,9 +24,12 @@ parserOptions:
 
 plugins:
   - "react"
+  - "react-hooks"
   - "@typescript-eslint"
 
 rules:
+  react-hooks/rules-of-hooks: "error"
+  react-hooks/exhaustive-deps: "warn"
   no-console: warn
   no-multiple-empty-lines: error
   # Prevent relative imports above the current directory

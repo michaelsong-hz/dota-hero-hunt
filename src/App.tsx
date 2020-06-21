@@ -14,13 +14,13 @@ function App(): JSX.Element {
               <Link to="/">Home</Link>
             </li>
             <li>
-              <Link to="/play/abc123">Start Game</Link>
+              <Link to="/play">Start Game</Link>
             </li>
           </ul>
         </nav>
 
         <Switch>
-          <Route path="/play/:sessionId">
+          <Route path="/play">
             <GamePage />
           </Route>
           <Route path="/">
