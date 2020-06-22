@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Link, Switch, Route } from "react-router-dom";
 
 import GamePage from "components/Game/GamePage";
-import Home from "components/Home";
 
 function App(): JSX.Element {
   return (
@@ -14,17 +13,17 @@ function App(): JSX.Element {
               <Link to="/">Home</Link>
             </li>
             <li>
-              <Link to="/play">Start Game</Link>
+              <Link to="/about">About Page</Link>
             </li>
           </ul>
         </nav>
 
         <Switch>
-          <Route path="/play">
+          <Route path="/about">
             <GamePage />
           </Route>
           <Route path="/">
-            <Home />
+            <GamePage />
           </Route>
         </Switch>
       </div>

@@ -1,4 +1,4 @@
-import { isUndefined } from "util";
+import { isUndefined, isNullOrUndefined } from "util";
 
 import Peer from "peerjs";
 import React, {
@@ -7,11 +7,11 @@ import React, {
   Dispatch,
   SetStateAction,
   useReducer,
-  useCallback,
 } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
+import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 
 import gameSettingsReducer, {
@@ -27,7 +27,10 @@ import { heroList } from "utils/HeroList";
 import HeroIcon from "../HeroIcon";
 
 function GamePage(): JSX.Element {
-  const playerName = localStorage.getItem("playerName");
+  const [hostID, setHostID] = useState<string>();
+
+  let remoteHostID: string;
+  let playerName = localStorage.getItem("playerName") || "";
 
   const currentHeroes = [
     [32, 63, 34, 118, 43, 38, 17, 91, 96, 5, 93, 79],
@@ -62,7 +65,6 @@ function GamePage(): JSX.Element {
   >();
 
   useEffect(() => {
-    console.log("useEffect");
     if (isUndefined(peer)) {
       console.log("set new peer");
       const currentPeer = new Peer();
@@ -70,10 +72,14 @@ function GamePage(): JSX.Element {
         currentPeer,
         onClientMessage,
         onHostMessage,
-        playerName
+        onSetHostID
       );
       setConnectionsHandler(currentConnectionsHandler);
       setPeer(currentPeer);
+    }
+
+    function onSetHostID(receivedHostID: string) {
+      setHostID(receivedHostID);
     }
 
     function onClientMessage(
@@ -95,6 +101,10 @@ function GamePage(): JSX.Element {
             selected: data.selected,
           });
         });
+      } else if (data.type === "connection") {
+        // TODO: Add entries in reducer to hold player names, scores, currently selected heroes
+        // and set their names here, as well as broadcast to other players
+        console.log(data);
       }
     }
 
@@ -108,7 +118,7 @@ function GamePage(): JSX.Element {
         console.log("updated selected icons", currentSelectedIcons);
       }
     }
-  }, [peer, playerName, selectedIcons]);
+  }, [peer, selectedIcons]);
 
   function appendUrl(heroString: string): string {
     return `https://d1wyehvpr5fwo.cloudfront.net/${heroString}`;
@@ -124,6 +134,11 @@ function GamePage(): JSX.Element {
           selected: heroNumber,
         });
       } else {
+        const currentSelectedIcons = new Set(selectedIcons);
+        currentSelectedIcons.add(heroNumber);
+        setSelectedIcons(currentSelectedIcons);
+        console.log("updated selected icons", currentSelectedIcons);
+
         connectionsHandler.connectedClients.forEach((clientConnection) => {
           clientConnection.send({
             type: "playeraction",
@@ -166,6 +181,22 @@ function GamePage(): JSX.Element {
   }
 
   function startGame(): void {
+    if (isNullOrUndefined(playerName)) {
+      console.log("invalid playername");
+    } else {
+      console.log("hi", playerName);
+      localStorage.setItem("playerName", playerName);
+    }
+
+    if (!isNullOrUndefined(remoteHostID)) {
+      if (connectionsHandler) {
+        console.log("connecting to", remoteHostID);
+        connectionsHandler.connect(remoteHostID, playerName);
+      } else {
+        console.log("Throw some kind of error");
+      }
+    }
+
     setGameStatusState({
       type: GameStatusReducer.UPDATE_ROUND,
       round: 1,
@@ -177,7 +208,24 @@ function GamePage(): JSX.Element {
     if (gameStatusState.round === 0) {
       return (
         <Col>
-          <p>TODO: Game settings page</p>
+          <h3>Your connection ID is: {hostID}</h3>
+          <Form>
+            <Form.Group>
+              <Form.Label>Connect to player</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Target player ID"
+                onChange={(e) => (remoteHostID = e.target.value)}
+              />
+              <Form.Label>Player Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your name"
+                defaultValue={playerName}
+                onChange={(e) => (playerName = e.target.value)}
+              />
+            </Form.Group>
+          </Form>
           <Button variant="primary" onClick={() => startGame()}>
             Start Game
           </Button>
@@ -187,11 +235,17 @@ function GamePage(): JSX.Element {
     return <Col>{createHeroImages()}</Col>;
   }
 
+  function renderConnectedPlayers(): JSX.Element[] {
+    const connectedPlayers: JSX.Element[] = [];
+    return connectedPlayers;
+  }
+
   return (
     <Container>
       <Row>
         <Col>
           <h2>Connected Players</h2>
+          {renderConnectedPlayers()}
         </Col>
         {getPageContent()}
       </Row>
