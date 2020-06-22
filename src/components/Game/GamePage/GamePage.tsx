@@ -7,6 +7,7 @@ import React, {
   Dispatch,
   SetStateAction,
   useReducer,
+  useRef,
 } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -44,7 +45,7 @@ function GamePage(): JSX.Element {
     // [48, 83, 64, 94, 58, 10, 3, 84, 42, 14, 59, 102],
   ];
 
-  const [peer, setPeer] = useState<Peer>();
+  const peer = useRef<Peer>();
 
   const [gameSettingsState, setGameSettingsState] = useReducer(
     gameSettingsReducer,
@@ -65,17 +66,23 @@ function GamePage(): JSX.Element {
   >();
 
   useEffect(() => {
-    if (isUndefined(peer)) {
-      console.log("set new peer");
-      const currentPeer = new Peer();
+    peer.current = new Peer();
+    return () => {
+      if (peer.current) {
+        peer.current.destroy();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isUndefined(connectionsHandler) && peer.current) {
       const currentConnectionsHandler = new ConnectionsHandler(
-        currentPeer,
+        peer.current,
         onClientMessage,
         onHostMessage,
         onSetHostID
       );
       setConnectionsHandler(currentConnectionsHandler);
-      setPeer(currentPeer);
     }
 
     function onSetHostID(receivedHostID: string) {
@@ -118,7 +125,7 @@ function GamePage(): JSX.Element {
         console.log("updated selected icons", currentSelectedIcons);
       }
     }
-  }, [peer, selectedIcons]);
+  }, [connectionsHandler, peer, selectedIcons]);
 
   function appendUrl(heroString: string): string {
     return `https://d1wyehvpr5fwo.cloudfront.net/${heroString}`;
