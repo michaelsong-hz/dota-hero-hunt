@@ -1,4 +1,4 @@
-import { isUndefined, isNullOrUndefined } from "util";
+import { isUndefined } from "util";
 
 import Peer from "peerjs";
 import React, {
@@ -7,15 +7,13 @@ import React, {
   Dispatch,
   SetStateAction,
   useReducer,
+  useCallback,
 } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 
-import connectionReducer, {
-  ConnectionReducerConstants,
-} from "reducers/ConnectionReducer";
 import gameSettingsReducer, {
   gameSettingsInitialState,
 } from "reducers/GameSettingsReducer";
@@ -23,6 +21,7 @@ import gameStatusReducer, {
   gameStatusInitialState,
   GameStatusReducer,
 } from "reducers/GameStatusReducer";
+import ConnectionsHandler from "utils/ConnectionsHandler";
 import { heroList } from "utils/HeroList";
 
 import HeroIcon from "../HeroIcon";
@@ -43,10 +42,6 @@ function GamePage(): JSX.Element {
   ];
 
   const [peer, setPeer] = useState<Peer>();
-  const [hostConnection, setHostConnection] = useState<Peer.DataConnection>();
-  const [connectionState, setConnectionState] = useReducer(connectionReducer, {
-    clientConnections: [],
-  });
 
   const [gameSettingsState, setGameSettingsState] = useReducer(
     gameSettingsReducer,
@@ -62,84 +57,58 @@ function GamePage(): JSX.Element {
     Dispatch<SetStateAction<Set<number>>>
   ] = useState(new Set());
 
+  const [connectionsHandler, setConnectionsHandler] = useState<
+    ConnectionsHandler
+  >();
+
   useEffect(() => {
+    console.log("useEffect");
     if (isUndefined(peer)) {
+      console.log("set new peer");
       const currentPeer = new Peer();
-
-      currentPeer.on("open", () => {
-        console.log("peer open", currentPeer.id);
-        if (!isNullOrUndefined(playerName)) {
-          const currentHostConnection = currentPeer.connect(playerName);
-
-          currentHostConnection.on("open", () => {
-            console.log("sending hello");
-            currentHostConnection.send({
-              type: "debug",
-              message: "hi!",
-            });
-          });
-          currentHostConnection.on("data", (data: any) => {
-            console.log(data);
-            if (data.type === "playeraction") {
-              // TODO: Error handling, checking received data
-              const currentSelectedIcons = new Set(selectedIcons);
-              currentSelectedIcons.add(data.selected);
-              setSelectedIcons(currentSelectedIcons);
-              console.log("updated selected icons", currentSelectedIcons);
-            }
-          });
-
-          currentHostConnection.on("error", (err: any) => {
-            console.log("connection error", err);
-          });
-
-          setHostConnection(currentHostConnection);
-        }
-      });
-
-      currentPeer.on("connection", (incomingConn) => {
-        incomingConn.on("data", (data) => {
-          console.log(data);
-          if (data.type === "playeraction") {
-            // TODO: Error handling, checking received data
-            const currentSelectedIcons = new Set(selectedIcons);
-            currentSelectedIcons.add(data.selected);
-            setSelectedIcons(currentSelectedIcons);
-            console.log("updated selected icons", currentSelectedIcons);
-
-            console.log(
-              "broadcasting to clients",
-              connectionState.clientConnections
-            );
-            connectionState.clientConnections.forEach((clientConnection) => {
-              clientConnection.send({
-                type: "playeraction",
-                name: data.playerName,
-                selected: data.selected,
-              });
-            });
-          }
-        });
-        incomingConn.on("open", () => {
-          incomingConn.send({
-            type: "debug",
-            message: "hello",
-          });
-        });
-
-        setConnectionState({
-          type: ConnectionReducerConstants.REGISTER_CLIENT,
-          newConnection: incomingConn,
-        });
-        console.log("client connections", incomingConn, connectionState);
-      });
-
-      currentPeer.on("error", (err) => {
-        console.log("peer connection error", err);
-      });
+      const currentConnectionsHandler = new ConnectionsHandler(
+        currentPeer,
+        onClientMessage,
+        onHostMessage,
+        playerName
+      );
+      setConnectionsHandler(currentConnectionsHandler);
       setPeer(currentPeer);
     }
-  }, [peer, playerName, selectedIcons, connectionState]);
+
+    function onClientMessage(
+      data: any,
+      connectedClients: Peer.DataConnection[]
+    ) {
+      if (data.type === "playeraction") {
+        // TODO: Error handling, checking received data
+        const currentSelectedIcons = new Set(selectedIcons);
+        currentSelectedIcons.add(data.selected);
+        setSelectedIcons(currentSelectedIcons);
+        console.log("updated selected icons", currentSelectedIcons);
+
+        console.log("broadcasting to clients", connectedClients);
+        connectedClients.forEach((clientConnection) => {
+          clientConnection.send({
+            type: "playeraction",
+            name: data.playerName,
+            selected: data.selected,
+          });
+        });
+      }
+    }
+
+    function onHostMessage(data: any) {
+      console.log(data);
+      if (data.type === "playeraction") {
+        // TODO: Error handling, checking received data
+        const currentSelectedIcons = new Set(selectedIcons);
+        currentSelectedIcons.add(data.selected);
+        setSelectedIcons(currentSelectedIcons);
+        console.log("updated selected icons", currentSelectedIcons);
+      }
+    }
+  }, [peer, playerName, selectedIcons]);
 
   function appendUrl(heroString: string): string {
     return `https://d1wyehvpr5fwo.cloudfront.net/${heroString}`;
@@ -147,20 +116,22 @@ function GamePage(): JSX.Element {
 
   function handleClick(heroNumber: number) {
     console.log("clicked", heroNumber);
-    if (!isUndefined(hostConnection)) {
-      hostConnection.send({
-        type: "playeraction",
-        playerName: playerName,
-        selected: heroNumber,
-      });
-    } else {
-      connectionState.clientConnections.forEach((clientConnection) => {
-        clientConnection.send({
+    if (connectionsHandler) {
+      if (!isUndefined(connectionsHandler.hostConnection)) {
+        connectionsHandler.hostConnection.send({
           type: "playeraction",
           playerName: playerName,
           selected: heroNumber,
         });
-      });
+      } else {
+        connectionsHandler.connectedClients.forEach((clientConnection) => {
+          clientConnection.send({
+            type: "playeraction",
+            playerName: playerName,
+            selected: heroNumber,
+          });
+        });
+      }
     }
   }
 
