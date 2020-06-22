@@ -1,10 +1,8 @@
-import { isNullOrUndefined } from "util";
-
 import Peer from "peerjs";
 
 export default class ConnectionsHandler {
   peer: Peer;
-  hostId?: string | null;
+  remoteHostID?: string;
   hostConnection: Peer.DataConnection | undefined;
   connectedClients: Peer.DataConnection[];
 
@@ -18,10 +16,9 @@ export default class ConnectionsHandler {
       connectedClients: Peer.DataConnection[]
     ) => void,
     onHostMessage: (data: any) => void,
-    hostId: string | null
+    onSetHostID: (hostID: string) => void
   ) {
     this.peer = peer;
-    this.hostId = hostId;
 
     this.hostConnection = undefined;
     this.connectedClients = [];
@@ -30,31 +27,7 @@ export default class ConnectionsHandler {
     this.onHostMessage = onHostMessage;
 
     peer.on("open", () => {
-      console.log("peer open", peer.id);
-      if (!isNullOrUndefined(hostId)) {
-        console.log("connecting to host", hostId);
-        const currentHostConnection = peer.connect(hostId);
-
-        currentHostConnection.on("open", () => {
-          console.log("sending hello");
-          currentHostConnection.send({
-            type: "debug",
-            message: "hi!",
-          });
-          this.hostConnection = currentHostConnection;
-        });
-        currentHostConnection.on("data", (data: any) => {
-          console.log(data);
-          if (data.type === "playeraction") {
-            // TODO: Error handling, checking received data
-            onHostMessage(data);
-          }
-        });
-        currentHostConnection.on("error", (err: any) => {
-          console.log("connection error", err);
-        });
-      }
-
+      onSetHostID(peer.id);
       peer.on("connection", (incomingConn) => {
         incomingConn.on("open", () => {
           incomingConn.send({
@@ -75,6 +48,36 @@ export default class ConnectionsHandler {
           console.log("peer connection error", err);
         });
       });
+    });
+  }
+
+  connect(hostId: string, playerName: string): void {
+    this.remoteHostID = hostId;
+
+    console.log("connecting to host", hostId);
+    const currentHostConnection = this.peer.connect(hostId);
+
+    currentHostConnection.on("open", () => {
+      console.log("sending hello");
+      currentHostConnection.send({
+        type: "debug",
+        message: "hi!",
+      });
+      currentHostConnection.send({
+        type: "connection",
+        name: playerName,
+      });
+      this.hostConnection = currentHostConnection;
+    });
+    currentHostConnection.on("data", (data: any) => {
+      console.log(data);
+      if (data.type === "playeraction") {
+        // TODO: Error handling, checking received data
+        this.onHostMessage(data);
+      }
+    });
+    currentHostConnection.on("error", (err: any) => {
+      console.log("connection error", err);
     });
   }
 }
