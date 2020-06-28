@@ -27,6 +27,7 @@ export default class ConnectionsHandler {
     this.onHostMessage = onHostMessage;
 
     peer.on("open", () => {
+      console.log("listening for connections on", peer.id);
       onSetHostID(peer.id);
       peer.on("connection", (incomingConn) => {
         incomingConn.on("open", () => {
@@ -34,20 +35,29 @@ export default class ConnectionsHandler {
             type: "debug",
             message: "hello",
           });
+          incomingConn.send({
+            type: "connectionaccepted",
+            message: "hello",
+          });
           this.connectedClients.push(incomingConn);
         });
         incomingConn.on("data", (data) => {
           console.log(data);
-          if (data.type === "playeraction") {
-            // TODO: Error handling, checking received data
-            onClientMessage(data, this.connectedClients);
-          }
+          // TODO: Error handling, checking received data
+          onClientMessage(data, this.connectedClients);
         });
 
         incomingConn.on("error", (err) => {
           console.log("peer connection error", err);
         });
       });
+    });
+  }
+
+  broadcastToClients(data: any): void {
+    console.log("sending broadcast to clients", this.connectedClients);
+    this.connectedClients.forEach((clientConnection) => {
+      clientConnection.send(data);
     });
   }
 
@@ -65,19 +75,21 @@ export default class ConnectionsHandler {
       });
       currentHostConnection.send({
         type: "connection",
-        name: playerName,
+        playerName: playerName,
       });
       this.hostConnection = currentHostConnection;
     });
     currentHostConnection.on("data", (data: any) => {
       console.log(data);
-      if (data.type === "playeraction") {
-        // TODO: Error handling, checking received data
-        this.onHostMessage(data);
-      }
+      // TODO: Error handling, checking received data
+      this.onHostMessage(data);
     });
     currentHostConnection.on("error", (err: any) => {
       console.log("connection error", err);
     });
+  }
+
+  destroy(): void {
+    this.peer.destroy();
   }
 }
