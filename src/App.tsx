@@ -1,7 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Link, Switch, Route } from "react-router-dom";
 
-import GamePage from "components/Game/GamePage";
+import ConnectionPage from "components/ConnectionPage";
+import GamePage from "components/GamePage";
 
 function App(): JSX.Element {
   return (
@@ -19,6 +20,9 @@ function App(): JSX.Element {
         </nav>
 
         <Switch>
+          <Route path="/connect/:remoteHostID">
+            <ConnectionPage />
+          </Route>
           <Route path="/about">
             <GamePage />
           </Route>
