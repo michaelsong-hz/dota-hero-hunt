@@ -7,7 +7,7 @@ import Row from "react-bootstrap/Row";
 import { useParams } from "react-router-dom";
 
 function ConnectionPage(): JSX.Element {
-  const { remoteHostID } = useParams();
+  const { hostID } = useParams();
   let playerName = localStorage.getItem("playerName") || "";
   // useEffect(() => {
   // });
@@ -19,7 +19,7 @@ function ConnectionPage(): JSX.Element {
     <Container>
       <Row>
         <Col>
-          <h2>Connecting to game session {remoteHostID}</h2>
+          <h2>Connecting to game session {hostID}</h2>
           <Form>
             <Form.Group>
               <Form.Label>Player Name</Form.Label>

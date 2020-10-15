@@ -14,8 +14,10 @@ function HeroIcon(props: IHeroIconProps): JSX.Element {
   useEffect(() => {
     if (props.selectedIcons.has(props.heroNumber)) {
       setIsHighlighted(true);
+    } else if (isHighlighted) {
+      setIsHighlighted(false);
     }
-  }, [props.heroNumber, props.selectedIcons]);
+  }, [isHighlighted, props.heroNumber, props.selectedIcons]);
 
   return (
     <img

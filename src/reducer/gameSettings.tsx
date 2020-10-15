@@ -5,14 +5,15 @@ export enum GameSettingsReducerConstants {
   UPDATE_SHOW_ICONS = "UPDATE_SHOW_ICONS",
 }
 
-type IGameSettingsReducer = {
+export type IGameSettingsReducer = {
   rows: number;
   columns: number;
-  targetScore: number;
+  targetTotalScore: number;
+  targetRoundScore: number;
   showIcons: boolean;
 };
 
-type IGameSettingsActions =
+export type IGameSettingsActions =
   | {
       type: GameSettingsReducerConstants.UPDATE_ROWS;
       rows: number;
@@ -33,12 +34,13 @@ type IGameSettingsActions =
 export const gameSettingsInitialState: IGameSettingsReducer = {
   rows: 4,
   columns: 10,
-  targetScore: 15,
+  targetTotalScore: 15,
+  targetRoundScore: 3,
   showIcons: false,
 };
 
-export default function gameSettingsReducer(
-  state: IGameSettingsReducer,
+export default function settings(
+  state: IGameSettingsReducer = gameSettingsInitialState,
   action: IGameSettingsActions
 ): IGameSettingsReducer {
   switch (action.type) {
@@ -48,12 +50,12 @@ export default function gameSettingsReducer(
       state.columns = action.columns;
       return state;
     case GameSettingsReducerConstants.UPDATE_TARGET_SCORE:
-      state.targetScore = action.targetScore;
+      state.targetTotalScore = action.targetScore;
       return state;
     case GameSettingsReducerConstants.UPDATE_SHOW_ICONS:
       state.showIcons = action.showIcons;
       return state;
     default:
-      throw new Error();
+      return state;
   }
 }

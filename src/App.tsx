@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Link, Switch, Route } from "react-router-dom";
 
 import ConnectionPage from "components/ConnectionPage";
 import GamePage from "components/GamePage";
+import HomePage from "components/HomePage";
 
 function App(): JSX.Element {
   return (
@@ -20,14 +21,17 @@ function App(): JSX.Element {
         </nav>
 
         <Switch>
-          <Route path="/connect/:remoteHostID">
-            <ConnectionPage />
+          <Route path="/play/:remoteHostID">
+            <GamePage />
+          </Route>
+          <Route path="/play">
+            <GamePage />
           </Route>
           <Route path="/about">
             <GamePage />
           </Route>
           <Route path="/">
-            <GamePage />
+            <HomePage />
           </Route>
         </Switch>
       </div>
