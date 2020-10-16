@@ -1,4 +1,5 @@
 import Peer from "peerjs";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { useState, useEffect } from "react";
 
 import {
@@ -6,29 +7,20 @@ import {
   HostDataConnection,
   ClientTypes,
 } from "models/MessageClientTypes";
-import { ClientDataConnection, HostTypes } from "models/MessageHostTypes";
+import { HostTypes } from "models/MessageHostTypes";
 
-interface UsePeerProps {
+interface UsePeerAsClientProps {
   playerName: string;
   remoteHostID: string;
   onMessageFromHost: (data: HostTypes) => void;
-  onMessageFromClient: (data: ClientTypes) => void;
 }
 
 // Connects to (multiple) remote clients
 // export default function usePeer(addRemoteStream, removeRemoteStream) {
-export default function usePeer(
-  props: UsePeerProps
-): [
-  string | undefined,
-  (data: HostTypes) => void,
-  (data: ClientTypes) => void
-] {
+export default function usePeerAsClient(
+  props: UsePeerAsClientProps
+): [(data: ClientTypes) => void] {
   const [myPeer, setPeer] = useState<Peer>();
-  const [hostID, setHostID] = useState<string>();
-  const [connectedClients, setConnectedClients] = useState<
-    ClientDataConnection[]
-  >([]);
   const [hostConnection, setHostConnection] = useState<
     HostDataConnection | undefined
   >();
@@ -61,46 +53,26 @@ export default function usePeer(
 
     peer.on("open", () => {
       // setPeer(peer);
-      if (props.remoteHostID) {
-        console.log("connect to host", props.remoteHostID);
+      console.log("connect to host", props.remoteHostID);
 
-        const currentHostConnection: HostDataConnection = peer.connect(
-          props.remoteHostID
-        );
+      const currentHostConnection: HostDataConnection = peer.connect(
+        props.remoteHostID
+      );
 
-        currentHostConnection.on("open", () => {
-          console.log("connection opened");
-          currentHostConnection.send({
-            type: ClientTypeConstants.NEW_CONNECTION,
-            playerName: playerName,
-          });
-          setHostConnection(currentHostConnection);
+      currentHostConnection.on("open", () => {
+        console.log("connection opened");
+        currentHostConnection.send({
+          type: ClientTypeConstants.NEW_CONNECTION,
+          playerName: playerName,
         });
-        currentHostConnection.on("data", (data: HostTypes) => {
-          console.log("received data", data);
-          props.onMessageFromHost(data);
-        });
-        currentHostConnection.on("error", (err: any) => {
-          console.log("connection error", err);
-        });
-      } else {
-        setHostID(peer.id);
-      }
-    });
-
-    peer.on("connection", (incomingConn) => {
-      console.log("receiving connection");
-
-      incomingConn.on("open", () => {
-        console.log("opened connection");
-        setConnectedClients((prevConnectedClients) => [
-          ...prevConnectedClients,
-          incomingConn,
-        ]);
+        setHostConnection(currentHostConnection);
       });
-      incomingConn.on("data", (data: ClientTypes) => {
+      currentHostConnection.on("data", (data: HostTypes) => {
         console.log("received data", data);
-        props.onMessageFromClient(data);
+        props.onMessageFromHost(data);
+      });
+      currentHostConnection.on("error", (err: any) => {
+        console.log("connection error", err);
       });
     });
 
@@ -133,11 +105,5 @@ export default function usePeer(
     }
   }
 
-  function sendToClients(data: HostTypes): void {
-    connectedClients.forEach((clientConnection) => {
-      clientConnection.send(data as HostTypes);
-    });
-  }
-
-  return [hostID, sendToClients, sendToHost];
+  return [sendToHost];
 }
