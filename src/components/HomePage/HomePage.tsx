@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
-import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import Row from "react-bootstrap/Row";
@@ -26,7 +25,7 @@ function HomePage(): JSX.Element {
   }
 
   return (
-    <Container>
+    <div>
       <Modal show={showConnectionModal} onHide={handleConnectionModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>Joining existing game</Modal.Title>
@@ -56,25 +55,32 @@ function HomePage(): JSX.Element {
 
       <Row>
         <Col>
-          <h1>Dota Hero Hunt</h1>
+          <div className="d-flex flex-column align-items-center">
+            <div className="p-2">
+              <h1>Dota Hero Hunt</h1>
+            </div>
+            <div className="p-2">
+              <Button
+                className="homepage-button"
+                size="lg"
+                onClick={() => setToHostGame(true)}
+              >
+                Create Private Game
+              </Button>
+            </div>
+            <div>
+              <Button
+                className="homepage-button"
+                variant="secondary"
+                onClick={() => setShowConnectionModal(true)}
+              >
+                Join Existing Game
+              </Button>
+            </div>
+          </div>
         </Col>
       </Row>
-      <Row>
-        <Col xs="auto">
-          <Button onClick={() => setToHostGame(true)}>
-            Create Private Game
-          </Button>
-        </Col>
-        <Col xs="auto">
-          <Button
-            variant="secondary"
-            onClick={() => setShowConnectionModal(true)}
-          >
-            Join Existing Game
-          </Button>
-        </Col>
-      </Row>
-    </Container>
+    </div>
   );
 }
 
