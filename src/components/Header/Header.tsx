@@ -42,7 +42,9 @@ function Header(): JSX.Element {
           trigger="click"
           overlay={renderTooltip}
         >
-          <Button className="mr-3">Volume</Button>
+          <Button className="mr-3" variant="secondary">
+            Volume
+          </Button>
         </OverlayTrigger>
         <Form inline>
           <Form.Check
