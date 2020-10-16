@@ -1,26 +1,19 @@
 import React from "react";
-import { BrowserRouter as Router, Link, Switch, Route } from "react-router-dom";
+import { Container } from "react-bootstrap";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
+import AboutPage from "components/AboutPage";
 import GamePage from "components/GamePage";
+import Header from "components/Header";
 import HomePage from "components/HomePage";
 import { GameStatusProvider } from "reducer/GameStatusContext";
 
 function App(): JSX.Element {
   return (
     <GameStatusProvider>
+      <Header />
       <Router>
-        <div>
-          <nav>
-            <ul>
-              <li>
-                <Link to="/">Home</Link>
-              </li>
-              <li>
-                <Link to="/about">About Page</Link>
-              </li>
-            </ul>
-          </nav>
-
+        <Container className="mt-4">
           <Switch>
             <Route path="/play/:remoteHostID">
               <GamePage />
@@ -29,13 +22,13 @@ function App(): JSX.Element {
               <GamePage />
             </Route>
             <Route path="/about">
-              <GamePage />
+              <AboutPage />
             </Route>
             <Route path="/">
               <HomePage />
             </Route>
           </Switch>
-        </div>
+        </Container>
       </Router>
     </GameStatusProvider>
   );

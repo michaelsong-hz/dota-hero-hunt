@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useReducer, useContext } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
-import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import { useParams } from "react-router-dom";
@@ -339,26 +338,22 @@ function GamePage(): JSX.Element {
     (remoteHostID && state.players.length === 0)
   ) {
     return (
-      <Container>
-        <Row>
-          <Col>
-            <h2>Preparing your game lobby...</h2>
-          </Col>
-        </Row>
-      </Container>
+      <Row>
+        <Col>
+          <h2>Preparing your game lobby...</h2>
+        </Col>
+      </Row>
     );
   }
 
   return (
-    <Container>
-      <Row>
-        <Col xs="auto">
-          <h2>Connected Players</h2>
-          {renderConnectedPlayers()}
-        </Col>
-        {getPageContent()}
-      </Row>
-    </Container>
+    <Row>
+      <Col xs="auto">
+        <h2>Connected Players</h2>
+        {renderConnectedPlayers()}
+      </Col>
+      {getPageContent()}
+    </Row>
   );
 }
 

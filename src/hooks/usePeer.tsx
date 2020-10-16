@@ -93,9 +93,6 @@ export default function usePeer(
 
       incomingConn.on("open", () => {
         console.log("opened connection");
-        // const currentConnectedClients = [...connectedClients]
-        // currentConnectedClients.push(incomingConn);
-        // setConnectedClients(currentConnectedClients);
         setConnectedClients((prevConnectedClients) => [
           ...prevConnectedClients,
           incomingConn,
