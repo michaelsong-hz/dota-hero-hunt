@@ -84,7 +84,7 @@ function shuffle(array: number[]) {
   return array;
 }
 
-export default function status(
+export function gameStatusReducer(
   state: IGameStatusReducer = gameStatusInitialState,
   action: IGameStatusActions
 ): IGameStatusReducer {

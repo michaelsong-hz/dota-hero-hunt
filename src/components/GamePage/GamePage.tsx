@@ -1,11 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  Dispatch,
-  SetStateAction,
-  useReducer,
-  useMemo,
-} from "react";
+import React, { useEffect, useState, useReducer, useContext } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -17,11 +10,9 @@ import GameStatusBar from "components/GameStatusBar";
 import usePeer from "hooks/usePeer";
 import { ClientTypeConstants, ClientTypes } from "models/MessageClientTypes";
 import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
+import { GameStatusContext } from "reducer/GameStatusContext";
 import settings, { gameSettingsInitialState } from "reducer/gameSettings";
-import status, {
-  gameStatusInitialState,
-  GameStatusReducer,
-} from "reducer/gameStatus";
+import { GameStatusReducer } from "reducer/gameStatus";
 import { heroList } from "utils/HeroList";
 
 import HeroIcon from "../HeroIcon";
@@ -41,10 +32,12 @@ function GamePage(): JSX.Element {
     settings,
     gameSettingsInitialState
   );
-  const [gameStatusState, setGameStatusState] = useReducer(
-    status,
-    gameStatusInitialState
-  );
+  // const [gameStatusState, setGameStatusState] = useReducer(
+  //   gameStatusReducer,
+  //   gameStatusInitialState
+  // );
+
+  const { state, dispatch } = useContext(GameStatusContext);
 
   const [hostID, sendToClients, sendToHost] = usePeer({
     playerName,
@@ -56,30 +49,30 @@ function GamePage(): JSX.Element {
   useEffect(() => {
     console.log("remote host id", remoteHostID);
     // If host, add self to players list
-    if (remoteHostID === undefined && gameStatusState.players.length === 0) {
-      setGameStatusState({
+    if (remoteHostID === undefined && state.players.length === 0) {
+      dispatch({
         type: GameStatusReducer.REGISTER_NEW_PLAYER,
         newPlayerName: playerName,
       });
       console.log("Init, currently connected players", playerName);
     }
-  }, [gameStatusState.players.length, hostID, playerName]);
+  }, [state.players.length, hostID, playerName, remoteHostID, dispatch]);
 
   function onMessageFromHost(data: HostTypes) {
     console.log("received message", data);
-    console.log("state in function", gameStatusState);
+    console.log("state in function", state);
 
     switch (data.type) {
       case HostTypeConstants.CONNECTION_ACCEPTED: {
         console.log("Connection accepted by host");
-        setGameStatusState({
+        dispatch({
           type: GameStatusReducer.UPDATE_HOST_CONNECTION_STATE,
           isConnectedToHost: true,
         });
         break;
       }
       case HostTypeConstants.UPDATE_GAME_STATE: {
-        setGameStatusState({
+        dispatch({
           type: GameStatusReducer.UPDATE_PLAYERS_LIST,
           currentPlayers: data.connectedPlayers,
         });
@@ -87,7 +80,7 @@ function GamePage(): JSX.Element {
       }
       case HostTypeConstants.UPDATE_ROUND: {
         console.log("incrementing round");
-        setGameStatusState({
+        dispatch({
           type: GameStatusReducer.INCREMENT_ROUND,
           targetHeroes: new Set(data.targetHeroes),
           currentHeroes: data.currentHeroes,
@@ -95,11 +88,11 @@ function GamePage(): JSX.Element {
         break;
       }
       case HostTypeConstants.UPDATE_FROM_CLICK: {
-        setGameStatusState({
+        dispatch({
           type: GameStatusReducer.UPDATE_SELECTED_ICONS,
           selectedIcons: new Set(data.selected),
         });
-        setGameStatusState({
+        dispatch({
           type: GameStatusReducer.UPDATE_PLAYERS_LIST,
           currentPlayers: data.players,
         });
@@ -116,7 +109,7 @@ function GamePage(): JSX.Element {
     if (data.type === ClientTypeConstants.PLAYER_ACTION) {
       // TODO: Error handling, checking received data
 
-      setGameStatusState({
+      dispatch({
         type: GameStatusReducer.ADD_SELECTED_ICON,
         selectedIcon: data.selected,
         playerName: data.playerName,
@@ -126,7 +119,7 @@ function GamePage(): JSX.Element {
       // TODO: Add entries in reducer to hold player names, scores, currently selected heroes
       // and set their names here, as well as broadcast to other players
       console.log(data);
-      setGameStatusState({
+      dispatch({
         type: GameStatusReducer.REGISTER_NEW_PLAYER,
         newPlayerName: data.playerName,
       });
@@ -139,13 +132,14 @@ function GamePage(): JSX.Element {
    */
   useEffect(() => {
     if (remoteHostID === undefined) {
+      console.log("sent round update");
       sendToClients({
         type: HostTypeConstants.UPDATE_ROUND,
-        targetHeroes: Array.from(gameStatusState.targetHeroes),
-        currentHeroes: gameStatusState.currentHeroes,
+        targetHeroes: Array.from(state.targetHeroes),
+        currentHeroes: state.currentHeroes,
       });
     }
-  }, [gameStatusState.round]);
+  }, [state.round]);
 
   /**
    * If the player is the host, automatically sends updates to the clients when the
@@ -160,13 +154,12 @@ function GamePage(): JSX.Element {
       sendToClients({
         type: HostTypeConstants.UPDATE_FROM_CLICK,
         lastClickedPlayerName: "temp",
-        selected: Array.from(gameStatusState.selectedIcons),
-        players: gameStatusState.players,
+        selected: Array.from(state.selectedIcons),
+        players: state.players,
       });
 
       if (
-        gameStatusState.selectedIcons.size ===
-          gameSettingsState.targetRoundScore &&
+        state.selectedIcons.size === gameSettingsState.targetRoundScore &&
         !preparingNextRound
       ) {
         // Prepare next round
@@ -176,8 +169,8 @@ function GamePage(): JSX.Element {
 
       if (preparingNextRound) {
         setPreparingNextRound(false);
-        const currentRound = gameStatusState.round + 1;
-        setGameStatusState({
+        const currentRound = state.round + 1;
+        dispatch({
           type: GameStatusReducer.UPDATE_ROUND,
           round: currentRound,
         });
@@ -205,7 +198,7 @@ function GamePage(): JSX.Element {
         selected: heroNumber,
       });
     } else {
-      setGameStatusState({
+      dispatch({
         type: GameStatusReducer.ADD_SELECTED_ICON,
         selectedIcon: heroNumber,
         playerName: playerName,
@@ -216,15 +209,15 @@ function GamePage(): JSX.Element {
   function createHeroImagesRow(rowNumber: number): JSX.Element[] {
     const heroImagesRow: JSX.Element[] = [];
 
-    for (let i = 0; i < gameStatusState.currentHeroes[rowNumber].length; i++) {
-      const heroNumber = gameStatusState.currentHeroes[rowNumber][i];
+    for (let i = 0; i < state.currentHeroes[rowNumber].length; i++) {
+      const heroNumber = state.currentHeroes[rowNumber][i];
       heroImagesRow.push(
         <HeroIcon
           key={`heroIcon${i}`}
           src={appendUrl(heroList[heroNumber].url)}
           onClick={() => handleClick(heroNumber)}
           heroNumber={heroNumber}
-          selectedIcons={gameStatusState.selectedIcons}
+          selectedIcons={state.selectedIcons}
         />
       );
     }
@@ -233,7 +226,7 @@ function GamePage(): JSX.Element {
 
   function createHeroImages(): JSX.Element[] {
     const heroImages: JSX.Element[] = [];
-    for (let i = 0; i < gameStatusState.currentHeroes.length; i++) {
+    for (let i = 0; i < state.currentHeroes.length; i++) {
       heroImages.push(
         <Row key={`heroIconRow${i}`}>
           <Col>{createHeroImagesRow(i)}</Col>
@@ -251,11 +244,11 @@ function GamePage(): JSX.Element {
       localStorage.setItem("playerName", playerName);
     }
 
-    setGameStatusState({
+    dispatch({
       type: GameStatusReducer.UPDATE_ROUND,
       round: 1,
     });
-    console.log("game started", gameStatusState);
+    console.log("game started", state);
   }
 
   function getInviteLink(): string {
@@ -266,7 +259,7 @@ function GamePage(): JSX.Element {
   }
 
   function getPageContent(): JSX.Element | JSX.Element[] {
-    if (gameStatusState.round === 0) {
+    if (state.round === 0) {
       if (remoteHostID) {
         return (
           <Col>
@@ -312,22 +305,13 @@ function GamePage(): JSX.Element {
     }
 
     const heroesToFind: string[] = [];
-    gameStatusState.targetHeroes.forEach((targetHero) => {
+    state.targetHeroes.forEach((targetHero) => {
       heroesToFind.push(heroList[targetHero].name);
     });
 
     return (
       <Col>
-        <Row>
-          <Col>
-            {gameSettingsState.targetRoundScore ===
-            gameStatusState.selectedIcons.size ? (
-              <p>Preparing next round</p>
-            ) : (
-              <p>{heroesToFind}</p>
-            )}
-          </Col>
-        </Row>
+        <GameStatusBar />
         <Row>
           <Col>{createHeroImages()}</Col>
         </Row>
@@ -337,7 +321,7 @@ function GamePage(): JSX.Element {
 
   function renderConnectedPlayers(): JSX.Element[] {
     const connectedPlayers: JSX.Element[] = [];
-    gameStatusState.players.forEach((player) => {
+    state.players.forEach((player) => {
       connectedPlayers.push(
         <div key={`player-${player.name}`}>
           <h4>{player.name}</h4>
@@ -350,7 +334,10 @@ function GamePage(): JSX.Element {
   }
 
   // If hosting and we are waiting to get a host ID from Peer JS
-  if (!remoteHostID && !hostID) {
+  if (
+    (!remoteHostID && !hostID) ||
+    (remoteHostID && state.players.length === 0)
+  ) {
     return (
       <Container>
         <Row>

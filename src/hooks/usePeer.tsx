@@ -108,7 +108,7 @@ export default function usePeer(
     });
 
     peer.on("disconnected", () => {
-      console.log("Peer desconnected");
+      console.log("Peer disconnected");
       cleanUp();
     });
 
@@ -127,6 +127,7 @@ export default function usePeer(
     return () => {
       cleanUp();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function sendToHost(data: ClientTypes) {
