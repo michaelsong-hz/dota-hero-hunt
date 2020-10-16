@@ -1,45 +1,35 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
-import { IGameSettingsReducer } from "reducer/gameSettings";
-import { IGameStatusReducer } from "reducer/gameStatus";
+import { GameStatusContext } from "reducer/GameStatusContext";
 import { heroList } from "utils/HeroList";
 
-interface IGamePageProps {
-  remoteHostID?: string;
-}
+function GameStatusBar(): JSX.Element {
+  const { state } = useContext(GameStatusContext);
 
-interface IGameStatusBarProps {
-  targetHeroes: Set<number>;
-  targetRoundScore: number;
-  numSelectedIcons: number;
-}
-
-function GameStatusBar(props: IGameStatusBarProps): JSX.Element {
-  // const [showConnectionModal, setShowConnectionModal] = useState(false);
-  // const [gameID, setGameID] = useState("");
-  // const [toHostGame, setToHostGame] = useState(false);
-  // const [toJoinGame, setToJoinGame] = useState(false);
-
-  // function handleConnectionModalClose() {
-  //   setShowConnectionModal(false);
-  // }
-
-  const heroesToFind: string[] = [];
-  props.targetHeroes.forEach((targetHero) => {
-    heroesToFind.push(heroList[targetHero].name);
-  });
+  function renderHeroesToFind(): JSX.Element[] {
+    const heroesToFind: JSX.Element[] = [];
+    state.targetHeroes.forEach((targetHero) => {
+      heroesToFind.push(
+        <Col key={`${heroList[targetHero].name}-icon`} xs="auto">
+          <p>{heroList[targetHero].name}</p>
+        </Col>
+      );
+    });
+    return heroesToFind;
+  }
 
   return (
     <Row>
-      <Col>
-        {props.targetRoundScore === props.numSelectedIcons ? (
-          <p>Preparing next round</p>
-        ) : (
-          <p>{heroesToFind}</p>
-        )}
-      </Col>
+      {/* {state.targetRoundScore === state.numSelectedIcons ? ( */}
+      {3 === state.selectedIcons.size ? (
+        <Col>
+          <p>All heroes found! Get ready for the next round...</p>
+        </Col>
+      ) : (
+        renderHeroesToFind()
+      )}
     </Row>
   );
 }

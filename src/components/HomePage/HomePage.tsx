@@ -7,10 +7,6 @@ import Modal from "react-bootstrap/Modal";
 import Row from "react-bootstrap/Row";
 import { Redirect } from "react-router-dom";
 
-interface IGamePageProps {
-  remoteHostID?: string;
-}
-
 function HomePage(): JSX.Element {
   const [showConnectionModal, setShowConnectionModal] = useState(false);
   const [gameID, setGameID] = useState("");
