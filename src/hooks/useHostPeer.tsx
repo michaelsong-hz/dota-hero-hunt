@@ -11,6 +11,7 @@ import React, {
 import { ClientTypes } from "models/MessageClientTypes";
 import { ClientDataConnection, HostTypes } from "models/MessageHostTypes";
 import { IGameStatusReducer, IGameStatusActions } from "reducer/gameStatus";
+import { getPeerConfig } from "utils/utilities";
 
 interface UseHostPeerProps {
   GameStatusContext: React.Context<{
@@ -47,19 +48,7 @@ export default function useHostPeer(
   };
 
   useEffect(() => {
-    let peer: Peer;
-    // Connect to a local dev server if in development, and the cloud hosted peer js
-    // server if in production. The cloud hosted peer js server rate limits new
-    // connections, which is problematic when developing and hot reloading the application.
-    if (process.env.NODE_ENV === "development") {
-      peer = new Peer({
-        host: "localhost",
-        port: 9000,
-        path: "/play",
-      });
-    } else {
-      peer = new Peer();
-    }
+    const peer = new Peer(getPeerConfig());
 
     peer.on("open", () => {
       setPeer(peer);
