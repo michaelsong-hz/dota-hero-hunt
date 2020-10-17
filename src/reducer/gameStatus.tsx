@@ -95,8 +95,8 @@ export function gameStatusReducer(
         allHeroIcons.push(i);
       });
       // TODO: Get game settings current heroes
-      const rowTarget = 12;
-      const currentHeroesFlat = shuffle(allHeroIcons).slice(0, 48);
+      const rowTarget = 16;
+      const currentHeroesFlat = shuffle(allHeroIcons).slice(0, 96);
       const currentHeroes: number[][] = [];
       let currentRow: number[] = [];
       currentHeroesFlat.forEach((hero, i) => {
