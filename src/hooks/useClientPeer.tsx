@@ -8,6 +8,7 @@ import {
   ClientTypes,
 } from "models/MessageClientTypes";
 import { HostTypes } from "models/MessageHostTypes";
+import { getPeerConfig } from "utils/utilities";
 
 interface UseClientPeerProps {
   playerName: string;
@@ -35,19 +36,7 @@ export default function useClientPeer(
   };
 
   function connectToHost() {
-    let peer: Peer;
-    // Connect to a local dev server if in development, and the cloud hosted peer js
-    // server if in production. The cloud hosted peer js server rate limits new
-    // connections, which is problematic when developing and hot reloading the application.
-    if (process.env.NODE_ENV === "development") {
-      peer = new Peer({
-        host: "localhost",
-        port: 9000,
-        path: "/play",
-      });
-    } else {
-      peer = new Peer();
-    }
+    const peer = new Peer(getPeerConfig());
 
     peer.on("open", () => {
       setPeer(peer);
