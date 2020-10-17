@@ -1,11 +1,12 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { useParams } from "react-router-dom";
 
 import ConnectedPlayers from "components/ConnectedPlayers";
+import ConnectionView from "components/ConnectionView";
 import HeroGrid from "components/HeroGrid";
-import usePeerAsClient from "hooks/usePeerAsClient";
+import useClientPeer from "hooks/useClientPeer";
 import { ClientTypeConstants } from "models/MessageClientTypes";
 import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
 import { GameStatusContext } from "reducer/GameStatusContext";
@@ -18,26 +19,30 @@ interface GameClientPageParams {
 function GameClientPage(): JSX.Element {
   const { remoteHostID } = useParams<GameClientPageParams>();
   const { state, dispatch } = useContext(GameStatusContext);
+  const [playerName, setPlayerName] = useState("");
+  const [isNameTaken, setIsNameTaken] = useState(false);
 
-  const playerName = localStorage.getItem("playerName") || "";
-
-  const [sendToHost] = usePeerAsClient({
+  const [connectToHost, sendToHost, peerError] = useClientPeer({
     playerName,
     remoteHostID,
     onMessageFromHost,
   });
 
-  function onMessageFromHost(data: HostTypes) {
-    console.log("received message", data);
-    console.log("state in function", state);
+  useEffect(() => {
+    setPlayerName(localStorage.getItem("playerName") || "");
+  }, []);
 
+  function onMessageFromHost(data: HostTypes) {
     switch (data.type) {
       case HostTypeConstants.CONNECTION_ACCEPTED: {
-        console.log("Connection accepted by host");
         dispatch({
           type: GameStatusReducer.UPDATE_HOST_CONNECTION_STATE,
           isConnectedToHost: true,
         });
+        break;
+      }
+      case HostTypeConstants.PLAYER_NAME_TAKEN: {
+        setIsNameTaken(true);
         break;
       }
       case HostTypeConstants.UPDATE_GAME_STATE: {
@@ -48,7 +53,6 @@ function GameClientPage(): JSX.Element {
         break;
       }
       case HostTypeConstants.UPDATE_ROUND: {
-        console.log("incrementing round");
         dispatch({
           type: GameStatusReducer.INCREMENT_ROUND,
           targetHeroes: new Set(data.targetHeroes),
@@ -65,7 +69,6 @@ function GameClientPage(): JSX.Element {
           type: GameStatusReducer.UPDATE_PLAYERS_LIST,
           currentPlayers: data.players,
         });
-        console.log("updated selected icons", data.selected);
         break;
       }
       default: {
@@ -75,7 +78,6 @@ function GameClientPage(): JSX.Element {
   }
 
   function handleClick(heroNumber: number) {
-    console.log("clicked", heroNumber);
     sendToHost({
       type: ClientTypeConstants.PLAYER_ACTION,
       playerName: playerName,
@@ -95,14 +97,19 @@ function GameClientPage(): JSX.Element {
     return <HeroGrid handleClick={handleClick} />;
   }
 
-  // If waiting to receive data from host
-  if (state.players.length === 0) {
+  // Show connection page, have player set their name and
+  // check that there are no conflicting names and that
+  // we are connected to the game before proceeding
+  if (!state.isConnectedToHost) {
     return (
-      <Row>
-        <Col>
-          <h2>Preparing your game lobby...</h2>
-        </Col>
-      </Row>
+      <ConnectionView
+        playerName={playerName}
+        isNameTaken={isNameTaken}
+        peerError={peerError}
+        connectToHost={connectToHost}
+        setPlayerName={setPlayerName}
+        setIsNameTaken={setIsNameTaken}
+      />
     );
   }
 

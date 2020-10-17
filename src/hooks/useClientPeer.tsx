@@ -1,6 +1,6 @@
 import Peer from "peerjs";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 
 import {
   ClientTypeConstants,
@@ -9,34 +9,32 @@ import {
 } from "models/MessageClientTypes";
 import { HostTypes } from "models/MessageHostTypes";
 
-interface UsePeerAsClientProps {
+interface UseClientPeerProps {
   playerName: string;
   remoteHostID: string;
   onMessageFromHost: (data: HostTypes) => void;
 }
 
-// Connects to (multiple) remote clients
-// export default function usePeer(addRemoteStream, removeRemoteStream) {
-export default function usePeerAsClient(
-  props: UsePeerAsClientProps
-): [(data: ClientTypes) => void] {
+// Connects to a host peer
+export default function useClientPeer(
+  props: UseClientPeerProps
+): [() => void, (data: ClientTypes) => void, string | undefined] {
   const [myPeer, setPeer] = useState<Peer>();
   const [hostConnection, setHostConnection] = useState<
     HostDataConnection | undefined
   >();
-
-  const playerName = localStorage.getItem("playerName") || "";
+  const [error, setError] = useState();
 
   const cleanUp = () => {
+    console.log("peerjs cleanup");
+    setHostConnection(undefined);
     if (myPeer) {
       myPeer.disconnect();
       myPeer.destroy();
     }
-    // setPeer(null);
-    // setHostID(null);
   };
 
-  useEffect(() => {
+  function connectToHost() {
     let peer: Peer;
     // Connect to a local dev server if in development, and the cloud hosted peer js
     // server if in production. The cloud hosted peer js server rate limits new
@@ -52,7 +50,7 @@ export default function usePeerAsClient(
     }
 
     peer.on("open", () => {
-      // setPeer(peer);
+      setPeer(peer);
       console.log("connect to host", props.remoteHostID);
 
       const currentHostConnection: HostDataConnection = peer.connect(
@@ -63,7 +61,7 @@ export default function usePeerAsClient(
         console.log("connection opened");
         currentHostConnection.send({
           type: ClientTypeConstants.NEW_CONNECTION,
-          playerName: playerName,
+          playerName: props.playerName,
         });
         setHostConnection(currentHostConnection);
       });
@@ -87,6 +85,7 @@ export default function usePeerAsClient(
     });
 
     peer.on("error", (error) => {
+      setError(error);
       console.log("peer error", error);
       cleanUp();
     });
@@ -97,7 +96,7 @@ export default function usePeerAsClient(
       cleanUp();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }
 
   function sendToHost(data: ClientTypes) {
     if (hostConnection) {
@@ -105,5 +104,5 @@ export default function usePeerAsClient(
     }
   }
 
-  return [sendToHost];
+  return [connectToHost, sendToHost, error];
 }
