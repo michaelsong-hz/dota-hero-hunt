@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
-import Button from "react-bootstrap/Button";
+import { Spinner } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
-import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 
 import ConnectedPlayers from "components/ConnectedPlayers";
+import GameSettings from "components/GameSettings";
 import HeroGrid from "components/HeroGrid";
+import PlayerNameModal from "components/PlayerNameModal";
 import useHostPeer from "hooks/useHostPeer";
 import { ClientTypeConstants, ClientTypes } from "models/MessageClientTypes";
 import { HostTypeConstants } from "models/MessageHostTypes";
@@ -15,12 +16,12 @@ import { GameStatusReducer } from "reducer/gameStatus";
 function GameHostPage(): JSX.Element {
   const { state, dispatch } = useContext(GameStatusContext);
   const [preparingNextRound, setPreparingNextRound] = useState(false);
+  const [playerName, setPlayerName] = useState("");
+  const [showPlayerNameModal, setShowPlayerNameModal] = useState(true);
 
   // TODO: Keeping a separate copy of connected players in ref as we
   // can't access the store in the callback. Need to find a better fix.
   const connectedPlayers = useRef<Set<string>>(new Set());
-
-  const playerName = localStorage.getItem("playerName") || "";
 
   const [hostID, sendToClients] = useHostPeer({
     GameStatusContext,
@@ -29,15 +30,8 @@ function GameHostPage(): JSX.Element {
   });
 
   useEffect(() => {
-    // Add self to players list
-    if (state.players.length === 0) {
-      dispatch({
-        type: GameStatusReducer.REGISTER_NEW_PLAYER,
-        newPlayerName: playerName,
-      });
-      connectedPlayers.current.add(playerName);
-    }
-  }, [dispatch, playerName, state.players.length]);
+    setPlayerName(localStorage.getItem("playerName") || "");
+  }, []);
 
   function onMessage(data: ClientTypes) {
     if (data.type === ClientTypeConstants.PLAYER_ACTION) {
@@ -151,39 +145,8 @@ function GameHostPage(): JSX.Element {
 
   function getPageContent(): JSX.Element | JSX.Element[] {
     if (state.round === 0) {
-      const inviteLink = getInviteLink();
       return (
-        <Col>
-          <h3>Your invite link is:</h3>
-          <Row>
-            <Col xs="auto">
-              <p>{inviteLink}</p>
-            </Col>
-            <Col>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => navigator.clipboard.writeText(inviteLink)}
-              >
-                Copy
-              </Button>
-            </Col>
-          </Row>
-          <Form>
-            <Form.Group>
-              <Form.Label>Player Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter your name"
-                defaultValue={playerName}
-                onChange={(e) => console.log("ayylmao")}
-              />
-            </Form.Group>
-          </Form>
-          <Button variant="primary" onClick={() => startGame()}>
-            Start Game
-          </Button>
-        </Col>
+        <GameSettings inviteLink={getInviteLink()} startGame={startGame} />
       );
     }
 
@@ -193,19 +156,41 @@ function GameHostPage(): JSX.Element {
   // If we are waiting to get a host ID from Peer JS
   if (!hostID) {
     return (
-      <Row>
-        <Col>
-          <h2>Preparing your game lobby...</h2>
+      <Row className="justify-content-center">
+        <Col xs="auto" className="mt-1">
+          <Spinner animation="grow" />
+        </Col>
+        <Col xs="auto">
+          <h2>Preparing your game lobby</h2>
         </Col>
       </Row>
     );
   }
 
+  function submitPlayerName() {
+    setShowPlayerNameModal(false);
+
+    // Add self to players list
+    dispatch({
+      type: GameStatusReducer.REGISTER_NEW_PLAYER,
+      newPlayerName: playerName,
+    });
+    connectedPlayers.current.add(playerName);
+  }
+
   return (
-    <Row>
-      <ConnectedPlayers />
-      {getPageContent()}
-    </Row>
+    <>
+      <PlayerNameModal
+        playerName={playerName}
+        showPlayerNameModal={showPlayerNameModal}
+        setPlayerName={setPlayerName}
+        submitPlayerName={submitPlayerName}
+      />
+      <Row>
+        <ConnectedPlayers />
+        {getPageContent()}
+      </Row>
+    </>
   );
 }
 

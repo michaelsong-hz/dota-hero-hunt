@@ -73,7 +73,7 @@ function ConnectionView(props: ConnectionViewProps): JSX.Element {
   }
 
   return (
-    <div>
+    <>
       <Modal show={showError} onHide={() => setToHomePage(true)}>
         <Modal.Header>
           <Modal.Title>Error Joining Game Session</Modal.Title>
@@ -125,7 +125,7 @@ function ConnectionView(props: ConnectionViewProps): JSX.Element {
           </Form>
         </Col>
       </Row>
-    </div>
+    </>
   );
 }
 

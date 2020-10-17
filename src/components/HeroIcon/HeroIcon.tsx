@@ -21,7 +21,9 @@ function HeroIcon(props: IHeroIconProps): JSX.Element {
 
   return (
     <img
-      className={isHighlighted ? "hero-icon-highlighted" : "hero-icon"}
+      className={
+        isHighlighted ? "hero-icon hero-icon-highlighted" : "hero-icon"
+      }
       src={props.src}
       onClick={() => {
         props.onClick();
