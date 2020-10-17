@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
@@ -6,7 +6,7 @@ import Row from "react-bootstrap/Row";
 
 import ConnectedPlayers from "components/ConnectedPlayers";
 import HeroGrid from "components/HeroGrid";
-import usePeerAsHost from "hooks/usePeerAsHost";
+import useHostPeer from "hooks/useHostPeer";
 import { ClientTypeConstants, ClientTypes } from "models/MessageClientTypes";
 import { HostTypeConstants } from "models/MessageHostTypes";
 import { GameStatusContext } from "reducer/GameStatusContext";
@@ -16,9 +16,14 @@ function GameHostPage(): JSX.Element {
   const { state, dispatch } = useContext(GameStatusContext);
   const [preparingNextRound, setPreparingNextRound] = useState(false);
 
+  // TODO: Keeping a separate copy of connected players in ref as we
+  // can't access the store in the callback. Need to find a better fix.
+  const connectedPlayers = useRef<Set<string>>(new Set());
+
   const playerName = localStorage.getItem("playerName") || "";
 
-  const [hostID, sendToClients] = usePeerAsHost({
+  const [hostID, sendToClients] = useHostPeer({
+    GameStatusContext,
     playerName,
     onMessage,
   });
@@ -30,14 +35,13 @@ function GameHostPage(): JSX.Element {
         type: GameStatusReducer.REGISTER_NEW_PLAYER,
         newPlayerName: playerName,
       });
-      console.log("Init, currently connected players", playerName);
+      connectedPlayers.current.add(playerName);
     }
   }, [dispatch, playerName, state.players.length]);
 
   function onMessage(data: ClientTypes) {
     if (data.type === ClientTypeConstants.PLAYER_ACTION) {
       // TODO: Error handling, checking received data
-
       dispatch({
         type: GameStatusReducer.ADD_SELECTED_ICON,
         selectedIcon: data.selected,
@@ -45,13 +49,21 @@ function GameHostPage(): JSX.Element {
       });
       console.log("updated selected icons");
     } else if (data.type === ClientTypeConstants.NEW_CONNECTION) {
-      // TODO: Add entries in reducer to hold player names, scores, currently selected heroes
-      // and set their names here, as well as broadcast to other players
-      console.log(data);
-      dispatch({
-        type: GameStatusReducer.REGISTER_NEW_PLAYER,
-        newPlayerName: data.playerName,
-      });
+      if (connectedPlayers.current.has(data.playerName)) {
+        sendToClients({
+          type: HostTypeConstants.PLAYER_NAME_TAKEN,
+          currentPlayers: Array.from(connectedPlayers.current),
+        });
+      } else {
+        connectedPlayers.current.add(data.playerName);
+        sendToClients({
+          type: HostTypeConstants.CONNECTION_ACCEPTED,
+        });
+        dispatch({
+          type: GameStatusReducer.REGISTER_NEW_PLAYER,
+          newPlayerName: data.playerName,
+        });
+      }
     }
   }
 
@@ -142,7 +154,7 @@ function GameHostPage(): JSX.Element {
       const inviteLink = getInviteLink();
       return (
         <Col>
-          <h3>Your connection ID is:</h3>
+          <h3>Your invite link is:</h3>
           <Row>
             <Col xs="auto">
               <p>{inviteLink}</p>

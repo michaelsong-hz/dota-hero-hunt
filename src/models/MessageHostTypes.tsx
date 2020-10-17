@@ -7,6 +7,7 @@ export enum HostTypeConstants {
   UPDATE_ROUND = "START_GAME",
   UPDATE_GAME_STATE = "UPDATE_GAME_STATE",
   CONNECTION_ACCEPTED = "CONNECTION_ACCEPTED",
+  PLAYER_NAME_TAKEN = "PLAYER_NAME_TAKEN",
   UPDATE_FROM_CLICK = "UPDATE_FROM_CLICK",
 }
 
@@ -16,25 +17,25 @@ export type HostTypes =
       targetHeroes: number[];
       currentHeroes: number[][];
     }
-  // | {
-  //     type: HostTypeConstants.UPDATE_ROUND;
-  //     round: number;
-  //   }
   | {
       type: HostTypeConstants.UPDATE_GAME_STATE;
-      connectedPlayers: Array<PlayerState>;
+      connectedPlayers: PlayerState[];
     }
   | {
       type: HostTypeConstants.CONNECTION_ACCEPTED;
     }
   | {
+      type: HostTypeConstants.PLAYER_NAME_TAKEN;
+      currentPlayers: string[];
+    }
+  | {
       type: HostTypeConstants.UPDATE_FROM_CLICK;
       lastClickedPlayerName: string;
-      players: Array<PlayerState>;
+      players: PlayerState[];
       // Will prefer to send sets as those are our native data structure,
       // but Peer JS does not seem to like sets.
       // Maybe revisit in the future to see if they make an update to support sets.
-      selected: Array<number>;
+      selected: number[];
     };
 
 export interface ClientDataConnection extends Peer.DataConnection {
