@@ -4,8 +4,7 @@ import { PlayerState } from "./PlayerState";
 
 // Definitions for messages from the host to the client
 export enum HostTypeConstants {
-  UPDATE_ROUND = "START_GAME",
-  UPDATE_GAME_STATE = "UPDATE_GAME_STATE",
+  UPDATE_ROUND = "UPDATE_ROUND",
   CONNECTION_ACCEPTED = "CONNECTION_ACCEPTED",
   PLAYER_NAME_TAKEN = "PLAYER_NAME_TAKEN",
   UPDATE_FROM_CLICK = "UPDATE_FROM_CLICK",
@@ -14,15 +13,13 @@ export enum HostTypeConstants {
 export type HostTypes =
   | {
       type: HostTypeConstants.UPDATE_ROUND;
+      round: number;
       targetHeroes: number[];
       currentHeroes: number[][];
     }
   | {
-      type: HostTypeConstants.UPDATE_GAME_STATE;
-      connectedPlayers: PlayerState[];
-    }
-  | {
       type: HostTypeConstants.CONNECTION_ACCEPTED;
+      players: PlayerState[];
     }
   | {
       type: HostTypeConstants.PLAYER_NAME_TAKEN;

@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Col, Modal, Spinner } from "react-bootstrap";
+import React, { useState } from "react";
+import { Modal } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import { Redirect } from "react-router-dom";
 
 interface PlayerNameModalProps {
   playerName: string;

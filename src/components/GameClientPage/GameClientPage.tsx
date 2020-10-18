@@ -19,6 +19,8 @@ interface GameClientPageParams {
 function GameClientPage(): JSX.Element {
   const { remoteHostID } = useParams<GameClientPageParams>();
   const { state, dispatch } = useContext(GameStatusContext);
+
+  const [isConnectedToHost, setIsconnectedToHost] = useState(false);
   const [playerName, setPlayerName] = useState("");
   const [isNameTaken, setIsNameTaken] = useState(false);
 
@@ -35,9 +37,10 @@ function GameClientPage(): JSX.Element {
   function onMessageFromHost(data: HostTypes) {
     switch (data.type) {
       case HostTypeConstants.CONNECTION_ACCEPTED: {
+        setIsconnectedToHost(true);
         dispatch({
-          type: GameStatusReducer.UPDATE_HOST_CONNECTION_STATE,
-          isConnectedToHost: true,
+          type: GameStatusReducer.UPDATE_PLAYERS_LIST,
+          currentPlayers: data.players,
         });
         break;
       }
@@ -45,16 +48,10 @@ function GameClientPage(): JSX.Element {
         setIsNameTaken(true);
         break;
       }
-      case HostTypeConstants.UPDATE_GAME_STATE: {
-        dispatch({
-          type: GameStatusReducer.UPDATE_PLAYERS_LIST,
-          currentPlayers: data.connectedPlayers,
-        });
-        break;
-      }
       case HostTypeConstants.UPDATE_ROUND: {
         dispatch({
-          type: GameStatusReducer.INCREMENT_ROUND,
+          type: GameStatusReducer.UPDATE_ROUND,
+          round: data.round,
           targetHeroes: new Set(data.targetHeroes),
           currentHeroes: data.currentHeroes,
         });
@@ -100,7 +97,7 @@ function GameClientPage(): JSX.Element {
   // Show connection page, have player set their name and
   // check that there are no conflicting names and that
   // we are connected to the game before proceeding
-  if (!state.isConnectedToHost) {
+  if (!isConnectedToHost) {
     return (
       <ConnectionView
         playerName={playerName}
