@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 import { Col } from "react-bootstrap";
 
-import { GameStatusContext } from "reducer/GameStatusContext";
+import { StoreContext } from "reducer/store";
 
 function ConnectedPlayers(): JSX.Element {
-  const { state } = useContext(GameStatusContext);
+  const { state } = useContext(StoreContext);
 
   const connectedPlayers: JSX.Element[] = [];
   state.players.forEach((player) => {

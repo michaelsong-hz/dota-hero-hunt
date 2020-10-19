@@ -8,15 +8,18 @@ import ConnectedPlayers from "components/GameShared/ConnectedPlayers";
 import HeroGrid from "components/GameShared/HeroGrid";
 import GameSettings from "components/GameShared/Settings";
 import useHostPeer from "hooks/useHostPeer";
+import useSoundEffect from "hooks/useSoundEffect";
 import { ClientTypeConstants, ClientTypes } from "models/MessageClientTypes";
 import { HostTypeConstants } from "models/MessageHostTypes";
 import { PlayerState } from "models/PlayerState";
-import { GameStatusContext } from "reducer/GameStatusContext";
-import { GameStatusReducer } from "reducer/gameStatus";
+import { StoreContext } from "reducer/store";
+import { StoreConstants } from "reducer/storeReducer";
 import { heroList } from "utils/HeroList";
+import { SoundEffects } from "utils/SoundEffectList";
+import { StorageConstants } from "utils/constants";
 
 function GameHostPage(): JSX.Element {
-  const { state, dispatch } = useContext(GameStatusContext);
+  const { state, dispatch } = useContext(StoreContext);
   const [preparingNextRound, setPreparingNextRound] = useState(false);
   const [playerName, setPlayerName] = useState("");
   const [showPlayerNameModal, setShowPlayerNameModal] = useState(true);
@@ -25,20 +28,24 @@ function GameHostPage(): JSX.Element {
   const stateRef = useRef(state);
 
   const [hostID, sendToClients] = useHostPeer({
-    GameStatusContext,
+    GameStatusContext: StoreContext,
     playerName,
     onMessage,
   });
+  const [playAudio] = useSoundEffect();
 
   useEffect(() => {
     stateRef.current = state;
   }, [state]);
 
   useEffect(() => {
-    setPlayerName(localStorage.getItem("playerName") || "");
+    setPlayerName(localStorage.getItem(StorageConstants.PLAYER_NAME) || "");
   }, []);
 
-  function addSelectedIcon(selectedIcon: number, playerName: string): void {
+  function addSelectedIcon(
+    selectedIcon: number,
+    selectedPlayerName: string
+  ): void {
     // Ignore if we have reached the target for selected icons, or the icon has
     // already been clicked this round
     // TODO: Get from game settings
@@ -59,21 +66,25 @@ function GameHostPage(): JSX.Element {
 
     const players = [...stateRef.current.players];
     players.forEach((player) => {
-      if (player.name === playerName) {
+      if (player.name === selectedPlayerName) {
         player.score += 1;
+        if (selectedPlayerName === playerName) {
+          playAudio(SoundEffects.PartyHorn);
+        }
       }
     });
 
     sendToClients({
       type: HostTypeConstants.UPDATE_FROM_CLICK,
-      lastClickedPlayerName: playerName,
+      lastClickedPlayerName: selectedPlayerName,
       selected: Array.from(selectedIcons),
       players: players,
     });
 
     dispatch({
-      type: GameStatusReducer.UPDATE_SELECTED_ICONS,
+      type: StoreConstants.UPDATE_SELECTED_ICONS,
       selectedIcons,
+      currentPlayers: players,
     });
   }
 
@@ -114,7 +125,7 @@ function GameHostPage(): JSX.Element {
           players,
         });
         dispatch({
-          type: GameStatusReducer.UPDATE_PLAYERS_LIST,
+          type: StoreConstants.UPDATE_PLAYERS_LIST,
           currentPlayers: players,
         });
       } else {
@@ -179,7 +190,7 @@ function GameHostPage(): JSX.Element {
       currentHeroes: currentHeroes,
     });
     dispatch({
-      type: GameStatusReducer.UPDATE_ROUND,
+      type: StoreConstants.UPDATE_ROUND,
       round,
       targetHeroes: new Set(targetHeroes),
       currentHeroes: currentHeroes,
@@ -257,7 +268,7 @@ function GameHostPage(): JSX.Element {
 
     // Add self to players list
     dispatch({
-      type: GameStatusReducer.UPDATE_PLAYERS_LIST,
+      type: StoreConstants.UPDATE_PLAYERS_LIST,
       currentPlayers: [
         {
           name: playerName,

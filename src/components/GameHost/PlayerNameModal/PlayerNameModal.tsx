@@ -3,6 +3,8 @@ import { Modal } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 
+import { StorageConstants } from "utils/constants";
+
 interface PlayerNameModalProps {
   playerName: string;
   showPlayerNameModal: boolean;
@@ -17,7 +19,7 @@ function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
     if (!isStringValid(props.playerName)) {
       setIsInvalidName(true);
     } else {
-      localStorage.setItem("playerName", props.playerName);
+      localStorage.setItem(StorageConstants.PLAYER_NAME, props.playerName);
       props.submitPlayerName();
     }
   }

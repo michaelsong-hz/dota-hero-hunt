@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Navbar,
   Nav,
@@ -9,21 +9,35 @@ import {
 } from "react-bootstrap";
 import RangeSlider from "react-bootstrap-range-slider";
 
-function Header(): JSX.Element {
-  const [volume, setVolume] = useState(50);
+import { StoreContext } from "reducer/store";
+import { StoreConstants } from "reducer/storeReducer";
+import { GlobalConstants, StorageConstants } from "utils/constants";
 
-  const renderTooltip = (props: any) => (
-    <Tooltip
-      id="button-tooltip"
-      className="tooltip"
-      style={{ backgroundColor: "#4A7EFA" }}
-      {...props}
-    >
+function Header(): JSX.Element {
+  const { state, dispatch } = useContext(StoreContext);
+  const [showVolume, setShowVolume] = useState(false);
+
+  function toggleTooltip(show: boolean) {
+    if (show === false) {
+      localStorage.setItem(
+        StorageConstants.VOLUME,
+        state.appSettings.volume.toString()
+      );
+    }
+    setShowVolume(show);
+  }
+
+  const renderTooltip = (props: unknown) => (
+    <Tooltip id="button-tooltip" className="tooltip" {...props}>
       <RangeSlider
-        value={volume}
+        value={state.appSettings.volume}
         onChange={(changeEvent) =>
-          setVolume(parseInt(changeEvent.target.value))
+          dispatch({
+            type: StoreConstants.SET_VOLUME,
+            volume: parseInt(changeEvent.target.value),
+          })
         }
+        step={GlobalConstants.VOLUME_STEP}
       />
     </Tooltip>
   );
@@ -41,6 +55,8 @@ function Header(): JSX.Element {
           placement="bottom"
           trigger="click"
           overlay={renderTooltip}
+          show={showVolume}
+          onToggle={(show: boolean) => toggleTooltip(show)}
         >
           <Button className="mr-3" variant="secondary">
             Volume

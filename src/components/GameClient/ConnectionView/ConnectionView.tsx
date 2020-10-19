@@ -5,6 +5,8 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import { Redirect } from "react-router-dom";
 
+import { StorageConstants } from "utils/constants";
+
 interface ConnectionViewProps {
   playerName: string;
   isNameTaken: boolean;
@@ -31,7 +33,7 @@ function ConnectionView(props: ConnectionViewProps): JSX.Element {
     e.preventDefault();
 
     if (!isJoiningGame) {
-      localStorage.setItem("playerName", props.playerName);
+      localStorage.setItem(StorageConstants.PLAYER_NAME, props.playerName);
       setIsJoiningGame(true);
       props.setIsNameTaken(false);
       props.connectToHost();

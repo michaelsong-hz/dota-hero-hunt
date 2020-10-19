@@ -7,10 +7,13 @@ import ConnectionView from "components/GameClient/ConnectionView";
 import ConnectedPlayers from "components/GameShared/ConnectedPlayers";
 import HeroGrid from "components/GameShared/HeroGrid";
 import useClientPeer from "hooks/useClientPeer";
+import useSoundEffect from "hooks/useSoundEffect";
 import { ClientTypeConstants } from "models/MessageClientTypes";
 import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
-import { GameStatusContext } from "reducer/GameStatusContext";
-import { GameStatusReducer } from "reducer/gameStatus";
+import { StoreContext } from "reducer/store";
+import { StoreConstants } from "reducer/storeReducer";
+import { SoundEffects } from "utils/SoundEffectList";
+import { StorageConstants } from "utils/constants";
 
 interface GameClientPageParams {
   remoteHostID: string;
@@ -18,7 +21,7 @@ interface GameClientPageParams {
 
 function GameClientPage(): JSX.Element {
   const { remoteHostID } = useParams<GameClientPageParams>();
-  const { state, dispatch } = useContext(GameStatusContext);
+  const { state, dispatch } = useContext(StoreContext);
 
   const [isConnectedToHost, setIsconnectedToHost] = useState(false);
   const [playerName, setPlayerName] = useState("");
@@ -29,9 +32,10 @@ function GameClientPage(): JSX.Element {
     remoteHostID,
     onMessageFromHost,
   });
+  const [playAudio] = useSoundEffect();
 
   useEffect(() => {
-    setPlayerName(localStorage.getItem("playerName") || "");
+    setPlayerName(localStorage.getItem(StorageConstants.PLAYER_NAME) || "");
   }, []);
 
   function onMessageFromHost(data: HostTypes) {
@@ -39,7 +43,7 @@ function GameClientPage(): JSX.Element {
       case HostTypeConstants.CONNECTION_ACCEPTED: {
         setIsconnectedToHost(true);
         dispatch({
-          type: GameStatusReducer.UPDATE_PLAYERS_LIST,
+          type: StoreConstants.UPDATE_PLAYERS_LIST,
           currentPlayers: data.players,
         });
         break;
@@ -50,7 +54,7 @@ function GameClientPage(): JSX.Element {
       }
       case HostTypeConstants.UPDATE_ROUND: {
         dispatch({
-          type: GameStatusReducer.UPDATE_ROUND,
+          type: StoreConstants.UPDATE_ROUND,
           round: data.round,
           targetHeroes: new Set(data.targetHeroes),
           currentHeroes: data.currentHeroes,
@@ -58,12 +62,12 @@ function GameClientPage(): JSX.Element {
         break;
       }
       case HostTypeConstants.UPDATE_FROM_CLICK: {
+        if (data.lastClickedPlayerName === playerName) {
+          playAudio(SoundEffects.PartyHorn);
+        }
         dispatch({
-          type: GameStatusReducer.UPDATE_SELECTED_ICONS,
+          type: StoreConstants.UPDATE_SELECTED_ICONS,
           selectedIcons: new Set(data.selected),
-        });
-        dispatch({
-          type: GameStatusReducer.UPDATE_PLAYERS_LIST,
           currentPlayers: data.players,
         });
         break;
