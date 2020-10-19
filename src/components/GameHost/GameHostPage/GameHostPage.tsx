@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { Spinner } from "react-bootstrap";
+import { Container, Spinner } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
@@ -171,10 +171,10 @@ function GameHostPage(): JSX.Element {
         allHeroIcons.push(i);
       });
       // TODO: Get game settings current heroes
-      // const rowTarget = 16;
-      const rowTarget = 6;
-      // const currentHeroesFlat = shuffle(allHeroIcons).slice(0, 96);
-      const currentHeroesFlat = shuffle(allHeroIcons).slice(0, 24);
+      const rowTarget = 16;
+      // const rowTarget = 6;
+      const currentHeroesFlat = shuffle(allHeroIcons).slice(0, 96);
+      // const currentHeroesFlat = shuffle(allHeroIcons).slice(0, 24);
       const currentHeroes: number[][] = [];
       let currentRow: number[] = [];
       currentHeroesFlat.forEach((hero, i) => {
@@ -259,14 +259,16 @@ function GameHostPage(): JSX.Element {
   // If we are waiting to get a host ID from Peer JS
   if (!hostID) {
     return (
-      <Row className="justify-content-center">
-        <Col xs="auto" className="mt-1">
-          <Spinner animation="grow" />
-        </Col>
-        <Col xs="auto">
-          <h2>Preparing your game lobby</h2>
-        </Col>
-      </Row>
+      <Container className="mt-4">
+        <Row className="justify-content-center">
+          <Col xs="auto" className="mt-1">
+            <Spinner animation="grow" />
+          </Col>
+          <Col xs="auto">
+            <h2>Preparing your game lobby</h2>
+          </Col>
+        </Row>
+      </Container>
     );
   }
 
@@ -287,7 +289,7 @@ function GameHostPage(): JSX.Element {
   }
 
   return (
-    <>
+    <Container className="mt-4">
       <PlayerNameModal
         playerName={playerName}
         showPlayerNameModal={showPlayerNameModal}
@@ -295,10 +297,12 @@ function GameHostPage(): JSX.Element {
         submitPlayerName={submitPlayerName}
       />
       <Row>
-        <ConnectedPlayers />
-        {getPageContent()}
+        <Col xs="auto">
+          <ConnectedPlayers />
+        </Col>
+        <Col>{getPageContent()}</Col>
       </Row>
-    </>
+    </Container>
   );
 }
 

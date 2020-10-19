@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Container } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
@@ -25,7 +26,7 @@ function HomePage(): JSX.Element {
   }
 
   return (
-    <div>
+    <Container className="mt-4">
       <Modal show={showConnectionModal} onHide={handleConnectionModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>Joining existing game</Modal.Title>
@@ -37,7 +38,6 @@ function HomePage(): JSX.Element {
               <Form.Control
                 type="text"
                 placeholder="Enter the game ID to join"
-                // defaultValue={playerName}
                 onChange={(e) => setGameID(e.target.value)}
               />
             </Form.Group>
@@ -80,7 +80,7 @@ function HomePage(): JSX.Element {
           </div>
         </Col>
       </Row>
-    </div>
+    </Container>
   );
 }
 

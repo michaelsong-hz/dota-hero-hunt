@@ -1,5 +1,4 @@
 import React from "react";
-import { Container } from "react-bootstrap";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import AboutPage from "components/AboutPage";
@@ -14,22 +13,20 @@ function App(): JSX.Element {
     <StoreContextProvider>
       <Header />
       <Router>
-        <Container className="mt-4">
-          <Switch>
-            <Route path="/play/:remoteHostID">
-              <GameClientPage />
-            </Route>
-            <Route path="/play">
-              <GameHostPage />
-            </Route>
-            <Route path="/about">
-              <AboutPage />
-            </Route>
-            <Route path="/">
-              <HomePage />
-            </Route>
-          </Switch>
-        </Container>
+        <Switch>
+          <Route path="/play/:remoteHostID">
+            <GameClientPage />
+          </Route>
+          <Route path="/play">
+            <GameHostPage />
+          </Route>
+          <Route path="/about">
+            <AboutPage />
+          </Route>
+          <Route path="/">
+            <HomePage />
+          </Route>
+        </Switch>
       </Router>
     </StoreContextProvider>
   );

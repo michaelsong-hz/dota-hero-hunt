@@ -1,10 +1,11 @@
 import React from "react";
+import { Container } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
 function AboutPage(): JSX.Element {
   return (
-    <div>
+    <Container className="mt-4">
       <Row>
         <Col>
           <h1>About</h1>
@@ -19,7 +20,7 @@ function AboutPage(): JSX.Element {
           </p>
         </Col>
       </Row>
-    </div>
+    </Container>
   );
 }
 
