@@ -10,13 +10,13 @@ import React, {
 
 import { ClientTypes } from "models/MessageClientTypes";
 import { ClientDataConnection, HostTypes } from "models/MessageHostTypes";
-import { IGameStatusReducer, IGameStatusActions } from "reducer/gameStatus";
+import { StoreReducer, StoreActions } from "reducer/storeReducer";
 import { getPeerConfig } from "utils/utilities";
 
 interface UseHostPeerProps {
   GameStatusContext: React.Context<{
-    state: IGameStatusReducer;
-    dispatch: Dispatch<IGameStatusActions>;
+    state: StoreReducer;
+    dispatch: Dispatch<StoreActions>;
   }>;
   playerName: string;
   onMessage: (data: ClientTypes) => void;

@@ -2,11 +2,11 @@ import React, { useContext } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
-import { GameStatusContext } from "reducer/GameStatusContext";
+import { StoreContext } from "reducer/store";
 import { heroList } from "utils/HeroList";
 
 function GameStatusBar(): JSX.Element {
-  const { state } = useContext(GameStatusContext);
+  const { state } = useContext(StoreContext);
 
   function renderHeroesToFind(): JSX.Element[] {
     const heroesToFind: JSX.Element[] = [];

@@ -7,11 +7,11 @@ import GameClientPage from "components/GameClient/GameClientPage";
 import GameHostPage from "components/GameHost/GameHostPage";
 import Header from "components/Header";
 import HomePage from "components/HomePage";
-import { GameStatusProvider } from "reducer/GameStatusContext";
+import { StoreContextProvider } from "reducer/store";
 
 function App(): JSX.Element {
   return (
-    <GameStatusProvider>
+    <StoreContextProvider>
       <Header />
       <Router>
         <Container className="mt-4">
@@ -31,7 +31,7 @@ function App(): JSX.Element {
           </Switch>
         </Container>
       </Router>
-    </GameStatusProvider>
+    </StoreContextProvider>
   );
 }
 

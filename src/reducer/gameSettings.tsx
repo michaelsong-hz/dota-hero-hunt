@@ -39,7 +39,7 @@ export const gameSettingsInitialState: IGameSettingsReducer = {
   showIcons: false,
 };
 
-export default function settings(
+export default function gameSettingsReducer(
   state: IGameSettingsReducer = gameSettingsInitialState,
   action: IGameSettingsActions
 ): IGameSettingsReducer {

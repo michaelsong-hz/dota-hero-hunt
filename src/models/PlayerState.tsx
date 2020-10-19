@@ -1,5 +1,5 @@
-export interface PlayerState {
+export type PlayerState = {
   name: string;
   score: number;
   isDisabled: boolean;
-}
+};
