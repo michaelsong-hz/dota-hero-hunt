@@ -1,7 +1,7 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 
-import { StoreContext } from "reducer/store";
+import { useStoreState } from "reducer/store";
 
 interface GameSettingsProps {
   inviteLink: string;
@@ -9,7 +9,7 @@ interface GameSettingsProps {
 }
 
 function GameSettings(props: GameSettingsProps): JSX.Element {
-  const { state } = useContext(StoreContext);
+  const state = useStoreState();
 
   function handleSubmit(e: React.FormEvent) {
     // Prevent form post

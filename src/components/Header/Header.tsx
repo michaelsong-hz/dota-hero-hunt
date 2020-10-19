@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import {
   Navbar,
   Nav,
@@ -9,12 +9,13 @@ import {
 } from "react-bootstrap";
 import RangeSlider from "react-bootstrap-range-slider";
 
-import { StoreContext } from "reducer/store";
+import { useStoreState, useStoreDispatch } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { GlobalConstants, StorageConstants } from "utils/constants";
 
 function Header(): JSX.Element {
-  const { state, dispatch } = useContext(StoreContext);
+  const state = useStoreState();
+  const dispatch = useStoreDispatch();
   const [showVolume, setShowVolume] = useState(false);
 
   function toggleTooltip(show: boolean) {

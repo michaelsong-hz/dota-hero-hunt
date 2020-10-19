@@ -1,6 +1,6 @@
 import Peer from "peerjs";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useState, useEffect, useContext } from "react";
+import React, { useCallback, useState, useRef } from "react";
 
 import {
   ClientTypeConstants,
@@ -20,26 +20,27 @@ interface UseClientPeerProps {
 export default function useClientPeer(
   props: UseClientPeerProps
 ): [() => void, (data: ClientTypes) => void, string | undefined] {
-  const [myPeer, setPeer] = useState<Peer>();
   const [hostConnection, setHostConnection] = useState<
     HostDataConnection | undefined
   >();
   const [error, setError] = useState();
 
-  const cleanUp = () => {
+  const myPeer = useRef<Peer>();
+
+  const cleanUp = useCallback(() => {
     console.log("peerjs cleanup");
     setHostConnection(undefined);
-    if (myPeer) {
-      myPeer.disconnect();
-      myPeer.destroy();
+    if (myPeer.current) {
+      console.log("destroying peer");
+      myPeer.current.disconnect();
+      myPeer.current.destroy();
     }
-  };
+  }, []);
 
   function connectToHost() {
     const peer = new Peer(getPeerConfig());
 
     peer.on("open", () => {
-      setPeer(peer);
       console.log("connect to host", props.remoteHostID);
 
       const currentHostConnection: HostDataConnection = peer.connect(
@@ -79,19 +80,21 @@ export default function useClientPeer(
       cleanUp();
     });
 
-    setPeer(peer);
+    myPeer.current = peer;
 
     return () => {
       cleanUp();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }
 
-  function sendToHost(data: ClientTypes) {
-    if (hostConnection) {
-      hostConnection.send(data);
-    }
-  }
+  const sendToHost = useCallback(
+    (data: ClientTypes) => {
+      if (hostConnection) {
+        hostConnection.send(data);
+      }
+    },
+    [hostConnection]
+  );
 
   return [connectToHost, sendToHost, error];
 }

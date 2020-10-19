@@ -1,21 +1,22 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Col } from "react-bootstrap";
 
-import { StoreContext } from "reducer/store";
+import { useStoreState } from "reducer/store";
 
 function ConnectedPlayers(): JSX.Element {
-  const { state } = useContext(StoreContext);
+  const state = useStoreState();
 
   const connectedPlayers: JSX.Element[] = [];
-  state.players.forEach((player) => {
+
+  for (const [playerName, player] of Object.entries(state.players)) {
     connectedPlayers.push(
-      <div key={`player-${player.name}`}>
-        <h4>{player.name}</h4>
+      <div key={`player-${playerName}`}>
+        <h4>{playerName}</h4>
         <p>{player.score}</p>
         <p>{player.isDisabled}</p>
       </div>
     );
-  });
+  }
   return (
     <Col xs="auto">
       <h2>Players</h2>

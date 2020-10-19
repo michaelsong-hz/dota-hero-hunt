@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Col, Row } from "react-bootstrap";
 
 import HeroIcon from "components/GameShared/HeroIcon";
 import GameStatusBar from "components/GameShared/StatusBar";
-import { StoreContext } from "reducer/store";
+import { useStoreState } from "reducer/store";
 import { heroList } from "utils/HeroList";
 import { prependCDN } from "utils/utilities";
 
@@ -12,7 +12,7 @@ interface HeroGridProps {
 }
 
 function HeroGrid(props: HeroGridProps): JSX.Element {
-  const { state } = useContext(StoreContext);
+  const state = useStoreState();
 
   function createHeroImagesRow(rowNumber: number): JSX.Element[] {
     const heroImagesRow: JSX.Element[] = [];

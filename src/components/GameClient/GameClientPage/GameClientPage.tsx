@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { useParams } from "react-router-dom";
@@ -10,7 +10,7 @@ import useClientPeer from "hooks/useClientPeer";
 import useSoundEffect from "hooks/useSoundEffect";
 import { ClientTypeConstants } from "models/MessageClientTypes";
 import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
-import { StoreContext } from "reducer/store";
+import { useStoreDispatch, useStoreState } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { SoundEffects } from "utils/SoundEffectList";
 import { StorageConstants } from "utils/constants";
@@ -21,7 +21,8 @@ interface GameClientPageParams {
 
 function GameClientPage(): JSX.Element {
   const { remoteHostID } = useParams<GameClientPageParams>();
-  const { state, dispatch } = useContext(StoreContext);
+  const state = useStoreState();
+  const dispatch = useStoreDispatch();
 
   const [isConnectedToHost, setIsconnectedToHost] = useState(false);
   const [playerName, setPlayerName] = useState("");
@@ -63,7 +64,11 @@ function GameClientPage(): JSX.Element {
       }
       case HostTypeConstants.UPDATE_FROM_CLICK: {
         if (data.lastClickedPlayerName === playerName) {
-          playAudio(SoundEffects.PartyHorn);
+          if (data.isCorrectHero) {
+            playAudio(SoundEffects.PartyHorn);
+          } else {
+            playAudio(SoundEffects.Headshake);
+          }
         }
         dispatch({
           type: StoreConstants.UPDATE_SELECTED_ICONS,
