@@ -8,10 +8,8 @@ import {
 } from "reducer/storeReducer";
 import { StorageConstants } from "utils/constants";
 
-export const StoreContext = createContext<{
-  state: StoreReducer;
-  dispatch: Dispatch<StoreActions>;
-}>({ state: storeInitialState, dispatch: () => null });
+const StoreStateContext = createContext<StoreReducer>(storeInitialState);
+const StoreDispatchContext = createContext<Dispatch<StoreActions>>(() => null);
 
 function getStoredVolume(): number {
   let volume = 50;
@@ -38,8 +36,26 @@ export const StoreContextProvider: React.FC = ({ children }) => {
 
   const [state, dispatch] = useReducer(storeReducer, storeInitialState);
   return (
-    <StoreContext.Provider value={{ state, dispatch }}>
-      {children}
-    </StoreContext.Provider>
+    <StoreStateContext.Provider value={state}>
+      <StoreDispatchContext.Provider value={dispatch}>
+        {children}
+      </StoreDispatchContext.Provider>
+    </StoreStateContext.Provider>
   );
 };
+
+export function useStoreState(): StoreReducer {
+  const context = React.useContext(StoreStateContext);
+  if (context === undefined) {
+    throw new Error("useStoreState must be used within a StoreProvider");
+  }
+  return context;
+}
+
+export function useStoreDispatch(): React.Dispatch<StoreActions> {
+  const context = React.useContext(StoreDispatchContext);
+  if (context === undefined) {
+    throw new Error("useStoreDispatch must be used within a StoreProvider");
+  }
+  return context;
+}

@@ -19,7 +19,7 @@ export type HostTypes =
     }
   | {
       type: HostTypeConstants.CONNECTION_ACCEPTED;
-      players: PlayerState[];
+      players: Record<string, PlayerState>;
     }
   | {
       type: HostTypeConstants.PLAYER_NAME_TAKEN;
@@ -27,12 +27,14 @@ export type HostTypes =
     }
   | {
       type: HostTypeConstants.UPDATE_FROM_CLICK;
+      isCorrectHero: boolean;
       lastClickedPlayerName: string;
-      players: PlayerState[];
+      players: Record<string, PlayerState>;
       // Will prefer to send sets as those are our native data structure,
       // but Peer JS does not seem to like sets.
       // Maybe revisit in the future to see if they make an update to support sets.
       selected: number[];
+      invalidIcons: number[];
     };
 
 export interface ClientDataConnection extends Peer.DataConnection {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Spinner } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
@@ -12,14 +12,16 @@ import useSoundEffect from "hooks/useSoundEffect";
 import { ClientTypeConstants, ClientTypes } from "models/MessageClientTypes";
 import { HostTypeConstants } from "models/MessageHostTypes";
 import { PlayerState } from "models/PlayerState";
-import { StoreContext } from "reducer/store";
+import { useStoreState, useStoreDispatch } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { heroList } from "utils/HeroList";
 import { SoundEffects } from "utils/SoundEffectList";
 import { StorageConstants } from "utils/constants";
 
 function GameHostPage(): JSX.Element {
-  const { state, dispatch } = useContext(StoreContext);
+  const state = useStoreState();
+  const dispatch = useStoreDispatch();
+
   const [preparingNextRound, setPreparingNextRound] = useState(false);
   const [playerName, setPlayerName] = useState("");
   const [showPlayerNameModal, setShowPlayerNameModal] = useState(true);
@@ -28,7 +30,7 @@ function GameHostPage(): JSX.Element {
   const stateRef = useRef(state);
 
   const [hostID, sendToClients] = useHostPeer({
-    GameStatusContext: StoreContext,
+    state,
     playerName,
     onMessage,
   });
@@ -47,40 +49,48 @@ function GameHostPage(): JSX.Element {
     selectedPlayerName: string
   ): void {
     // Ignore if we have reached the target for selected icons, or the icon has
-    // already been clicked this round
+    // already been clicked this round, or the player is disabled
     // TODO: Get from game settings
     if (
       stateRef.current.selectedIcons.size >= 3 ||
-      stateRef.current.selectedIcons.has(selectedIcon)
+      stateRef.current.selectedIcons.has(selectedIcon) ||
+      stateRef.current.invalidIcons.has(selectedIcon) ||
+      stateRef.current.players[selectedPlayerName].isDisabled
     ) {
-      return;
-    }
-    if (!stateRef.current.targetHeroes.has(selectedIcon)) {
-      // Do something to punish the player
-      console.log("TODO: Punish the player");
       return;
     }
 
     const selectedIcons = new Set(stateRef.current.selectedIcons);
-    selectedIcons.add(selectedIcon);
+    const invalidIcons = new Set(stateRef.current.invalidIcons);
+    const players = { ...stateRef.current.players };
+    let isCorrectHero;
 
-    const players = [...stateRef.current.players];
-    players.forEach((player) => {
-      if (player.name === selectedPlayerName) {
-        player.score += 1;
-        if (selectedPlayerName === playerName) {
-          playAudio(SoundEffects.PartyHorn);
-        }
+    if (!stateRef.current.targetHeroes.has(selectedIcon)) {
+      isCorrectHero = false;
+      invalidIcons.add(selectedIcon);
+
+      players[selectedPlayerName].score -= 1;
+      if (selectedPlayerName === playerName) {
+        playAudio(SoundEffects.Headshake);
       }
-    });
+    } else {
+      isCorrectHero = true;
+      selectedIcons.add(selectedIcon);
+
+      players[selectedPlayerName].score += 1;
+      if (selectedPlayerName === playerName) {
+        playAudio(SoundEffects.PartyHorn);
+      }
+    }
 
     sendToClients({
       type: HostTypeConstants.UPDATE_FROM_CLICK,
+      isCorrectHero: isCorrectHero,
+      players: players,
       lastClickedPlayerName: selectedPlayerName,
       selected: Array.from(selectedIcons),
-      players: players,
+      invalidIcons: Array.from(invalidIcons),
     });
-
     dispatch({
       type: StoreConstants.UPDATE_SELECTED_ICONS,
       selectedIcons,
@@ -99,36 +109,30 @@ function GameHostPage(): JSX.Element {
       // TODO: Error handling, checking received data
       addSelectedIcon(data.selected, data.playerName);
     } else if (data.type === ClientTypeConstants.NEW_CONNECTION) {
-      // Check if the playername has been taken, let client know if
-      // it has been taken
-      let playerNameTaken = false;
-      const currPlayerNames: string[] = [];
-
-      stateRef.current.players.forEach((player) => {
-        currPlayerNames.push(player.name);
-        if (player.name === data.playerName) {
-          playerNameTaken = true;
-        }
-      });
-
-      // If playername hasn't been taken, accept the connection
-      if (!playerNameTaken) {
-        const newPlayer: PlayerState = {
-          name: data.playerName,
+      // If player name hasn't been taken, accept the connection
+      if (!(data.playerName in stateRef.current.players)) {
+        const currentPlayers = { ...stateRef.current.players };
+        currentPlayers[data.playerName] = {
           score: 0,
           isDisabled: false,
         };
-        const players = [...stateRef.current.players, newPlayer];
 
         sendToClients({
           type: HostTypeConstants.CONNECTION_ACCEPTED,
-          players,
+          players: currentPlayers,
         });
         dispatch({
           type: StoreConstants.UPDATE_PLAYERS_LIST,
-          currentPlayers: players,
+          currentPlayers,
         });
       } else {
+        // Let client know that the player name has been taken
+        const currPlayerNames: string[] = [];
+
+        for (const currPlayerName of Object.keys(stateRef.current.players)) {
+          currPlayerNames.push(currPlayerName);
+        }
+
         sendToClients({
           type: HostTypeConstants.PLAYER_NAME_TAKEN,
           currentPlayers: currPlayerNames,
@@ -137,66 +141,69 @@ function GameHostPage(): JSX.Element {
     }
   }
 
-  // TODO: Clean up function
-  function shuffle(array: number[]) {
-    let i = array.length,
-      j = 0,
-      temp;
+  const incrementRound = useCallback(
+    (overrideRound?: number) => {
+      // TODO: Clean up function
+      function shuffle(array: number[]) {
+        let i = array.length,
+          j = 0,
+          temp;
 
-    while (i--) {
-      j = Math.floor(Math.random() * (i + 1));
+        while (i--) {
+          j = Math.floor(Math.random() * (i + 1));
 
-      // swap randomly chosen element with current element
-      temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
-    }
+          // swap randomly chosen element with current element
+          temp = array[i];
+          array[i] = array[j];
+          array[j] = temp;
+        }
 
-    return array;
-  }
-
-  function incrementRound(overrideRound?: number) {
-    let round = state.round + 1;
-    if (overrideRound) {
-      round = overrideRound;
-    }
-
-    const allHeroIcons: number[] = [];
-    heroList.forEach((hero, i) => {
-      allHeroIcons.push(i);
-    });
-    // TODO: Get game settings current heroes
-    // const rowTarget = 16;
-    const rowTarget = 6;
-    // const currentHeroesFlat = shuffle(allHeroIcons).slice(0, 96);
-    const currentHeroesFlat = shuffle(allHeroIcons).slice(0, 24);
-    const currentHeroes: number[][] = [];
-    let currentRow: number[] = [];
-    currentHeroesFlat.forEach((hero, i) => {
-      currentRow.push(hero);
-      if ((i + 1) % rowTarget === 0) {
-        currentHeroes.push(currentRow);
-        currentRow = [];
+        return array;
       }
-    });
 
-    // TODO: Get game settings target heroes
-    const targetHeroes = new Set(shuffle(currentHeroesFlat).slice(0, 3));
+      let round = state.round + 1;
+      if (overrideRound) {
+        round = overrideRound;
+      }
 
-    sendToClients({
-      type: HostTypeConstants.UPDATE_ROUND,
-      round,
-      targetHeroes: Array.from(targetHeroes),
-      currentHeroes: currentHeroes,
-    });
-    dispatch({
-      type: StoreConstants.UPDATE_ROUND,
-      round,
-      targetHeroes: new Set(targetHeroes),
-      currentHeroes: currentHeroes,
-    });
-    console.log("round set to", round);
-  }
+      const allHeroIcons: number[] = [];
+      heroList.forEach((hero, i) => {
+        allHeroIcons.push(i);
+      });
+      // TODO: Get game settings current heroes
+      // const rowTarget = 16;
+      const rowTarget = 6;
+      // const currentHeroesFlat = shuffle(allHeroIcons).slice(0, 96);
+      const currentHeroesFlat = shuffle(allHeroIcons).slice(0, 24);
+      const currentHeroes: number[][] = [];
+      let currentRow: number[] = [];
+      currentHeroesFlat.forEach((hero, i) => {
+        currentRow.push(hero);
+        if ((i + 1) % rowTarget === 0) {
+          currentHeroes.push(currentRow);
+          currentRow = [];
+        }
+      });
+
+      // TODO: Get game settings target heroes
+      const targetHeroes = new Set(shuffle(currentHeroesFlat).slice(0, 3));
+
+      sendToClients({
+        type: HostTypeConstants.UPDATE_ROUND,
+        round,
+        targetHeroes: Array.from(targetHeroes),
+        currentHeroes: currentHeroes,
+      });
+      dispatch({
+        type: StoreConstants.UPDATE_ROUND,
+        round,
+        targetHeroes: new Set(targetHeroes),
+        currentHeroes: currentHeroes,
+      });
+      console.log("round set to", round);
+    },
+    [dispatch, sendToClients, state.round]
+  );
 
   /**
    * Automatically sends updates to the clients when the
@@ -221,7 +228,7 @@ function GameHostPage(): JSX.Element {
       console.log("cleared next round timer");
       clearTimeout(nextRoundTimer);
     };
-  });
+  }, [state.selectedIcons.size, preparingNextRound, incrementRound]);
 
   function getInviteLink(): string {
     let path = window.location.href;
@@ -266,16 +273,16 @@ function GameHostPage(): JSX.Element {
   function submitPlayerName() {
     setShowPlayerNameModal(false);
 
+    const currentPlayers: Record<string, PlayerState> = {};
+    currentPlayers[playerName] = {
+      score: 0,
+      isDisabled: false,
+    };
+
     // Add self to players list
     dispatch({
       type: StoreConstants.UPDATE_PLAYERS_LIST,
-      currentPlayers: [
-        {
-          name: playerName,
-          score: 0,
-          isDisabled: false,
-        },
-      ],
+      currentPlayers,
     });
   }
 

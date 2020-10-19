@@ -1,12 +1,12 @@
-import React, { useContext } from "react";
+import React from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
-import { StoreContext } from "reducer/store";
+import { useStoreState } from "reducer/store";
 import { heroList } from "utils/HeroList";
 
 function GameStatusBar(): JSX.Element {
-  const { state } = useContext(StoreContext);
+  const state = useStoreState();
 
   function renderHeroesToFind(): JSX.Element[] {
     const heroesToFind: JSX.Element[] = [];
