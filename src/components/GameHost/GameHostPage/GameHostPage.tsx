@@ -3,10 +3,10 @@ import { Spinner } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
-import ConnectedPlayers from "components/ConnectedPlayers";
-import GameSettings from "components/GameSettings";
-import HeroGrid from "components/HeroGrid";
-import PlayerNameModal from "components/PlayerNameModal";
+import PlayerNameModal from "components/GameHost/PlayerNameModal";
+import ConnectedPlayers from "components/GameShared/ConnectedPlayers";
+import HeroGrid from "components/GameShared/HeroGrid";
+import GameSettings from "components/GameShared/Settings";
 import useHostPeer from "hooks/useHostPeer";
 import { ClientTypeConstants, ClientTypes } from "models/MessageClientTypes";
 import { HostTypeConstants } from "models/MessageHostTypes";

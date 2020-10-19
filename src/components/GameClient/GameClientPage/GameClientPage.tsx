@@ -3,9 +3,9 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { useParams } from "react-router-dom";
 
-import ConnectedPlayers from "components/ConnectedPlayers";
-import ConnectionView from "components/ConnectionView";
-import HeroGrid from "components/HeroGrid";
+import ConnectionView from "components/GameClient/ConnectionView";
+import ConnectedPlayers from "components/GameShared/ConnectedPlayers";
+import HeroGrid from "components/GameShared/HeroGrid";
 import useClientPeer from "hooks/useClientPeer";
 import { ClientTypeConstants } from "models/MessageClientTypes";
 import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
