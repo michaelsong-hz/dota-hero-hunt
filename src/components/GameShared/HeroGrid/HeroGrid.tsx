@@ -45,12 +45,12 @@ function HeroGrid(props: HeroGridProps): JSX.Element {
   }
 
   return (
-    <Col>
+    <div className="text-center">
       <GameStatusBar />
       <Row>
         <Col>{createHeroImages()}</Col>
       </Row>
-    </Col>
+    </div>
   );
 }
 

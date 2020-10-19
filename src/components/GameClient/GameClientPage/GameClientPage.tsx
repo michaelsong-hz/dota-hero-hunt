@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { Container, Row } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
 import { useParams } from "react-router-dom";
 
 import ConnectionView from "components/GameClient/ConnectionView";
@@ -108,22 +108,28 @@ function GameClientPage(): JSX.Element {
   // we are connected to the game before proceeding
   if (!isConnectedToHost) {
     return (
-      <ConnectionView
-        playerName={playerName}
-        isNameTaken={isNameTaken}
-        peerError={peerError}
-        connectToHost={connectToHost}
-        setPlayerName={setPlayerName}
-        setIsNameTaken={setIsNameTaken}
-      />
+      <Container className="mt-4">
+        <ConnectionView
+          playerName={playerName}
+          isNameTaken={isNameTaken}
+          peerError={peerError}
+          connectToHost={connectToHost}
+          setPlayerName={setPlayerName}
+          setIsNameTaken={setIsNameTaken}
+        />
+      </Container>
     );
   }
 
   return (
-    <Row>
-      <ConnectedPlayers />
-      {getPageContent()}
-    </Row>
+    <Container className="mt-4">
+      <Row>
+        <Col xs="auto">
+          <ConnectedPlayers />
+        </Col>
+        <Col>{getPageContent()}</Col>
+      </Row>
+    </Container>
   );
 }
 
