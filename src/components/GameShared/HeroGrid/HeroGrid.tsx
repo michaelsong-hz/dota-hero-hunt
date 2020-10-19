@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 import { Col, Row } from "react-bootstrap";
 
-import GameStatusBar from "components/GameStatusBar";
-import HeroIcon from "components/HeroIcon";
+import HeroIcon from "components/GameShared/HeroIcon";
+import GameStatusBar from "components/GameShared/StatusBar";
 import { GameStatusContext } from "reducer/GameStatusContext";
 import { heroList } from "utils/HeroList";
 import { prependCDN } from "utils/utilities";

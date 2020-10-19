@@ -3,8 +3,8 @@ import { Container } from "react-bootstrap";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import AboutPage from "components/AboutPage";
-import GameClientPage from "components/GameClientPage";
-import GameHostPage from "components/GameHostPage";
+import GameClientPage from "components/GameClient/GameClientPage";
+import GameHostPage from "components/GameHost/GameHostPage";
 import Header from "components/Header";
 import HomePage from "components/HomePage";
 import { GameStatusProvider } from "reducer/GameStatusContext";
