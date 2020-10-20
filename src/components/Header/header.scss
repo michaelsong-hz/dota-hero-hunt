@@ -1,5 +1,20 @@
+@import "styles/variables.scss";
+
 // TODO: Get colours from global style
 .tooltip [class$="inner"] {
   background-color: gray;
   border: 1px solid gray;
+}
+
+.header-btn {
+  box-shadow: none !important;
+}
+
+// Set background colors for when switch is toggled
+// Need to be here as the switch API only takes hex strings
+.header-switch-on > div.react-switch-bg {
+  background: $secondary-color-dark !important;
+}
+.header-switch-off > div.react-switch-bg {
+  background: $secondary-color-light !important;
 }
