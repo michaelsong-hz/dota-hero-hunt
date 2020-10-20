@@ -80,6 +80,8 @@ function GameHostPage(): JSX.Element {
       players[selectedPlayerName].score += 1;
       if (selectedPlayerName === playerName) {
         playAudio(SoundEffects.PartyHorn);
+      } else {
+        playAudio(SoundEffects.Frog);
       }
     }
 

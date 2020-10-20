@@ -70,6 +70,8 @@ function GameClientPage(): JSX.Element {
           } else {
             playAudio(SoundEffects.Headshake);
           }
+        } else if (data.isCorrectHero) {
+          playAudio(SoundEffects.Frog);
         }
         dispatch({
           type: StoreConstants.UPDATE_SELECTED_ICONS,
