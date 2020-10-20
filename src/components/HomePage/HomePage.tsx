@@ -7,7 +7,12 @@ import Modal from "react-bootstrap/Modal";
 import Row from "react-bootstrap/Row";
 import { Redirect } from "react-router-dom";
 
+import { useStoreState } from "reducer/store";
+import { appendTheme } from "utils/utilities";
+
 function HomePage(): JSX.Element {
+  const state = useStoreState();
+
   const [showConnectionModal, setShowConnectionModal] = useState(false);
   const [gameID, setGameID] = useState("");
   const [toHostGame, setToHostGame] = useState(false);
@@ -44,10 +49,16 @@ function HomePage(): JSX.Element {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleConnectionModalClose}>
+          <Button
+            variant={appendTheme("secondary", state.appSettings.isDark)}
+            onClick={handleConnectionModalClose}
+          >
             Cancel
           </Button>
-          <Button variant="primary" onClick={() => setToJoinGame(true)}>
+          <Button
+            variant={appendTheme("primary", state.appSettings.isDark)}
+            onClick={() => setToJoinGame(true)}
+          >
             Connect
           </Button>
         </Modal.Footer>
@@ -62,6 +73,7 @@ function HomePage(): JSX.Element {
             <div className="p-2">
               <Button
                 className="homepage-button"
+                variant={appendTheme("primary", state.appSettings.isDark)}
                 size="lg"
                 onClick={() => setToHostGame(true)}
               >
@@ -71,7 +83,7 @@ function HomePage(): JSX.Element {
             <div>
               <Button
                 className="homepage-button"
-                variant="secondary"
+                variant={appendTheme("secondary", state.appSettings.isDark)}
                 onClick={() => setShowConnectionModal(true)}
               >
                 Join Existing Game

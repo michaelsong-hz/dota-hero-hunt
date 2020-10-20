@@ -26,12 +26,20 @@ function getStoredVolume(): number {
   return volume;
 }
 
+function getStoredIsDark(): boolean {
+  const storedIsDark = localStorage.getItem(StorageConstants.THEME_IS_DARK);
+  if (storedIsDark && storedIsDark === "true") {
+    return true;
+  }
+  // Light theme by default
+  return false;
+}
+
 // eslint-disable-next-line react/prop-types
 export const StoreContextProvider: React.FC = ({ children }) => {
   useMemo(() => {
     storeInitialState.appSettings.volume = getStoredVolume();
-    // TODO: Read from storage
-    storeInitialState.appSettings.isDark = true;
+    storeInitialState.appSettings.isDark = getStoredIsDark();
   }, []);
 
   const [state, dispatch] = useReducer(storeReducer, storeInitialState);

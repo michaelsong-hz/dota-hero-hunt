@@ -8,10 +8,12 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import RangeSlider from "react-bootstrap-range-slider";
+import { Link } from "react-router-dom";
 
 import { useStoreState, useStoreDispatch } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { GlobalConstants, StorageConstants } from "utils/constants";
+import { appendTheme } from "utils/utilities";
 
 function Header(): JSX.Element {
   const state = useStoreState();
@@ -43,14 +45,34 @@ function Header(): JSX.Element {
     </Tooltip>
   );
 
+  function toggleTheme(isDark: boolean) {
+    dispatch({
+      type: StoreConstants.SET_THEME,
+      isDark,
+    });
+    localStorage.setItem(StorageConstants.THEME_IS_DARK, isDark.toString());
+  }
+
   return (
-    <Navbar bg="light" expand="lg">
-      <Navbar.Brand href="/">Dota Hero Hunt</Navbar.Brand>
+    <Navbar bg={appendTheme("header", state.appSettings.isDark)} expand="lg">
+      <Link
+        to="/"
+        className={`navbar-brand ${appendTheme(
+          "text",
+          !state.appSettings.isDark
+        )}`}
+      >
+        Dota Hero Hunt
+      </Link>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <Nav.Link href="/">Home</Nav.Link>
-          <Nav.Link href="/about">About</Nav.Link>
+          <Link to="/" className="nav-link text-muted">
+            Home
+          </Link>
+          <Link to="/about" className="nav-link text-muted">
+            About
+          </Link>
         </Nav>
         <OverlayTrigger
           placement="bottom"
@@ -59,16 +81,24 @@ function Header(): JSX.Element {
           show={showVolume}
           onToggle={(show: boolean) => toggleTooltip(show)}
         >
-          <Button className="mr-3" variant="secondary">
+          <Button
+            className="mr-3"
+            variant={appendTheme("secondary", state.appSettings.isDark)}
+          >
             Volume
           </Button>
         </OverlayTrigger>
         <Form inline>
           <Form.Check
+            className={appendTheme("text", !state.appSettings.isDark)}
             inline
             type="switch"
             id="theme-switch"
             label="Toggle Theme"
+            checked={state.appSettings.isDark}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              toggleTheme(e.target.checked)
+            }
           ></Form.Check>
         </Form>
       </Navbar.Collapse>

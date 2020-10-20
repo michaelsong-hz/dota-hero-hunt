@@ -24,6 +24,7 @@ export default function useSoundEffect(): [
     0: new Audio(prependCDN(soundEffectList[0].url)),
     1: new Audio(prependCDN(soundEffectList[1].url)),
     2: new Audio(prependCDN(soundEffectList[2].url)),
+    3: new Audio(prependCDN(soundEffectList[3].url)),
   });
 
   const playAudio = useCallback(

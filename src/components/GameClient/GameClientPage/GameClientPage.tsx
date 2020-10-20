@@ -14,6 +14,7 @@ import { useStoreDispatch, useStoreState } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { SoundEffects } from "utils/SoundEffectList";
 import { StorageConstants } from "utils/constants";
+import { appendTheme } from "utils/utilities";
 
 interface GameClientPageParams {
   remoteHostID: string;
@@ -95,7 +96,9 @@ function GameClientPage(): JSX.Element {
     if (state.round === 0) {
       return (
         <Col>
-          <h3>Waiting for the game to start</h3>
+          <h3 className={appendTheme("text", !state.appSettings.isDark)}>
+            Waiting for the game to start
+          </h3>
         </Col>
       );
     }

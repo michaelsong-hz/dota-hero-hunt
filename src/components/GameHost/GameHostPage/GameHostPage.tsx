@@ -230,6 +230,23 @@ function GameHostPage(): JSX.Element {
     };
   }, [state.selectedIcons.size, preparingNextRound, incrementRound]);
 
+  // Reset round and player list if leaving the page
+  useEffect(() => {
+    return () => {
+      console.log("left game page, resetting state");
+      dispatch({
+        type: StoreConstants.UPDATE_ROUND,
+        round: 0,
+        targetHeroes: new Set(),
+        currentHeroes: [],
+      });
+      dispatch({
+        type: StoreConstants.UPDATE_PLAYERS_LIST,
+        currentPlayers: {},
+      });
+    };
+  }, [dispatch]);
+
   function getInviteLink(): string {
     let path = window.location.href;
     path =
