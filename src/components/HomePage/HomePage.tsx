@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container } from "react-bootstrap";
+import { Container, Jumbotron } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
@@ -20,6 +20,14 @@ function HomePage(): JSX.Element {
 
   function handleConnectionModalClose() {
     setShowConnectionModal(false);
+  }
+
+  function getJumbotronClassName(): string {
+    let returnString = "d-flex flex-column align-items-center";
+    if (state.appSettings.isDark) {
+      returnString += " bg-dark";
+    }
+    return returnString;
   }
 
   if (toHostGame) {
@@ -66,7 +74,7 @@ function HomePage(): JSX.Element {
 
       <Row>
         <Col>
-          <div className="d-flex flex-column align-items-center">
+          <Jumbotron className={getJumbotronClassName()}>
             <div className="p-2">
               <h1>Dota Hero Hunt</h1>
             </div>
@@ -89,7 +97,7 @@ function HomePage(): JSX.Element {
                 Join Existing Game
               </Button>
             </div>
-          </div>
+          </Jumbotron>
         </Col>
       </Row>
     </Container>

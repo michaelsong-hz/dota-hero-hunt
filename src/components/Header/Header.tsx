@@ -1,3 +1,6 @@
+import { faSun, faMoon } from "@fortawesome/free-regular-svg-icons";
+import { faVolumeUp, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import {
   Navbar,
@@ -9,6 +12,7 @@ import {
 } from "react-bootstrap";
 import RangeSlider from "react-bootstrap-range-slider";
 import { Link } from "react-router-dom";
+import Switch from "react-switch";
 
 import { useStoreState, useStoreDispatch } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
@@ -82,24 +86,62 @@ function Header(): JSX.Element {
           onToggle={(show: boolean) => toggleTooltip(show)}
         >
           <Button
-            className="mr-3"
-            variant={appendTheme("secondary", state.appSettings.isDark)}
+            className="mr-1 header-btn"
+            variant={appendTheme("navbar-brand", state.appSettings.isDark)}
           >
-            Volume
+            <div className="text-muted">
+              {state.appSettings.volume > 0 ? (
+                <FontAwesomeIcon icon={faVolumeUp} />
+              ) : (
+                <FontAwesomeIcon icon={faVolumeMute} />
+              )}
+            </div>
           </Button>
         </OverlayTrigger>
         <Form inline>
-          <Form.Check
-            className={appendTheme("text", !state.appSettings.isDark)}
-            inline
-            type="switch"
-            id="theme-switch"
-            label="Toggle Theme"
-            checked={state.appSettings.isDark}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              toggleTheme(e.target.checked)
-            }
-          ></Form.Check>
+          <label>
+            <Switch
+              className={
+                state.appSettings.isDark
+                  ? "header-switch-on"
+                  : "header-switch-off"
+              }
+              height={24}
+              width={50}
+              handleDiameter={22}
+              onChange={(checked: boolean) => toggleTheme(checked)}
+              checked={state.appSettings.isDark}
+              checkedIcon={
+                <div
+                  style={{
+                    color: "#dddddd",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                  }}
+                >
+                  <FontAwesomeIcon icon={faMoon} />
+                </div>
+              }
+              uncheckedIcon={
+                <div
+                  style={{
+                    color: "#dddddd",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                  }}
+                >
+                  <FontAwesomeIcon icon={faSun} />
+                </div>
+              }
+              aria-label="toggle dark theme"
+            />
+          </label>
+
+          {/* <FontAwesomeIcon icon={faMoon} /> */}
         </Form>
       </Navbar.Collapse>
     </Navbar>
