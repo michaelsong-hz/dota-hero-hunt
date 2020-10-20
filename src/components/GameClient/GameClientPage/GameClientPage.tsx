@@ -75,6 +75,7 @@ function GameClientPage(): JSX.Element {
         }
         dispatch({
           type: StoreConstants.UPDATE_SELECTED_ICONS,
+          invalidIcons: new Set(data.invalidIcons),
           selectedIcons: new Set(data.selected),
           currentPlayers: data.players,
         });

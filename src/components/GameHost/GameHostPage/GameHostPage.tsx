@@ -96,6 +96,7 @@ function GameHostPage(): JSX.Element {
     dispatch({
       type: StoreConstants.UPDATE_SELECTED_ICONS,
       selectedIcons,
+      invalidIcons,
       currentPlayers: players,
     });
   }

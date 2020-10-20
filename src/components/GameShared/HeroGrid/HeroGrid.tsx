@@ -25,7 +25,6 @@ function HeroGrid(props: HeroGridProps): JSX.Element {
           src={prependCDN(heroList[heroNumber].url)}
           onClick={() => props.handleClick(heroNumber)}
           heroNumber={heroNumber}
-          selectedIcons={state.selectedIcons}
         />
       );
     }

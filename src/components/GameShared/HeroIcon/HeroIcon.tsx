@@ -1,29 +1,50 @@
 import React, { useEffect, useState } from "react";
 
+import { useStoreState } from "reducer/store";
+
 interface IHeroIconProps {
   key: string;
   src: string;
   onClick: () => void;
   heroNumber: number;
-  selectedIcons: Set<number>;
 }
 
 function HeroIcon(props: IHeroIconProps): JSX.Element {
-  const [isHighlighted, setIsHighlighted] = useState(false);
+  const state = useStoreState();
+
+  const [isHighlightedValid, setIsHighlightedValid] = useState(false);
+  const [isHighlightedInvalid, setIsHighlightedInvalid] = useState(false);
 
   useEffect(() => {
-    if (props.selectedIcons.has(props.heroNumber)) {
-      setIsHighlighted(true);
-    } else if (isHighlighted) {
-      setIsHighlighted(false);
+    if (state.selectedIcons.has(props.heroNumber)) {
+      setIsHighlightedValid(true);
+    } else if (state.invalidIcons.has(props.heroNumber)) {
+      setIsHighlightedInvalid(true);
+    } else if (isHighlightedValid) {
+      setIsHighlightedValid(false);
+    } else if (isHighlightedInvalid) {
+      setIsHighlightedInvalid(false);
     }
-  }, [isHighlighted, props.heroNumber, props.selectedIcons]);
+  }, [
+    isHighlightedInvalid,
+    isHighlightedValid,
+    props.heroNumber,
+    state.invalidIcons,
+    state.selectedIcons,
+  ]);
+
+  function getClassName(): string {
+    if (isHighlightedValid) {
+      return "hero-icon hero-icon-valid";
+    } else if (isHighlightedInvalid) {
+      return "hero-icon hero-icon-invalid";
+    }
+    return "hero-icon";
+  }
 
   return (
     <img
-      className={
-        isHighlighted ? "hero-icon hero-icon-highlighted" : "hero-icon"
-      }
+      className={getClassName()}
       src={props.src}
       onClick={() => {
         props.onClick();
