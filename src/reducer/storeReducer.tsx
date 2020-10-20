@@ -4,7 +4,6 @@ import { PlayerState } from "models/PlayerState";
 export enum StoreConstants {
   UPDATE_ROUND,
   UPDATE_SELECTED_ICONS,
-  UPDATE_INVALID_ICONS,
   UPDATE_PLAYERS_LIST,
   SET_CURRENT_HEROES,
   SET_VOLUME,
@@ -31,10 +30,6 @@ export type StoreActions =
   | {
       type: StoreConstants.UPDATE_SELECTED_ICONS;
       selectedIcons: Set<number>;
-      currentPlayers: Record<string, PlayerState>;
-    }
-  | {
-      type: StoreConstants.UPDATE_INVALID_ICONS;
       invalidIcons: Set<number>;
       currentPlayers: Record<string, PlayerState>;
     }
@@ -80,17 +75,13 @@ export function storeReducer(
         targetHeroes: action.targetHeroes,
         currentHeroes: action.currentHeroes,
         selectedIcons: new Set(),
+        invalidIcons: new Set(),
       };
     case StoreConstants.UPDATE_SELECTED_ICONS:
       return {
         ...state,
         selectedIcons: action.selectedIcons,
-        players: action.currentPlayers,
-      };
-    case StoreConstants.UPDATE_INVALID_ICONS:
-      return {
-        ...state,
-        selectedIcons: action.invalidIcons,
+        invalidIcons: action.invalidIcons,
         players: action.currentPlayers,
       };
     case StoreConstants.UPDATE_PLAYERS_LIST: {
