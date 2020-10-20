@@ -1,9 +1,13 @@
 @import "styles/variables.scss";
 
-// TODO: Get colours from global style
 .tooltip [class$="inner"] {
-  background-color: gray;
-  border: 1px solid gray;
+  background-color: $overlay-tooltip-color;
+  border: 1px solid $overlay-tooltip-color;
+}
+
+.bs-tooltip-bottom .arrow::before,
+.bs-tooltip-auto[x-placement^="bottom"] .arrow::before {
+  border-bottom-color: $overlay-tooltip-color;
 }
 
 .header-btn {

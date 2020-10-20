@@ -79,6 +79,7 @@ function Header(): JSX.Element {
           </Link>
         </Nav>
         <OverlayTrigger
+          rootClose
           placement="bottom"
           trigger="click"
           overlay={renderTooltip}
