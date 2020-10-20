@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 
 import { useStoreState } from "reducer/store";
+import { appendTheme } from "utils/utilities";
 
 interface GameSettingsProps {
   inviteLink: string;
@@ -27,7 +28,7 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
         </Col>
         <Col>
           <Button
-            variant="secondary"
+            variant={appendTheme("secondary", state.appSettings.isDark)}
             size="sm"
             onClick={() => navigator.clipboard.writeText(props.inviteLink)}
           >
@@ -37,7 +38,11 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
       </Row>
       <Form onSubmit={handleSubmit}>
         <Form.Group>
-          <Form.Label>Game Settings</Form.Label>
+          <Form.Label
+            className={appendTheme("global-text", state.appSettings.isDark)}
+          >
+            Game Settings
+          </Form.Label>
           <Form.Control
             type="text"
             placeholder="Coming soon"
@@ -45,7 +50,10 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
           />
         </Form.Group>
 
-        <Button variant="primary" type="submit">
+        <Button
+          variant={appendTheme("primary", state.appSettings.isDark)}
+          type="submit"
+        >
           Start Game
         </Button>
       </Form>

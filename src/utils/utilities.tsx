@@ -1,5 +1,12 @@
 import Peer from "peerjs";
 
+export function appendTheme(themeName: string, isDark: boolean): string {
+  if (isDark) {
+    return `${themeName}-dark`;
+  }
+  return `${themeName}-light`;
+}
+
 export function prependCDN(resourceString: string): string {
   return `${process.env.REACT_APP_CDN_URL}${resourceString}`;
 }

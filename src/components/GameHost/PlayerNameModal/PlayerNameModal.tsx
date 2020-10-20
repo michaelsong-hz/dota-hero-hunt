@@ -3,7 +3,9 @@ import { Modal } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 
+import { useStoreState } from "reducer/store";
 import { StorageConstants } from "utils/constants";
+import { appendTheme } from "utils/utilities";
 
 interface PlayerNameModalProps {
   playerName: string;
@@ -13,6 +15,7 @@ interface PlayerNameModalProps {
 }
 
 function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
+  const state = useStoreState();
   const [isInvalidName, setIsInvalidName] = useState(false);
 
   function handleClose() {
@@ -64,7 +67,10 @@ function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" type="submit">
+          <Button
+            variant={appendTheme("primary", state.appSettings.isDark)}
+            type="submit"
+          >
             Submit
           </Button>
         </Modal.Footer>

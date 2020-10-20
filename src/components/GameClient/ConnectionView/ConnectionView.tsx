@@ -5,7 +5,9 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import { Redirect } from "react-router-dom";
 
+import { useStoreState } from "reducer/store";
 import { StorageConstants } from "utils/constants";
+import { appendTheme } from "utils/utilities";
 
 interface ConnectionViewProps {
   playerName: string;
@@ -17,6 +19,7 @@ interface ConnectionViewProps {
 }
 
 function ConnectionView(props: ConnectionViewProps): JSX.Element {
+  const state = useStoreState();
   const [isJoiningGame, setIsJoiningGame] = useState(false);
   const [showError, setShowError] = useState(false);
 
@@ -89,7 +92,10 @@ function ConnectionView(props: ConnectionViewProps): JSX.Element {
           </p>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={() => setToHomePage(true)}>
+          <Button
+            variant={appendTheme("primary", state.appSettings.isDark)}
+            onClick={() => setToHomePage(true)}
+          >
             Return to home page
           </Button>
         </Modal.Footer>
@@ -104,7 +110,11 @@ function ConnectionView(props: ConnectionViewProps): JSX.Element {
         <Col>
           <Form onSubmit={joinGame}>
             <Form.Group>
-              <Form.Label>Set your player name</Form.Label>
+              <Form.Label
+                className={appendTheme("global-text", state.appSettings.isDark)}
+              >
+                Set your player name
+              </Form.Label>
               <Form.Control
                 isInvalid={props.isNameTaken}
                 className="playername-field"
@@ -120,7 +130,11 @@ function ConnectionView(props: ConnectionViewProps): JSX.Element {
               </Form.Control.Feedback>
             </Form.Group>
             <Row className="justify-content-center">
-              <Button variant="primary" disabled={isJoiningGame} type="submit">
+              <Button
+                variant={appendTheme("primary", state.appSettings.isDark)}
+                disabled={isJoiningGame}
+                type="submit"
+              >
                 {renderJoinGameStatus()}
               </Button>
             </Row>

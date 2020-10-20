@@ -1,0 +1,14 @@
+@import "./variables.scss";
+@import "./bootstrap-theme.scss";
+@import "./global.scss";
+
+// Custom class styles to use if not picked up from global setting
+.global-text-light {
+  color: $text-theme-light;
+}
+.global-text-dark {
+  color: $text-theme-dark;
+}
+
+// Import bootstrap last to override its styling with ours
+@import "~bootstrap/scss/bootstrap";

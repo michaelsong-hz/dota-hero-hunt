@@ -1,10 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import "./index.scss";
+import "./styles/index.scss";
 import App from "./App";
 import { unregister } from "./serviceWorker";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css";
 
 // TODO: Bootstrap 4 currently causes warnings to be thrown in strict mode
