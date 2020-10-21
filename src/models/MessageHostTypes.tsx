@@ -1,5 +1,6 @@
 import Peer from "peerjs";
 
+import { GameSettings } from "./GameSettingsType";
 import { PlayerState } from "./PlayerState";
 
 // Definitions for messages from the host to the client
@@ -8,6 +9,7 @@ export enum HostTypeConstants {
   CONNECTION_ACCEPTED = "CONNECTION_ACCEPTED",
   PLAYER_NAME_TAKEN = "PLAYER_NAME_TAKEN",
   UPDATE_FROM_CLICK = "UPDATE_FROM_CLICK",
+  UPDATE_SETTINGS = "UPDATE_SETTINGS",
 }
 
 export type HostTypes =
@@ -20,6 +22,7 @@ export type HostTypes =
   | {
       type: HostTypeConstants.CONNECTION_ACCEPTED;
       players: Record<string, PlayerState>;
+      settings: GameSettings;
     }
   | {
       type: HostTypeConstants.PLAYER_NAME_TAKEN;
@@ -35,6 +38,10 @@ export type HostTypes =
       // Maybe revisit in the future to see if they make an update to support sets.
       selected: number[];
       invalidIcons: number[];
+    }
+  | {
+      type: HostTypeConstants.UPDATE_SETTINGS;
+      settings: GameSettings;
     };
 
 export interface ClientDataConnection extends Peer.DataConnection {

@@ -22,8 +22,7 @@ function GameStatusBar(): JSX.Element {
 
   return (
     <Row className="justify-content-center">
-      {/* {state.targetRoundScore === state.numSelectedIcons ? ( */}
-      {3 === state.selectedIcons.size ? (
+      {state.gameSettings.targetRoundScore === state.selectedIcons.size ? (
         <Col>
           <p>All heroes found! Get ready for the next round...</p>
         </Col>
