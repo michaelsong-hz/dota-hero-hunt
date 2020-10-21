@@ -8,6 +8,7 @@ import ConnectedPlayers from "components/GameShared/ConnectedPlayers";
 import HeroGrid from "components/GameShared/HeroGrid";
 import GameSettings from "components/GameShared/Settings";
 import useHostPeer from "hooks/useHostPeer";
+import useResetOnLeave from "hooks/useResetOnLeave";
 import useSoundEffect from "hooks/useSoundEffect";
 import { ClientTypeConstants, ClientTypes } from "models/MessageClientTypes";
 import { HostTypeConstants } from "models/MessageHostTypes";
@@ -35,37 +36,65 @@ function GameHostPage(): JSX.Element {
     onMessage,
   });
   const [playAudio] = useSoundEffect();
+  useResetOnLeave();
 
   useEffect(() => {
     stateRef.current = state;
   }, [state]);
 
+  // Sets the player name
+  const submitPlayerName = useCallback(
+    (submittedPlayerName: string) => {
+      setShowPlayerNameModal(false);
+
+      const currentPlayers: Record<string, PlayerState> = {};
+      currentPlayers[submittedPlayerName] = {
+        score: 0,
+        isDisabled: false,
+      };
+
+      // Add self to players list
+      dispatch({
+        type: StoreConstants.UPDATE_PLAYERS_LIST,
+        currentPlayers,
+      });
+    },
+    [dispatch]
+  );
+
+  // Retrieves player name if it has previously been set
   useEffect(() => {
-    setPlayerName(localStorage.getItem(StorageConstants.PLAYER_NAME) || "");
-  }, []);
+    const playerName = localStorage.getItem(StorageConstants.PLAYER_NAME) || "";
+    if (playerName !== "") {
+      submitPlayerName(playerName);
+    }
+    setPlayerName(playerName);
+  }, [submitPlayerName]);
 
   function addSelectedIcon(
     selectedIcon: number,
     selectedPlayerName: string
   ): void {
+    // Retrieve current state from ref
+    const currState = stateRef.current;
+
     // Ignore if we have reached the target for selected icons, or the icon has
     // already been clicked this round, or the player is disabled
-    // TODO: Get from game settings
     if (
-      stateRef.current.selectedIcons.size >= 3 ||
-      stateRef.current.selectedIcons.has(selectedIcon) ||
-      stateRef.current.invalidIcons.has(selectedIcon) ||
-      stateRef.current.players[selectedPlayerName].isDisabled
+      currState.selectedIcons.size >= currState.gameSettings.targetRoundScore ||
+      currState.selectedIcons.has(selectedIcon) ||
+      currState.invalidIcons.has(selectedIcon) ||
+      currState.players[selectedPlayerName].isDisabled
     ) {
       return;
     }
 
-    const selectedIcons = new Set(stateRef.current.selectedIcons);
-    const invalidIcons = new Set(stateRef.current.invalidIcons);
-    const players = { ...stateRef.current.players };
+    const selectedIcons = new Set(currState.selectedIcons);
+    const invalidIcons = new Set(currState.invalidIcons);
+    const players = { ...currState.players };
     let isCorrectHero;
 
-    if (!stateRef.current.targetHeroes.has(selectedIcon)) {
+    if (!currState.targetHeroes.has(selectedIcon)) {
       isCorrectHero = false;
       invalidIcons.add(selectedIcon);
 
@@ -123,6 +152,7 @@ function GameHostPage(): JSX.Element {
         sendToClients({
           type: HostTypeConstants.CONNECTION_ACCEPTED,
           players: currentPlayers,
+          settings: stateRef.current.gameSettings,
         });
         dispatch({
           type: StoreConstants.UPDATE_PLAYERS_LIST,
@@ -146,7 +176,8 @@ function GameHostPage(): JSX.Element {
 
   const incrementRound = useCallback(
     (overrideRound?: number) => {
-      // TODO: Clean up function
+      // Shuffles provided array
+      // Could be better optimized to stop after reaching target count
       function shuffle(array: number[]) {
         let i = array.length,
           j = 0,
@@ -160,7 +191,6 @@ function GameHostPage(): JSX.Element {
           array[i] = array[j];
           array[j] = temp;
         }
-
         return array;
       }
 
@@ -169,15 +199,15 @@ function GameHostPage(): JSX.Element {
         round = overrideRound;
       }
 
+      // Build and shuffle new 2d array of hero icons
       const allHeroIcons: number[] = [];
       heroList.forEach((hero, i) => {
         allHeroIcons.push(i);
       });
-      // TODO: Get game settings current heroes
-      const rowTarget = 16;
-      // const rowTarget = 6;
-      const currentHeroesFlat = shuffle(allHeroIcons).slice(0, 96);
-      // const currentHeroesFlat = shuffle(allHeroIcons).slice(0, 24);
+      const rowTarget = state.gameSettings.columns;
+      const totalHeroes = state.gameSettings.columns * state.gameSettings.rows;
+
+      const currentHeroesFlat = shuffle(allHeroIcons).slice(0, totalHeroes);
       const currentHeroes: number[][] = [];
       let currentRow: number[] = [];
       currentHeroesFlat.forEach((hero, i) => {
@@ -188,8 +218,10 @@ function GameHostPage(): JSX.Element {
         }
       });
 
-      // TODO: Get game settings target heroes
-      const targetHeroes = new Set(shuffle(currentHeroesFlat).slice(0, 3));
+      // Build set of heroes to search for next round
+      const targetHeroes = new Set(
+        shuffle(currentHeroesFlat).slice(0, state.gameSettings.targetRoundScore)
+      );
 
       sendToClients({
         type: HostTypeConstants.UPDATE_ROUND,
@@ -205,7 +237,7 @@ function GameHostPage(): JSX.Element {
       });
       console.log("round set to", round);
     },
-    [dispatch, sendToClients, state.round]
+    [dispatch, sendToClients, state.gameSettings, state.round]
   );
 
   /**
@@ -215,8 +247,10 @@ function GameHostPage(): JSX.Element {
   useEffect(() => {
     let nextRoundTimer: NodeJS.Timeout;
 
-    // TODO: Get target round score from game settings
-    if (state.selectedIcons.size === 3 && !preparingNextRound) {
+    if (
+      state.selectedIcons.size === state.gameSettings.targetRoundScore &&
+      !preparingNextRound
+    ) {
       // Prepare next round
       console.log("set next round timer");
       nextRoundTimer = setTimeout(() => setPreparingNextRound(true), 3000);
@@ -231,24 +265,23 @@ function GameHostPage(): JSX.Element {
       console.log("cleared next round timer");
       clearTimeout(nextRoundTimer);
     };
-  }, [state.selectedIcons.size, preparingNextRound, incrementRound]);
+  }, [
+    state.selectedIcons.size,
+    preparingNextRound,
+    incrementRound,
+    state.gameSettings.targetRoundScore,
+  ]);
 
-  // Reset round and player list if leaving the page
+  /**
+   * Automatically sends updates to the clients when the game settings change
+   */
   useEffect(() => {
-    return () => {
-      console.log("left game page, resetting state");
-      dispatch({
-        type: StoreConstants.UPDATE_ROUND,
-        round: 0,
-        targetHeroes: new Set(),
-        currentHeroes: [],
-      });
-      dispatch({
-        type: StoreConstants.UPDATE_PLAYERS_LIST,
-        currentPlayers: {},
-      });
-    };
-  }, [dispatch]);
+    console.log("game settings change");
+    sendToClients({
+      type: HostTypeConstants.UPDATE_SETTINGS,
+      settings: state.gameSettings,
+    });
+  }, [sendToClients, state.gameSettings]);
 
   function getInviteLink(): string {
     let path = window.location.href;
@@ -262,17 +295,21 @@ function GameHostPage(): JSX.Element {
       return (
         <GameSettings
           inviteLink={getInviteLink()}
+          disabled={false}
           startGame={() => incrementRound(1)}
+          changeName={() => setShowPlayerNameModal(true)}
         />
       );
     }
 
     return (
-      <HeroGrid
-        handleClick={(heroNumber: number) =>
-          addSelectedIcon(heroNumber, playerName)
-        }
-      />
+      <Col>
+        <HeroGrid
+          handleClick={(heroNumber: number) =>
+            addSelectedIcon(heroNumber, playerName)
+          }
+        />
+      </Col>
     );
   }
 
@@ -292,22 +329,6 @@ function GameHostPage(): JSX.Element {
     );
   }
 
-  function submitPlayerName() {
-    setShowPlayerNameModal(false);
-
-    const currentPlayers: Record<string, PlayerState> = {};
-    currentPlayers[playerName] = {
-      score: 0,
-      isDisabled: false,
-    };
-
-    // Add self to players list
-    dispatch({
-      type: StoreConstants.UPDATE_PLAYERS_LIST,
-      currentPlayers,
-    });
-  }
-
   return (
     <Container className="mt-4">
       <PlayerNameModal
@@ -320,7 +341,7 @@ function GameHostPage(): JSX.Element {
         <Col xs="auto">
           <ConnectedPlayers />
         </Col>
-        <Col>{getPageContent()}</Col>
+        {getPageContent()}
       </Row>
     </Container>
   );

@@ -58,13 +58,18 @@ function Header(): JSX.Element {
   }
 
   return (
-    <Navbar bg={appendTheme("header", state.appSettings.isDark)} expand="lg">
+    <Navbar
+      className="navbar-expand-sm"
+      bg={appendTheme("header", state.appSettings.isDark)}
+      expand="lg"
+    >
       <Link
         to="/"
         className={`navbar-brand ${appendTheme(
           "text",
           !state.appSettings.isDark
         )}`}
+        data-toggle="collapse"
       >
         Dota Hero Hunt
       </Link>
@@ -141,8 +146,6 @@ function Header(): JSX.Element {
               aria-label="toggle dark theme"
             />
           </label>
-
-          {/* <FontAwesomeIcon icon={faMoon} /> */}
         </Form>
       </Navbar.Collapse>
     </Navbar>

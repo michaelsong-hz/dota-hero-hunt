@@ -11,7 +11,7 @@ interface PlayerNameModalProps {
   playerName: string;
   showPlayerNameModal: boolean;
   setPlayerName: (playerName: string) => void;
-  submitPlayerName: () => void;
+  submitPlayerName: (playerName: string) => void;
 }
 
 function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
@@ -19,11 +19,12 @@ function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
   const [isInvalidName, setIsInvalidName] = useState(false);
 
   function handleClose() {
+    // TODO: Check that the player name hasn't been taken
     if (!isStringValid(props.playerName)) {
       setIsInvalidName(true);
     } else {
       localStorage.setItem(StorageConstants.PLAYER_NAME, props.playerName);
-      props.submitPlayerName();
+      props.submitPlayerName(props.playerName);
     }
   }
 

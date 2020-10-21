@@ -1,4 +1,5 @@
 import { ApplicationSettings } from "models/ApplicationSettings";
+import { GameSettings, GridSizeTypes } from "models/GameSettingsType";
 import { PlayerState } from "models/PlayerState";
 
 export enum StoreConstants {
@@ -6,6 +7,7 @@ export enum StoreConstants {
   UPDATE_SELECTED_ICONS,
   UPDATE_PLAYERS_LIST,
   SET_CURRENT_HEROES,
+  SET_SETTINGS,
   SET_VOLUME,
   SET_THEME,
 }
@@ -17,6 +19,7 @@ export type StoreReducer = {
   invalidIcons: Set<number>;
   targetHeroes: Set<number>;
   currentHeroes: Array<Array<number>>;
+  gameSettings: GameSettings;
   appSettings: ApplicationSettings;
 };
 
@@ -42,6 +45,10 @@ export type StoreActions =
       currentHeroes: number[][];
     }
   | {
+      type: StoreConstants.SET_SETTINGS;
+      gameSettings: GameSettings;
+    }
+  | {
       type: StoreConstants.SET_VOLUME;
       volume: number;
     }
@@ -57,6 +64,14 @@ export const storeInitialState: StoreReducer = {
   invalidIcons: new Set(),
   targetHeroes: new Set(),
   currentHeroes: [[]],
+  gameSettings: {
+    gridSize: GridSizeTypes.LARGE,
+    rows: 6,
+    columns: 16,
+    targetTotalScore: 15,
+    targetRoundScore: 3,
+    showTargetIcons: false,
+  },
   appSettings: {
     volume: 0,
     isDark: true,
@@ -94,6 +109,11 @@ export function storeReducer(
       return {
         ...state,
         currentHeroes: action.currentHeroes,
+      };
+    case StoreConstants.SET_SETTINGS:
+      return {
+        ...state,
+        gameSettings: action.gameSettings,
       };
     case StoreConstants.SET_VOLUME: {
       const applicationSettings = { ...state.appSettings };

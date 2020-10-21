@@ -6,7 +6,9 @@ import { useParams } from "react-router-dom";
 import ConnectionView from "components/GameClient/ConnectionView";
 import ConnectedPlayers from "components/GameShared/ConnectedPlayers";
 import HeroGrid from "components/GameShared/HeroGrid";
+import GameSettings from "components/GameShared/Settings";
 import useClientPeer from "hooks/useClientPeer";
+import useResetOnLeave from "hooks/useResetOnLeave";
 import useSoundEffect from "hooks/useSoundEffect";
 import { ClientTypeConstants } from "models/MessageClientTypes";
 import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
@@ -14,7 +16,6 @@ import { useStoreDispatch, useStoreState } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { SoundEffects } from "utils/SoundEffectList";
 import { StorageConstants } from "utils/constants";
-import { appendTheme } from "utils/utilities";
 
 interface GameClientPageParams {
   remoteHostID: string;
@@ -35,6 +36,7 @@ function GameClientPage(): JSX.Element {
     onMessageFromHost,
   });
   const [playAudio] = useSoundEffect();
+  useResetOnLeave();
 
   useEffect(() => {
     setPlayerName(localStorage.getItem(StorageConstants.PLAYER_NAME) || "");
@@ -48,10 +50,21 @@ function GameClientPage(): JSX.Element {
           type: StoreConstants.UPDATE_PLAYERS_LIST,
           currentPlayers: data.players,
         });
+        dispatch({
+          type: StoreConstants.SET_SETTINGS,
+          gameSettings: data.settings,
+        });
         break;
       }
       case HostTypeConstants.PLAYER_NAME_TAKEN: {
         setIsNameTaken(true);
+        break;
+      }
+      case HostTypeConstants.UPDATE_SETTINGS: {
+        dispatch({
+          type: StoreConstants.SET_SETTINGS,
+          gameSettings: data.settings,
+        });
         break;
       }
       case HostTypeConstants.UPDATE_ROUND: {
@@ -97,16 +110,14 @@ function GameClientPage(): JSX.Element {
 
   function getPageContent(): JSX.Element | JSX.Element[] {
     if (state.round === 0) {
-      return (
-        <Col>
-          <h3 className={appendTheme("text", !state.appSettings.isDark)}>
-            Waiting for the game to start
-          </h3>
-        </Col>
-      );
+      return <GameSettings inviteLink={window.location.href} disabled={true} />;
     }
 
-    return <HeroGrid handleClick={handleClick} />;
+    return (
+      <Col>
+        <HeroGrid handleClick={handleClick} />
+      </Col>
+    );
   }
 
   // Show connection page, have player set their name and
@@ -133,7 +144,7 @@ function GameClientPage(): JSX.Element {
         <Col xs="auto">
           <ConnectedPlayers />
         </Col>
-        <Col>{getPageContent()}</Col>
+        {getPageContent()}
       </Row>
     </Container>
   );
