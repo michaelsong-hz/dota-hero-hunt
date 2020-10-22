@@ -28,10 +28,10 @@ function getStoredVolume(): number {
 
 function getStoredIsDark(): boolean {
   const storedIsDark = localStorage.getItem(StorageConstants.THEME_IS_DARK);
-  if (storedIsDark && storedIsDark === "true") {
-    return true;
+  if (storedIsDark && storedIsDark === "false") {
+    return false;
   }
-  return storeInitialState.appSettings.isDark;
+  return true;
 }
 
 // eslint-disable-next-line react/prop-types
