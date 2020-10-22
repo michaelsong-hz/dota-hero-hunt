@@ -3,6 +3,7 @@
   width: 100%;
   max-height: 60px;
   max-width: 60px;
+  height: intrinsic; // Forces images to fill height on Safari THANKS TIM
 }
 
 .hero-icon-valid {
