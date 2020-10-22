@@ -65,7 +65,7 @@ function Header(): JSX.Element {
     >
       <Link
         to="/"
-        className={`navbar-brand ${appendTheme(
+        className={`navbar-brand font-weight-bold ${appendTheme(
           "text",
           !state.appSettings.isDark
         )}`}

@@ -4,7 +4,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   width: 90%;
-  z-index: -1; // Prevent from coverint toggle nav
+  z-index: -1; // Prevent from covering toggle nav
 }
 @media (min-width: 576px) {
   .homepage-container {
@@ -19,4 +19,60 @@
 
 .homepage-button {
   width: 100px;
+}
+
+.homepage-bg-light {
+  background: linear-gradient(270deg, #00fff6, #2076b0);
+}
+.homepage-bg-dark {
+  background: linear-gradient(270deg, #1a33c1, #a220b0);
+}
+
+.homepage-bg {
+  position: absolute;
+  top: 25vh;
+  width: 100%;
+  height: 50vh;
+  z-index: -1;
+  transform: skewY(-10deg);
+
+  background-size: 200% 200%;
+
+  -webkit-animation: AnimateHeader 30s ease infinite;
+  -moz-animation: AnimateHeader 30s ease infinite;
+  animation: AnimateHeader 30s ease infinite;
+}
+
+@-webkit-keyframes AnimateHeader {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@-moz-keyframes AnimateHeader {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes AnimateHeader {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
