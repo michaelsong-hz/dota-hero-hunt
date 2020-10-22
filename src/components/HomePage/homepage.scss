@@ -1,3 +1,22 @@
+.homepage-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  z-index: -1; // Prevent from coverint toggle nav
+}
+@media (min-width: 576px) {
+  .homepage-container {
+    width: 70%;
+  }
+}
+@media (max-height: 500px) {
+  .homepage-container {
+    top: 60%;
+  }
+}
+
 .homepage-button {
-  width: 215px;
+  width: 100px;
 }
