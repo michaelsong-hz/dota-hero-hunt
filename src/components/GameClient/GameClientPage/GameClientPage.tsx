@@ -141,20 +141,26 @@ function GameClientPage(): JSX.Element {
 
   // Actual game
   return (
-    <Container className="mt-4">
+    <Container className="mt-3">
       <Row>
         <Col
-          sm="12"
-          md="3"
-          lg="2"
           className={`${appendTheme(
             "content-holder",
             state.appSettings.isDark
-          )} mt-3`}
+          )} mt-3 mx-3`}
         >
           <ConnectedPlayers />
         </Col>
-        <HeroGrid handleClick={handleClick} />
+        <Col
+          sm="12"
+          md="8"
+          className={`${appendTheme(
+            "content-holder",
+            state.appSettings.isDark
+          )} mt-3 py-2`}
+        >
+          <HeroGrid handleClick={handleClick} />
+        </Col>
       </Row>
     </Container>
   );

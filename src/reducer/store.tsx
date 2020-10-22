@@ -12,7 +12,7 @@ const StoreStateContext = createContext<StoreReducer>(storeInitialState);
 const StoreDispatchContext = createContext<Dispatch<StoreActions>>(() => null);
 
 function getStoredVolume(): number {
-  let volume = 50;
+  let volume = storeInitialState.appSettings.volume;
 
   // If there is stored value for volume, validate it
   const storedVolume = localStorage.getItem(StorageConstants.VOLUME);
@@ -31,8 +31,7 @@ function getStoredIsDark(): boolean {
   if (storedIsDark && storedIsDark === "true") {
     return true;
   }
-  // Light theme by default
-  return false;
+  return storeInitialState.appSettings.isDark;
 }
 
 // eslint-disable-next-line react/prop-types

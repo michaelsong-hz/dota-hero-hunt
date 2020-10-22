@@ -277,21 +277,27 @@ function GameHostPage(): JSX.Element {
     <Container className="mt-3">
       <Row>
         <Col
-          sm="12"
-          md="3"
-          lg="2"
           className={`${appendTheme(
             "content-holder",
             state.appSettings.isDark
-          )} mt-3`}
+          )} mt-3 mx-3`}
         >
           <ConnectedPlayers />
         </Col>
-        <HeroGrid
-          handleClick={(heroNumber: number) =>
-            addSelectedIcon(heroNumber, playerName)
-          }
-        />
+        <Col
+          sm="12"
+          md="8"
+          className={`${appendTheme(
+            "content-holder",
+            state.appSettings.isDark
+          )} mt-3 py-2`}
+        >
+          <HeroGrid
+            handleClick={(heroNumber: number) =>
+              addSelectedIcon(heroNumber, playerName)
+            }
+          />
+        </Col>
       </Row>
     </Container>
   );

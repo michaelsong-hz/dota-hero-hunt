@@ -36,6 +36,9 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
         return "Medium";
       }
       case GridSizeTypes.LARGE: {
+        return "Large (Horizontal)";
+      }
+      case GridSizeTypes.LARGE_SQUARE: {
         return "Large";
       }
       default: {
@@ -177,10 +180,16 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
                   Medium
                 </Dropdown.Item>
                 <Dropdown.Item
-                  eventKey={GridSizeTypes.LARGE.toString()}
+                  eventKey={GridSizeTypes.LARGE_SQUARE.toString()}
                   onSelect={(e) => handleGridChange(e)}
                 >
                   Large
+                </Dropdown.Item>
+                <Dropdown.Item
+                  eventKey={GridSizeTypes.LARGE.toString()}
+                  onSelect={(e) => handleGridChange(e)}
+                >
+                  Large (Horizontal)
                 </Dropdown.Item>
               </DropdownButton>
             </Col>
