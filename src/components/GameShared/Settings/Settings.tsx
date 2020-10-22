@@ -20,7 +20,7 @@ interface GameSettingsProps {
   inviteLink: string;
   disabled: boolean;
   startGame?: () => void;
-  changeName?: () => void;
+  changeName: () => void;
 }
 
 function GameSettings(props: GameSettingsProps): JSX.Element {
@@ -52,12 +52,6 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
 
     if (props.startGame) {
       props.startGame();
-    }
-  }
-
-  function handleChangeName() {
-    if (props.changeName) {
-      props.changeName();
     }
   }
 
@@ -116,44 +110,21 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
   return (
     <Col>
       <Col
-        xs="12"
         className={`${appendTheme(
           "content-holder",
           state.appSettings.isDark
-        )} pt-2`}
-      >
-        <h3>The lobby invite link is:</h3>
-        <Row>
-          <Col xs="auto">
-            <p>{props.inviteLink}</p>
-          </Col>
-          <Col>
-            <Button
-              variant={appendTheme("secondary", state.appSettings.isDark)}
-              size="sm"
-              onClick={() => navigator.clipboard.writeText(props.inviteLink)}
-            >
-              Copy
-            </Button>
-          </Col>
-        </Row>
-      </Col>
-      <Col
-        className={`${appendTheme(
-          "content-holder",
-          state.appSettings.isDark
-        )} pt-2 mt-4`}
+        )} pt-2 mt-3`}
       >
         <Form onSubmit={handleSubmit}>
           <Row className="no-gutters">
             <Col xs="auto" className="mr-auto">
-              <h3>Game Settings</h3>
+              <h3>Game Settings{props.disabled === true && ` (Read Only)`}</h3>
             </Col>
             {props.disabled === false && (
               <Col xs="auto" className="mr-2 mt-1">
                 <Button
                   variant={appendTheme("secondary", state.appSettings.isDark)}
-                  onClick={handleChangeName}
+                  onClick={props.changeName}
                 >
                   Change Name
                 </Button>
@@ -169,7 +140,7 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
               </Button>
             </Col>
           </Row>
-          <Row className="mt-2 mb-1">
+          <Row className="mt-2">
             <Col xs="12" md="6">
               <label>
                 <span>
