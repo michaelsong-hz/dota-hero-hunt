@@ -1,5 +1,4 @@
 import React from "react";
-import { Col, Row } from "react-bootstrap";
 
 import HeroIcon from "components/GameShared/HeroIcon";
 import GameStatusBar from "components/GameShared/StatusBar";
@@ -35,23 +34,19 @@ function HeroGrid(props: HeroGridProps): JSX.Element {
     const heroImages: JSX.Element[] = [];
     for (let i = 0; i < state.currentHeroes.length; i++) {
       heroImages.push(
-        <Row key={`heroIconRow${i}`}>
-          <Col>{createHeroImagesRow(i)}</Col>
-        </Row>
+        <div className="d-flex justify-content-center" key={`heroIconRow${i}`}>
+          {createHeroImagesRow(i)}
+        </div>
       );
     }
     return heroImages;
   }
 
   return (
-    <Col className="mt-2">
-      <div className="text-center">
-        <GameStatusBar />
-        <Row>
-          <Col>{createHeroImages()}</Col>
-        </Row>
-      </div>
-    </Col>
+    <div className="text-center">
+      <GameStatusBar />
+      <div className="">{createHeroImages()}</div>
+    </div>
   );
 }
 

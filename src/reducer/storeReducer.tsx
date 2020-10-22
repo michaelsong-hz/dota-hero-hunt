@@ -1,5 +1,9 @@
 import { ApplicationSettings } from "models/ApplicationSettings";
-import { GameSettings, GridSizeTypes } from "models/GameSettingsType";
+import {
+  GameSettings,
+  gridSizes,
+  GridSizeTypes,
+} from "models/GameSettingsType";
 import { PlayerState } from "models/PlayerState";
 
 export enum StoreConstants {
@@ -65,15 +69,15 @@ export const storeInitialState: StoreReducer = {
   targetHeroes: new Set(),
   currentHeroes: [[]],
   gameSettings: {
-    gridSize: GridSizeTypes.LARGE,
-    rows: 6,
-    columns: 16,
+    gridSize: GridSizeTypes.MEDIUM,
+    rows: gridSizes[GridSizeTypes.MEDIUM].rows,
+    columns: gridSizes[GridSizeTypes.MEDIUM].cols,
     targetTotalScore: 15,
     targetRoundScore: 3,
-    showTargetIcons: false,
+    showTargetIcons: true,
   },
   appSettings: {
-    volume: 0,
+    volume: 30,
     isDark: true,
   },
 };
