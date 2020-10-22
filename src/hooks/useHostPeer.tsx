@@ -16,7 +16,7 @@ interface UseHostPeerProps {
 // Connects to (multiple) remote clients
 export default function useHostPeer(
   props: UseHostPeerProps
-): [string | undefined, (data: HostTypes) => void] {
+): [string | undefined, () => void, (data: HostTypes) => void] {
   const [hostID, setHostID] = useState<string>();
 
   const myPeer = useRef<Peer>();
@@ -32,7 +32,7 @@ export default function useHostPeer(
     }
   }, []);
 
-  useEffect(() => {
+  function startHosting() {
     const peer = new Peer(getPeerConfig());
 
     peer.on("open", () => {
@@ -73,8 +73,7 @@ export default function useHostPeer(
     return () => {
       cleanUp();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }
 
   const sendToClients = useCallback(
     (data: HostTypes) => {
@@ -85,5 +84,5 @@ export default function useHostPeer(
     [connectedClients]
   );
 
-  return [hostID, sendToClients];
+  return [hostID, startHosting, sendToClients];
 }

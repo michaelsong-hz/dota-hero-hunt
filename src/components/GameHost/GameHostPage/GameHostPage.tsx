@@ -1,23 +1,21 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { Container, Spinner } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
-import PlayerNameModal from "components/GameHost/PlayerNameModal";
 import ConnectedPlayers from "components/GameShared/ConnectedPlayers";
 import HeroGrid from "components/GameShared/HeroGrid";
-import GameSettings from "components/GameShared/Settings";
+import LobbyView from "components/GameShared/LobbyView";
 import useHostPeer from "hooks/useHostPeer";
 import useResetOnLeave from "hooks/useResetOnLeave";
 import useSoundEffect from "hooks/useSoundEffect";
 import { ClientTypeConstants, ClientTypes } from "models/MessageClientTypes";
 import { HostTypeConstants } from "models/MessageHostTypes";
-import { PlayerState } from "models/PlayerState";
 import { useStoreState, useStoreDispatch } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { heroList } from "utils/HeroList";
 import { SoundEffects } from "utils/SoundEffectList";
-import { StorageConstants } from "utils/constants";
+import { appendTheme } from "utils/utilities";
 
 function GameHostPage(): JSX.Element {
   const state = useStoreState();
@@ -25,12 +23,11 @@ function GameHostPage(): JSX.Element {
 
   const [preparingNextRound, setPreparingNextRound] = useState(false);
   const [playerName, setPlayerName] = useState("");
-  const [showPlayerNameModal, setShowPlayerNameModal] = useState(true);
 
   // Keeping state in ref as we can't access the store in peer js callbacks
   const stateRef = useRef(state);
 
-  const [hostID, sendToClients] = useHostPeer({
+  const [hostID, startHosting, sendToClients] = useHostPeer({
     state,
     playerName,
     onMessage,
@@ -41,35 +38,6 @@ function GameHostPage(): JSX.Element {
   useEffect(() => {
     stateRef.current = state;
   }, [state]);
-
-  // Sets the player name
-  const submitPlayerName = useCallback(
-    (submittedPlayerName: string) => {
-      setShowPlayerNameModal(false);
-
-      const currentPlayers: Record<string, PlayerState> = {};
-      currentPlayers[submittedPlayerName] = {
-        score: 0,
-        isDisabled: false,
-      };
-
-      // Add self to players list
-      dispatch({
-        type: StoreConstants.UPDATE_PLAYERS_LIST,
-        currentPlayers,
-      });
-    },
-    [dispatch]
-  );
-
-  // Retrieves player name if it has previously been set
-  useEffect(() => {
-    const playerName = localStorage.getItem(StorageConstants.PLAYER_NAME) || "";
-    if (playerName !== "") {
-      submitPlayerName(playerName);
-    }
-    setPlayerName(playerName);
-  }, [submitPlayerName]);
 
   function addSelectedIcon(
     selectedIcon: number,
@@ -290,58 +258,40 @@ function GameHostPage(): JSX.Element {
     return `${path}/${hostID}`;
   }
 
-  function getPageContent(): JSX.Element | JSX.Element[] {
-    if (state.round === 0) {
-      return (
-        <GameSettings
-          inviteLink={getInviteLink()}
-          disabled={false}
-          startGame={() => incrementRound(1)}
-          changeName={() => setShowPlayerNameModal(true)}
-        />
-      );
-    }
-
+  // Game lobby
+  if (state.round === 0) {
     return (
-      <Col>
+      <LobbyView
+        playerName={playerName}
+        inviteLink={getInviteLink()}
+        isSingleP={hostID ? false : true}
+        setPlayerName={setPlayerName}
+        startGame={() => incrementRound(1)}
+        startHosting={() => startHosting()}
+      />
+    );
+  }
+
+  // Actual game
+  return (
+    <Container className="mt-3">
+      <Row>
+        <Col
+          sm="12"
+          md="3"
+          lg="2"
+          className={`${appendTheme(
+            "content-holder",
+            state.appSettings.isDark
+          )} mt-3`}
+        >
+          <ConnectedPlayers />
+        </Col>
         <HeroGrid
           handleClick={(heroNumber: number) =>
             addSelectedIcon(heroNumber, playerName)
           }
         />
-      </Col>
-    );
-  }
-
-  // If we are waiting to get a host ID from Peer JS
-  if (!hostID) {
-    return (
-      <Container className="mt-4">
-        <Row className="justify-content-center">
-          <Col xs="auto" className="mt-1">
-            <Spinner animation="grow" />
-          </Col>
-          <Col xs="auto">
-            <h2>Preparing your game lobby</h2>
-          </Col>
-        </Row>
-      </Container>
-    );
-  }
-
-  return (
-    <Container className="mt-4">
-      <PlayerNameModal
-        playerName={playerName}
-        showPlayerNameModal={showPlayerNameModal}
-        setPlayerName={setPlayerName}
-        submitPlayerName={submitPlayerName}
-      />
-      <Row>
-        <Col xs="auto">
-          <ConnectedPlayers />
-        </Col>
-        {getPageContent()}
       </Row>
     </Container>
   );

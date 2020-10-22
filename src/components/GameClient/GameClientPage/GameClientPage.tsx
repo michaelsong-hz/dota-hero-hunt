@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import ConnectionView from "components/GameClient/ConnectionView";
 import ConnectedPlayers from "components/GameShared/ConnectedPlayers";
 import HeroGrid from "components/GameShared/HeroGrid";
-import GameSettings from "components/GameShared/Settings";
+import LobbyView from "components/GameShared/LobbyView";
 import useClientPeer from "hooks/useClientPeer";
 import useResetOnLeave from "hooks/useResetOnLeave";
 import useSoundEffect from "hooks/useSoundEffect";
@@ -16,6 +16,7 @@ import { useStoreDispatch, useStoreState } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { SoundEffects } from "utils/SoundEffectList";
 import { StorageConstants } from "utils/constants";
+import { appendTheme } from "utils/utilities";
 
 interface GameClientPageParams {
   remoteHostID: string;
@@ -108,18 +109,6 @@ function GameClientPage(): JSX.Element {
     });
   }
 
-  function getPageContent(): JSX.Element | JSX.Element[] {
-    if (state.round === 0) {
-      return <GameSettings inviteLink={window.location.href} disabled={true} />;
-    }
-
-    return (
-      <Col>
-        <HeroGrid handleClick={handleClick} />
-      </Col>
-    );
-  }
-
   // Show connection page, have player set their name and
   // check that there are no conflicting names and that
   // we are connected to the game before proceeding
@@ -138,13 +127,34 @@ function GameClientPage(): JSX.Element {
     );
   }
 
+  // Game lobby
+  if (state.round === 0) {
+    return (
+      <LobbyView
+        playerName={playerName}
+        inviteLink={window.location.href}
+        setPlayerName={setPlayerName}
+        isSingleP={false}
+      />
+    );
+  }
+
+  // Actual game
   return (
     <Container className="mt-4">
       <Row>
-        <Col xs="auto">
+        <Col
+          sm="12"
+          md="3"
+          lg="2"
+          className={`${appendTheme(
+            "content-holder",
+            state.appSettings.isDark
+          )} mt-3`}
+        >
           <ConnectedPlayers />
         </Col>
-        {getPageContent()}
+        <HeroGrid handleClick={handleClick} />
       </Row>
     </Container>
   );
