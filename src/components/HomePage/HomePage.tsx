@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Jumbotron } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import { Redirect } from "react-router-dom";
 
@@ -11,36 +10,36 @@ function HomePage(): JSX.Element {
 
   const [toHostGame, setToHostGame] = useState(false);
 
-  function getJumbotronClassName(): string {
-    let returnString = "d-flex flex-column align-items-center";
-    if (state.appSettings.isDark) {
-      returnString += " bg-dark";
-    }
-    return returnString;
-  }
-
   if (toHostGame) {
     return <Redirect to="/play" />;
   }
 
   return (
-    <div className="homepage-container">
-      <Jumbotron className={`${getJumbotronClassName()}`}>
-        <div className="text-center p-2">
-          <h1>Dota Hero Hunt</h1>
+    <>
+      <div
+        className={`homepage-bg ${appendTheme(
+          "homepage-bg",
+          state.appSettings.isDark
+        )}`}
+      />
+      <div className="homepage-container">
+        <div className="d-flex flex-column align-items-center">
+          <div className="text-center p-2">
+            <h1 className="display-1 font-weight-bold">Dota Hero Hunt</h1>
+          </div>
+          <div className="mt-3">
+            <Button
+              className="homepage-button"
+              variant={appendTheme("primary", state.appSettings.isDark)}
+              size="lg"
+              onClick={() => setToHostGame(true)}
+            >
+              Play
+            </Button>
+          </div>
         </div>
-        <div className="mt-3">
-          <Button
-            className="homepage-button"
-            variant={appendTheme("primary", state.appSettings.isDark)}
-            size="lg"
-            onClick={() => setToHostGame(true)}
-          >
-            Play!
-          </Button>
-        </div>
-      </Jumbotron>
-    </div>
+      </div>
+    </>
   );
 }
 
