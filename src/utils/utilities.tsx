@@ -12,13 +12,6 @@ export function prependCDN(resourceString: string): string {
 }
 
 export function getPeerConfig(): Peer.PeerJSOption {
-  if (process.env.NODE_ENV === "development") {
-    return {
-      host: "localhost",
-      port: 9000,
-      path: "/play",
-    };
-  }
   return {
     host: process.env.REACT_APP_PEER_JS_HOST,
     port: parseInt(process.env.REACT_APP_PEER_JS_PORT || ""),
