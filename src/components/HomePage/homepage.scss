@@ -6,19 +6,19 @@
   width: 90%;
   z-index: -1; // Prevent from covering toggle nav
 }
-@media (min-width: 576px) {
-  .homepage-container {
-    width: 70%;
-  }
-}
-@media (max-height: 500px) {
-  .homepage-container {
-    top: 60%;
-  }
-}
 
-.homepage-button {
-  width: 100px;
+.homepage-play-light {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+.homepage-play-dark {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+.homepage-play-icon {
+  margin-left: 0.7rem;
+
+  -webkit-animation: playBtnFadeIn 2s;
+  -moz-animation: playBtnFadeIn 2s;
+  animation: playBtnFadeIn 2s;
 }
 
 .homepage-bg-light {
@@ -32,18 +32,18 @@
   position: absolute;
   top: 25vh;
   width: 100%;
-  height: 50vh;
+  height: 47vh;
   z-index: -1;
   transform: skewY(-10deg);
 
   background-size: 200% 200%;
 
-  -webkit-animation: AnimateHeader 30s ease infinite;
-  -moz-animation: AnimateHeader 30s ease infinite;
-  animation: AnimateHeader 30s ease infinite;
+  -webkit-animation: animateBannerBg 30s ease infinite;
+  -moz-animation: animateBannerBg 30s ease infinite;
+  animation: animateBannerBg 30s ease infinite;
 }
 
-@-webkit-keyframes AnimateHeader {
+@-webkit-keyframes animateBannerBg {
   0% {
     background-position: 0% 50%;
   }
@@ -54,7 +54,7 @@
     background-position: 0% 50%;
   }
 }
-@-moz-keyframes AnimateHeader {
+@-moz-keyframes animateBannerBg {
   0% {
     background-position: 0% 50%;
   }
@@ -65,7 +65,7 @@
     background-position: 0% 50%;
   }
 }
-@keyframes AnimateHeader {
+@keyframes animateBannerBg {
   0% {
     background-position: 0% 50%;
   }
@@ -74,5 +74,48 @@
   }
   100% {
     background-position: 0% 50%;
+  }
+}
+
+@-webkit-keyframes playBtnFadeIn {
+  from {
+    opacity: 0;
+    margin-left: -0.3rem;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@-moz-keyframes playBtnFadeIn {
+  from {
+    opacity: 0;
+    margin-left: -0.3rem;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes playBtnFadeIn {
+  from {
+    opacity: 0;
+    margin-left: -0.3rem;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 720px) {
+  .homepage-play-icon {
+    margin-left: 0.4rem;
+  }
+}
+
+@media (max-height: 450px) {
+  .homepage-container {
+    top: 60%;
+  }
+  .homepage-bg {
+    height: 65vh;
   }
 }

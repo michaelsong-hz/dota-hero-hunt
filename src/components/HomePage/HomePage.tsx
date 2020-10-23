@@ -1,18 +1,13 @@
-import React, { useState } from "react";
-import Button from "react-bootstrap/Button";
-import { Redirect } from "react-router-dom";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
+import { Link } from "react-router-dom";
 
 import { useStoreState } from "reducer/store";
 import { appendTheme } from "utils/utilities";
 
 function HomePage(): JSX.Element {
   const state = useStoreState();
-
-  const [toHostGame, setToHostGame] = useState(false);
-
-  if (toHostGame) {
-    return <Redirect to="/play" />;
-  }
 
   return (
     <>
@@ -28,14 +23,23 @@ function HomePage(): JSX.Element {
             <h1 className="display-1 font-weight-bold">Dota Hero Hunt</h1>
           </div>
           <div className="mt-3">
-            <Button
-              className="homepage-button"
-              variant={appendTheme("primary", state.appSettings.isDark)}
-              size="lg"
-              onClick={() => setToHostGame(true)}
+            <Link
+              to="/play"
+              className={appendTheme("homepage-play", state.appSettings.isDark)}
+              data-toggle="collapse"
             >
-              Play
-            </Button>
+              <h1
+                className={`d-flex flex-row font-weight-bold ${appendTheme(
+                  "homepage-play",
+                  state.appSettings.isDark
+                )}`}
+              >
+                Play
+                <div className="homepage-play-icon">
+                  <FontAwesomeIcon icon={faChevronRight} size="xs" />
+                </div>
+              </h1>
+            </Link>
           </div>
         </div>
       </div>
