@@ -40,7 +40,8 @@
     "lint": "eslint \"src/**/*.+(ts|tsx|js|jsx)\"",
     "lint:fix": "eslint --fix \"src/**/*.+(ts|tsx|js|jsx)\"",
     "lint-style": "prettier --check \"**/*.+(ts|tsx|js|jsx|json|yml|yaml|scss|css|md)\"",
-    "lint-style:fix": "prettier --write \"**/*.+(ts|tsx|js|jsx|json|yml|yaml|scss|css|md)\""
+    "lint-style:fix": "prettier --write \"**/*.+(ts|tsx|js|jsx|json|yml|yaml|scss|css|md)\"",
+    "get-version": "echo ${npm_package_version}"
   },
   "eslintConfig": {
     "extends": "react-app"
