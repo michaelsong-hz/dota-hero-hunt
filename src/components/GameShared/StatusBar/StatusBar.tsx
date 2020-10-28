@@ -55,6 +55,7 @@ function GameStatusBar(): JSX.Element {
                   : prependCDN(heroList[targetHero].url)
               }
               alt={`${heroList[targetHero].name} icon`}
+              draggable="false"
             ></img>
           )}
           <h5 className="mb-3">{heroList[targetHero].name}</h5>

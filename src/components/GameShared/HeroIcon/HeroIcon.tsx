@@ -50,6 +50,7 @@ function HeroIcon(props: IHeroIconProps): JSX.Element {
         props.onClick();
       }}
       alt="hero icon"
+      draggable="false"
     ></img>
   );
 }
