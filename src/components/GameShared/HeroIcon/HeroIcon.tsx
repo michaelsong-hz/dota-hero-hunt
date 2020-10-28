@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { useStoreState } from "reducer/store";
+import { appendTheme } from "utils/utilities";
 
 interface IHeroIconProps {
   key: string;
@@ -33,25 +34,46 @@ function HeroIcon(props: IHeroIconProps): JSX.Element {
     state.selectedIcons,
   ]);
 
-  function getClassName(): string {
+  function getImageWrapperClassName(): string {
     if (isHighlightedValid) {
-      return "hero-icon hero-icon-valid";
+      return appendTheme(
+        "hero-icon-wrapper hero-icon-wrapper-valid",
+        state.appSettings.isDark
+      );
     } else if (isHighlightedInvalid) {
-      return "hero-icon hero-icon-invalid";
+      return appendTheme(
+        "hero-icon-wrapper hero-icon-wrapper-invalid",
+        state.appSettings.isDark
+      );
     }
-    return "hero-icon";
+    return "hero-icon-wrapper";
+  }
+
+  function getImageClassName(): string {
+    let baseName = "hero-icon";
+
+    if (isHighlightedInvalid) {
+      baseName += " hero-icon-invalid";
+    }
+
+    if (state.gameSettings.targetRoundScore === state.selectedIcons.size) {
+      baseName += " hero-icon-rotate";
+    }
+    return baseName;
   }
 
   return (
-    <img
-      className={getClassName()}
-      src={props.src}
-      onClick={() => {
-        props.onClick();
-      }}
-      alt="hero icon"
-      draggable="false"
-    ></img>
+    <div className={getImageWrapperClassName()}>
+      <img
+        className={getImageClassName()}
+        src={props.src}
+        onClick={() => {
+          props.onClick();
+        }}
+        alt="hero icon"
+        draggable="false"
+      ></img>
+    </div>
   );
 }
 
