@@ -16,9 +16,9 @@
 .homepage-play-icon {
   margin-left: 0.7rem;
 
-  -webkit-animation: playBtnFadeIn 2s;
-  -moz-animation: playBtnFadeIn 2s;
-  animation: playBtnFadeIn 2s;
+  -webkit-animation: playBtnFadeIn 1s;
+  -moz-animation: playBtnFadeIn 1s;
+  animation: playBtnFadeIn 1s;
 }
 
 .homepage-bg-light {
@@ -78,29 +78,41 @@
 }
 
 @-webkit-keyframes playBtnFadeIn {
-  from {
+  0% {
     opacity: 0;
     margin-left: -0.3rem;
   }
-  to {
+  25% {
+    opacity: 0;
+    margin-left: -0.3rem;
+  }
+  100% {
     opacity: 1;
   }
 }
 @-moz-keyframes playBtnFadeIn {
-  from {
+  0% {
     opacity: 0;
     margin-left: -0.3rem;
   }
-  to {
+  25% {
+    opacity: 0;
+    margin-left: -0.3rem;
+  }
+  100% {
     opacity: 1;
   }
 }
 @keyframes playBtnFadeIn {
-  from {
+  0% {
     opacity: 0;
     margin-left: -0.3rem;
   }
-  to {
+  25% {
+    opacity: 0;
+    margin-left: -0.3rem;
+  }
+  100% {
     opacity: 1;
   }
 }
