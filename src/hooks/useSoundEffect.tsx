@@ -29,13 +29,20 @@ export default function useSoundEffect(): [
 
   const playAudio = useCallback(
     (soundEffect: SoundEffects) => {
+      const volume = stateRef.current.appSettings.volume;
       const soundEffectFile = soundEffects[soundEffect];
 
-      // Resets audio if it's currently playing, and plays it
-      soundEffectFile.currentTime = 0;
-      soundEffectFile.volume =
-        stateRef.current.appSettings.volume / GlobalConstants.VOLUME_STEP / 10;
-      soundEffectFile.play();
+      // Only plays media if the game isn't muted
+      // Prevents music from stopping on mobile devices
+      if (volume > 0) {
+        // Resets audio if it's currently playing, and plays it
+        soundEffectFile.currentTime = 0;
+        soundEffectFile.volume =
+          stateRef.current.appSettings.volume /
+          GlobalConstants.VOLUME_STEP /
+          10;
+        soundEffectFile.play();
+      }
     },
     [soundEffects]
   );
