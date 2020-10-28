@@ -37,10 +37,53 @@
   transform: skewY(-10deg);
 
   background-size: 200% 200%;
+  background-repeat: no-repeat;
+}
 
+.homepage-bg-reveal {
+  -webkit-animation: bannerReveal 1s ease-out;
+  -moz-animation: bannerReveal 1s ease-out;
+  animation: bannerReveal 1s ease-out;
+}
+
+.homepage-bg-animate {
   -webkit-animation: animateBannerBg 30s ease infinite;
   -moz-animation: animateBannerBg 30s ease infinite;
   animation: animateBannerBg 30s ease infinite;
+}
+
+@-webkit-keyframes bannerReveal {
+  0% {
+    background-size: 0% 200%;
+  }
+  20% {
+    background-size: 0% 200%;
+  }
+  100% {
+    background-size: 200% 200%;
+  }
+}
+@-moz-keyframes bannerReveal {
+  0% {
+    background-size: 0% 200%;
+  }
+  20% {
+    background-size: 0% 200%;
+  }
+  100% {
+    background-size: 200% 200%;
+  }
+}
+@keyframes bannerReveal {
+  0% {
+    background-size: 0% 200%;
+  }
+  20% {
+    background-size: 0% 200%;
+  }
+  100% {
+    background-size: 200% 200%;
+  }
 }
 
 @-webkit-keyframes animateBannerBg {
@@ -82,7 +125,7 @@
     opacity: 0;
     margin-left: -0.3rem;
   }
-  25% {
+  50% {
     opacity: 0;
     margin-left: -0.3rem;
   }
@@ -95,7 +138,7 @@
     opacity: 0;
     margin-left: -0.3rem;
   }
-  25% {
+  50% {
     opacity: 0;
     margin-left: -0.3rem;
   }
@@ -108,7 +151,7 @@
     opacity: 0;
     margin-left: -0.3rem;
   }
-  25% {
+  50% {
     opacity: 0;
     margin-left: -0.3rem;
   }
