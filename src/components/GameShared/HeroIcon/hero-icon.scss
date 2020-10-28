@@ -4,6 +4,11 @@
   max-height: 60px;
   max-width: 60px;
   height: intrinsic; // Forces images to fill height on Safari THANKS TIM
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
 }
 
 .hero-icon-valid {
