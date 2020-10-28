@@ -67,3 +67,77 @@ code {
   background-color: $card-bg-dark;
   border-radius: 0.3rem;
 }
+
+.container {
+  -webkit-animation: containerFardIn 0.3s;
+  -moz-animation: containerFardIn 0.3s;
+  animation: containerFardIn 0.3s;
+}
+
+@-webkit-keyframes containerFardIn {
+  from {
+    position: relative;
+    bottom: 15px;
+    opacity: 0;
+  }
+  to {
+    position: relative;
+    bottom: 0px;
+    opacity: 1;
+  }
+}
+@-moz-keyframes containerFardIn {
+  from {
+    position: relative;
+    bottom: 15px;
+    opacity: 0;
+  }
+  to {
+    position: relative;
+    bottom: 0px;
+    opacity: 1;
+  }
+}
+@keyframes containerFardIn {
+  from {
+    position: relative;
+    bottom: 15px;
+    opacity: 0;
+  }
+  to {
+    position: relative;
+    bottom: 0px;
+    opacity: 1;
+  }
+}
+
+.fast-fade-reveal {
+  -webkit-animation: fastFadeReveal 0.1s linear;
+  -moz-animation: fastFadeReveal 0.1s linear;
+  animation: fastFadeReveal 0.1s linear;
+}
+
+@-webkit-keyframes fastFadeReveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@-moz-keyframes fastFadeReveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fastFadeReveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

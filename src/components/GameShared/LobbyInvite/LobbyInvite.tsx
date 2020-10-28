@@ -94,7 +94,7 @@ function LobbyInvite(props: LobbyInviteProps): JSX.Element {
           </Col>
         </Row>
         {showLinkCopied === true && (
-          <Row>
+          <Row className="lobby-link-copied-text">
             <Col>
               <p className="float-right mt-1 mb-0">Link copied to clipboard</p>
             </Col>

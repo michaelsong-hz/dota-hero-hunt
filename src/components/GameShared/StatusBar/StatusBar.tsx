@@ -48,7 +48,7 @@ function GameStatusBar(): JSX.Element {
         <Col key={`${heroList[targetHero].name}-icon`} xs="auto">
           {state.gameSettings.showTargetIcons === true && (
             <img
-              className="status-hero-icon"
+              className="status-hero-icon fast-fade-reveal"
               src={
                 loadingIcons
                   ? Placeholder_icon

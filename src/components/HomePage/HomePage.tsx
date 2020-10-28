@@ -1,6 +1,6 @@
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { useStoreState } from "reducer/store";
@@ -8,6 +8,14 @@ import { appendTheme } from "utils/utilities";
 
 function HomePage(): JSX.Element {
   const state = useStoreState();
+  const [homepageBgClass, setHomepageBgClass] = useState("homepage-bg-reveal");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setHomepageBgClass("homepage-bg-animate");
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <>
@@ -15,7 +23,7 @@ function HomePage(): JSX.Element {
         className={`homepage-bg ${appendTheme(
           "homepage-bg",
           state.appSettings.isDark
-        )}`}
+        )} ${homepageBgClass}`}
       />
       <div className="homepage-container">
         <div className="d-flex flex-column align-items-center">

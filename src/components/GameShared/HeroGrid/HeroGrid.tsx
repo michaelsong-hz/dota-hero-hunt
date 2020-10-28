@@ -84,7 +84,10 @@ function HeroGrid(props: HeroGridProps): JSX.Element {
       <div style={{ display: loading ? "block" : "none" }}>
         {createHeroImages(true)}
       </div>
-      <div style={{ display: loading ? "none" : "block" }}>
+      <div
+        className="fast-fade-reveal"
+        style={{ display: loading ? "none" : "block" }}
+      >
         {createHeroImages(false)}
       </div>
     </div>
