@@ -5,8 +5,8 @@ import { useStoreState } from "reducer/store";
 interface IHeroIconProps {
   key: string;
   src: string;
-  onClick: () => void;
   heroNumber: number;
+  onClick: () => void;
 }
 
 function HeroIcon(props: IHeroIconProps): JSX.Element {

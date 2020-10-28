@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import HeroIcon from "components/GameShared/HeroIcon";
 import GameStatusBar from "components/GameShared/StatusBar";
+import Placeholder_icon from "images/Placeholder_icon.png";
 import { useStoreState } from "reducer/store";
 import { heroList } from "utils/HeroList";
 import { prependCDN } from "utils/utilities";
@@ -12,8 +13,39 @@ interface HeroGridProps {
 
 function HeroGrid(props: HeroGridProps): JSX.Element {
   const state = useStoreState();
+  const [loading, setLoading] = useState(true);
 
-  function createHeroImagesRow(rowNumber: number): JSX.Element[] {
+  // Loads new icons if the current ones are changed
+  // Sets loading to true while icons are loading to display local placeholder
+  useEffect(() => {
+    const loadImage = (heroNumber: number) => {
+      return new Promise((resolve, reject) => {
+        const loadImg = new Image();
+        loadImg.src = prependCDN(heroList[heroNumber].url);
+        loadImg.onload = () => resolve(prependCDN(heroList[heroNumber].url));
+        loadImg.onerror = (err) => reject(err);
+      });
+    };
+
+    async function loadImages() {
+      setLoading(true);
+      await Promise.all(
+        state.currentHeroes.map(
+          async (heroRow) =>
+            await Promise.all(
+              heroRow.map(async (imageNumber) => await loadImage(imageNumber))
+            )
+        )
+      );
+      setLoading(false);
+    }
+    loadImages();
+  }, [state.currentHeroes]);
+
+  function createHeroImagesRow(
+    rowNumber: number,
+    loadingImages: boolean
+  ): JSX.Element[] {
     const heroImagesRow: JSX.Element[] = [];
 
     for (let i = 0; i < state.currentHeroes[rowNumber].length; i++) {
@@ -21,21 +53,25 @@ function HeroGrid(props: HeroGridProps): JSX.Element {
       heroImagesRow.push(
         <HeroIcon
           key={`heroIcon${i}`}
-          src={prependCDN(heroList[heroNumber].url)}
-          onClick={() => props.handleClick(heroNumber)}
+          src={
+            loadingImages
+              ? Placeholder_icon
+              : prependCDN(heroList[heroNumber].url)
+          }
           heroNumber={heroNumber}
+          onClick={() => props.handleClick(heroNumber)}
         />
       );
     }
     return heroImagesRow;
   }
 
-  function createHeroImages(): JSX.Element[] {
+  function createHeroImages(loadingImages: boolean): JSX.Element[] {
     const heroImages: JSX.Element[] = [];
     for (let i = 0; i < state.currentHeroes.length; i++) {
       heroImages.push(
         <div className="d-flex justify-content-center" key={`heroIconRow${i}`}>
-          {createHeroImagesRow(i)}
+          {createHeroImagesRow(i, loadingImages)}
         </div>
       );
     }
@@ -45,7 +81,12 @@ function HeroGrid(props: HeroGridProps): JSX.Element {
   return (
     <div className="text-center">
       <GameStatusBar />
-      <div className="">{createHeroImages()}</div>
+      <div style={{ display: loading ? "block" : "none" }}>
+        {createHeroImages(true)}
+      </div>
+      <div style={{ display: loading ? "none" : "block" }}>
+        {createHeroImages(false)}
+      </div>
     </div>
   );
 }
