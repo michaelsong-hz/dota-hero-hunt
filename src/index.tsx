@@ -23,6 +23,30 @@ if (process.env.NODE_ENV === "production") {
   );
 }
 
+// Disable devtools in production
+declare global {
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    __REACT_DEVTOOLS_GLOBAL_HOOK__: any;
+  }
+}
+
+if (process.env.NODE_ENV === "production") {
+  if (typeof window.__REACT_DEVTOOLS_GLOBAL_HOOK__ === "object") {
+    for (const prop in window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
+      if (prop === "renderers") {
+        window.__REACT_DEVTOOLS_GLOBAL_HOOK__[prop] = new Map();
+      } else {
+        window.__REACT_DEVTOOLS_GLOBAL_HOOK__[prop] =
+          typeof window.__REACT_DEVTOOLS_GLOBAL_HOOK__[prop] === "function"
+            ? // eslint-disable-next-line @typescript-eslint/no-empty-function
+              () => {}
+            : null;
+      }
+    }
+  }
+}
+
 // TODO: Bootstrap 4 currently causes warnings to be thrown in strict mode
 // Investigate re-enabling strict mode after Bootstrap 5 is released
 ReactDOM.render(<App />, document.getElementById("root"));
