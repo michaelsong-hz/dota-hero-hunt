@@ -34,7 +34,9 @@ code {
   p {
     color: $text-theme-light;
   }
-  opacity: 1;
+  -webkit-transition: background-color 0.3s;
+  -moz-transition: background-color 0.3s;
+  transition: background-color 0.3s;
 }
 .helmet-body-dark {
   background-color: $page-background-color-dark;
@@ -56,16 +58,20 @@ code {
   p {
     color: $text-theme-dark;
   }
-  opacity: 1;
+  -webkit-transition: background-color 0.3s;
+  -moz-transition: background-color 0.3s;
+  transition: background-color 0.3s;
 }
 
 .content-holder-light {
   background-color: $card-bg-light;
   border-radius: 0.3rem;
+  transition: background-color 0.3s;
 }
 .content-holder-dark {
   background-color: $card-bg-dark;
   border-radius: 0.3rem;
+  transition: background-color 0.3s;
 }
 
 .container {
