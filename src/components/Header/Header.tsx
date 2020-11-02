@@ -73,7 +73,14 @@ function Header(): JSX.Element {
       >
         Dota Hero Hunt
       </Link>
-      <Navbar.Toggle aria-controls="basic-navbar-nav" />
+      <Navbar.Toggle
+        label="Toggle navigation"
+        className={
+          state.appSettings.isDark
+            ? "navbar-toggle navbar-toggle-dark"
+            : "navbar-toggle"
+        }
+      />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
           <Link to="/" className="nav-link text-muted">
