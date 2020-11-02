@@ -34,9 +34,6 @@ code {
   p {
     color: $text-theme-light;
   }
-  -webkit-transition: background-color 0.3s;
-  -moz-transition: background-color 0.3s;
-  transition: background-color 0.3s;
 }
 .helmet-body-dark {
   background-color: $page-background-color-dark;
@@ -58,6 +55,8 @@ code {
   p {
     color: $text-theme-dark;
   }
+}
+.helmet-body-change-transition {
   -webkit-transition: background-color 0.3s;
   -moz-transition: background-color 0.3s;
   transition: background-color 0.3s;
