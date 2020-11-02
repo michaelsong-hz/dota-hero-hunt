@@ -76,6 +76,7 @@ code {
 }
 
 .container {
+  position: relative;
   -webkit-animation: containerFardIn 0.3s;
   -moz-animation: containerFardIn 0.3s;
   animation: containerFardIn 0.3s;
@@ -83,36 +84,30 @@ code {
 
 @-webkit-keyframes containerFardIn {
   from {
-    position: relative;
     bottom: 15px;
     opacity: 0;
   }
   to {
-    position: relative;
     bottom: 0px;
     opacity: 1;
   }
 }
 @-moz-keyframes containerFardIn {
   from {
-    position: relative;
     bottom: 15px;
     opacity: 0;
   }
   to {
-    position: relative;
     bottom: 0px;
     opacity: 1;
   }
 }
 @keyframes containerFardIn {
   from {
-    position: relative;
     bottom: 15px;
     opacity: 0;
   }
   to {
-    position: relative;
     bottom: 0px;
     opacity: 1;
   }
