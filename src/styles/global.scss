@@ -34,6 +34,7 @@ code {
   p {
     color: $text-theme-light;
   }
+  height: 100vh;
 }
 .helmet-body-dark {
   background-color: $page-background-color-dark;
@@ -55,6 +56,7 @@ code {
   p {
     color: $text-theme-dark;
   }
+  height: 100vh;
 }
 .helmet-body-change-transition {
   -webkit-transition: background-color 0.3s;

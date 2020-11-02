@@ -4,6 +4,7 @@
   -webkit-transition: background-color 0.3s;
   -moz-transition: background-color 0.3s;
   transition: background-color 0.3s;
+  z-index: 1000; //Place header above other page components, but below bootstrap modal (1050)
 }
 
 .tooltip [class$="inner"] {
