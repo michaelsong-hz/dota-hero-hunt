@@ -11,7 +11,11 @@ function HelmetWrapper(): JSX.Element {
   // Only add background change transition after the page loads
   // Prevents white to dark transition on page load (if dark theme is on)
   useEffect(() => {
-    setAnimateBgColorChange(true);
+    // Needs timeout to prevent race condition before browser renders the page
+    const timer = setTimeout(() => {
+      setAnimateBgColorChange(true);
+    }, 500);
+    return () => clearTimeout(timer);
   }, []);
 
   function getClassName(): string {
