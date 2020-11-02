@@ -55,10 +55,24 @@ function LobbyInvite(props: LobbyInviteProps): JSX.Element {
 
   const prevIsSinglePRef = useRef<boolean>();
   useEffect(() => {
+    async function writeLinkToClipboard() {
+      try {
+        await navigator.clipboard.writeText(props.inviteLink);
+        setShowLinkCopied(true);
+        setGeneratingLink(false);
+      } catch (err) {
+        /* 😡 SAFARI won't let you copy text to the clipboard if "it's not a
+        user action" and this technically isn't tied to a user action as we have
+        to wait for the invite link to come back from the server before writing
+        it to the clipboard THANKS TIM APPLE 🤡
+        It works if you hit copy after the link is generated because then it's
+        tied to a "user action" */
+        setGeneratingLink(false);
+      }
+    }
+
     if (prevIsSinglePRef.current === true && props.isSingleP === false) {
-      navigator.clipboard.writeText(props.inviteLink);
-      setShowLinkCopied(true);
-      setGeneratingLink(false);
+      writeLinkToClipboard();
     }
     prevIsSinglePRef.current = props.isSingleP;
   }, [props.inviteLink, props.isSingleP]);
