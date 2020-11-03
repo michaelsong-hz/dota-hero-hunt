@@ -31,13 +31,18 @@ function GameClientPage(): JSX.Element {
   const [playerName, setPlayerName] = useState("");
   const [isNameTaken, setIsNameTaken] = useState(false);
 
-  const [connectToHost, sendToHost, peerError] = useClientPeer({
+  const [
+    connectToHost,
+    sendToHost,
+    cleanUpConnections,
+    peerError,
+  ] = useClientPeer({
     playerName,
     remoteHostID,
     onMessageFromHost,
   });
   const [playAudio] = useSoundEffect();
-  useResetOnLeave();
+  useResetOnLeave({ cleanUpConnections });
 
   useEffect(() => {
     setPlayerName(localStorage.getItem(StorageConstants.PLAYER_NAME) || "");
@@ -47,18 +52,35 @@ function GameClientPage(): JSX.Element {
     switch (data.type) {
       case HostTypeConstants.CONNECTION_ACCEPTED: {
         setIsconnectedToHost(true);
-        dispatch({
-          type: StoreConstants.UPDATE_PLAYERS_LIST,
-          currentPlayers: data.players,
-        });
+
         dispatch({
           type: StoreConstants.SET_SETTINGS,
           gameSettings: data.settings,
+        });
+        dispatch({
+          type: StoreConstants.UPDATE_ROUND,
+          round: data.round,
+          targetHeroes: new Set(data.targetHeroes),
+          currentHeroes: data.currentHeroes,
+        });
+        dispatch({
+          type: StoreConstants.UPDATE_SELECTED_ICONS,
+          selectedIcons: new Set(data.selected),
+          invalidIcons: new Set(data.invalidIcons),
+          currentPlayers: data.players,
+        });
+        break;
+      }
+      case HostTypeConstants.UPDATE_PLAYERS_LIST: {
+        dispatch({
+          type: StoreConstants.UPDATE_PLAYERS_LIST,
+          currentPlayers: data.players,
         });
         break;
       }
       case HostTypeConstants.PLAYER_NAME_TAKEN: {
         setIsNameTaken(true);
+        cleanUpConnections();
         break;
       }
       case HostTypeConstants.UPDATE_SETTINGS: {
@@ -104,7 +126,6 @@ function GameClientPage(): JSX.Element {
   function handleClick(heroNumber: number) {
     sendToHost({
       type: ClientTypeConstants.PLAYER_ACTION,
-      playerName: playerName,
       selected: heroNumber,
     });
   }

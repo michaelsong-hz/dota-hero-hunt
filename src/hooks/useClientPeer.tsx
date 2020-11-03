@@ -10,16 +10,23 @@ import {
 import { HostTypes } from "models/MessageHostTypes";
 import { getPeerConfig } from "utils/utilities";
 
-interface UseClientPeerProps {
+type UseClientPeerProps = {
   playerName: string;
   remoteHostID: string;
   onMessageFromHost: (data: HostTypes) => void;
-}
+};
+
+type UseClientPeerReturn = [
+  () => void,
+  (data: ClientTypes) => void,
+  () => void,
+  string | undefined
+];
 
 // Connects to a host peer
 export default function useClientPeer(
   props: UseClientPeerProps
-): [() => void, (data: ClientTypes) => void, string | undefined] {
+): UseClientPeerReturn {
   const [hostConnection, setHostConnection] = useState<
     HostDataConnection | undefined
   >();
@@ -44,14 +51,14 @@ export default function useClientPeer(
       console.log("connect to host", props.remoteHostID);
 
       const currentHostConnection: HostDataConnection = peer.connect(
-        props.remoteHostID
+        props.remoteHostID,
+        { metadata: { playerName: props.playerName } }
       );
 
       currentHostConnection.on("open", () => {
         console.log("connection opened");
         currentHostConnection.send({
           type: ClientTypeConstants.NEW_CONNECTION,
-          playerName: props.playerName,
         });
         setHostConnection(currentHostConnection);
       });
@@ -96,5 +103,5 @@ export default function useClientPeer(
     [hostConnection]
   );
 
-  return [connectToHost, sendToHost, error];
+  return [connectToHost, sendToHost, cleanUp, error];
 }

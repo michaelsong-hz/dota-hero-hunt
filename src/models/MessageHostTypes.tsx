@@ -5,11 +5,12 @@ import { PlayerState } from "./PlayerState";
 
 // Definitions for messages from the host to the client
 export enum HostTypeConstants {
-  UPDATE_ROUND = "UPDATE_ROUND",
-  CONNECTION_ACCEPTED = "CONNECTION_ACCEPTED",
-  PLAYER_NAME_TAKEN = "PLAYER_NAME_TAKEN",
-  UPDATE_FROM_CLICK = "UPDATE_FROM_CLICK",
-  UPDATE_SETTINGS = "UPDATE_SETTINGS",
+  UPDATE_ROUND,
+  CONNECTION_ACCEPTED,
+  UPDATE_PLAYERS_LIST,
+  PLAYER_NAME_TAKEN,
+  UPDATE_FROM_CLICK,
+  UPDATE_SETTINGS,
 }
 
 export type HostTypes =
@@ -21,8 +22,17 @@ export type HostTypes =
     }
   | {
       type: HostTypeConstants.CONNECTION_ACCEPTED;
-      players: Record<string, PlayerState>;
       settings: GameSettings;
+      players: Record<string, PlayerState>;
+      round: number;
+      targetHeroes: number[];
+      currentHeroes: number[][];
+      selected: number[];
+      invalidIcons: number[];
+    }
+  | {
+      type: HostTypeConstants.UPDATE_PLAYERS_LIST;
+      players: Record<string, PlayerState>;
     }
   | {
       type: HostTypeConstants.PLAYER_NAME_TAKEN;

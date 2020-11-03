@@ -10,7 +10,10 @@ import useHostPeer from "hooks/useHostPeer";
 import useResetOnLeave from "hooks/useResetOnLeave";
 import useSoundEffect from "hooks/useSoundEffect";
 import { ClientTypeConstants, ClientTypes } from "models/MessageClientTypes";
-import { HostTypeConstants } from "models/MessageHostTypes";
+import {
+  ClientDataConnection,
+  HostTypeConstants,
+} from "models/MessageHostTypes";
 import { useStoreState, useStoreDispatch } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { heroList } from "utils/HeroList";
@@ -26,18 +29,19 @@ function GameHostPage(): JSX.Element {
 
   // Keeping state in ref as we can't access the store in peer js callbacks
   const stateRef = useRef(state);
-
-  const [hostID, startHosting, sendToClients] = useHostPeer({
-    state,
-    playerName,
-    onMessage,
-  });
-  const [playAudio] = useSoundEffect();
-  useResetOnLeave();
-
   useEffect(() => {
     stateRef.current = state;
   }, [state]);
+
+  const [hostID, startHosting, sendToClients, cleanUpConnections] = useHostPeer(
+    {
+      playerName,
+      stateRef,
+      onMessage,
+    }
+  );
+  const [playAudio] = useSoundEffect();
+  useResetOnLeave({ cleanUpConnections });
 
   function addSelectedIcon(
     selectedIcon: number,
@@ -104,41 +108,37 @@ function GameHostPage(): JSX.Element {
    * not include our state
    * @param data
    */
-  function onMessage(data: ClientTypes) {
+  function onMessage(data: ClientTypes, incomingConn: ClientDataConnection) {
+    const fromPlayerName = incomingConn.metadata.playerName as string;
+
     if (data.type === ClientTypeConstants.PLAYER_ACTION) {
       // TODO: Error handling, checking received data
-      addSelectedIcon(data.selected, data.playerName);
+      addSelectedIcon(data.selected, fromPlayerName);
     } else if (data.type === ClientTypeConstants.NEW_CONNECTION) {
-      // If player name hasn't been taken, accept the connection
-      if (!(data.playerName in stateRef.current.players)) {
-        const currentPlayers = { ...stateRef.current.players };
-        currentPlayers[data.playerName] = {
-          score: 0,
-          isDisabled: false,
-        };
+      const currentPlayers = { ...stateRef.current.players };
+      currentPlayers[fromPlayerName] = {
+        score: 0,
+        isDisabled: false,
+      };
 
-        sendToClients({
-          type: HostTypeConstants.CONNECTION_ACCEPTED,
-          players: currentPlayers,
-          settings: stateRef.current.gameSettings,
-        });
-        dispatch({
-          type: StoreConstants.UPDATE_PLAYERS_LIST,
-          currentPlayers,
-        });
-      } else {
-        // Let client know that the player name has been taken
-        const currPlayerNames: string[] = [];
-
-        for (const currPlayerName of Object.keys(stateRef.current.players)) {
-          currPlayerNames.push(currPlayerName);
-        }
-
-        sendToClients({
-          type: HostTypeConstants.PLAYER_NAME_TAKEN,
-          currentPlayers: currPlayerNames,
-        });
-      }
+      incomingConn.send({
+        type: HostTypeConstants.CONNECTION_ACCEPTED,
+        settings: stateRef.current.gameSettings,
+        players: stateRef.current.players,
+        round: stateRef.current.round,
+        targetHeroes: Array.from(stateRef.current.targetHeroes),
+        currentHeroes: stateRef.current.currentHeroes,
+        selected: Array.from(stateRef.current.selectedIcons),
+        invalidIcons: Array.from(stateRef.current.invalidIcons),
+      });
+      sendToClients({
+        type: HostTypeConstants.UPDATE_PLAYERS_LIST,
+        players: currentPlayers,
+      });
+      dispatch({
+        type: StoreConstants.UPDATE_PLAYERS_LIST,
+        currentPlayers,
+      });
     }
   }
 

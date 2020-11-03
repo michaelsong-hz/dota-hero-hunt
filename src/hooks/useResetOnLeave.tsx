@@ -4,13 +4,20 @@ import React, { useEffect } from "react";
 import { useStoreDispatch } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 
-export default function useResetOnLeave(): void {
+interface UseResetOnLeaveProps {
+  cleanUpConnections: () => void;
+}
+
+export default function useResetOnLeave(props: UseResetOnLeaveProps): void {
   const dispatch = useStoreDispatch();
+
+  const { cleanUpConnections } = props;
 
   // Reset round and player list if leaving the page
   useEffect(() => {
     return () => {
       console.log("left game page, resetting state");
+      cleanUpConnections();
       dispatch({
         type: StoreConstants.UPDATE_ROUND,
         round: 0,
@@ -22,5 +29,5 @@ export default function useResetOnLeave(): void {
         currentPlayers: {},
       });
     };
-  }, [dispatch]);
+  }, [cleanUpConnections, dispatch]);
 }
