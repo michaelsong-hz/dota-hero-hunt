@@ -1,35 +1,47 @@
 import Peer from "peerjs";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback } from "react";
 
-import { ClientTypes } from "models/MessageClientTypes";
-import { ClientDataConnection, HostTypes } from "models/MessageHostTypes";
+import { ClientTypeConstants, ClientTypes } from "models/MessageClientTypes";
+import {
+  ClientDataConnection,
+  HostTypeConstants,
+  HostTypes,
+} from "models/MessageHostTypes";
 import { StoreReducer } from "reducer/storeReducer";
 import { getPeerConfig } from "utils/utilities";
 
-interface UseHostPeerProps {
-  state: StoreReducer;
+type UseHostPeerProps = {
   playerName: string;
-  onMessage: (data: ClientTypes) => void;
-}
+  stateRef: React.MutableRefObject<StoreReducer>;
+  onMessage: (data: ClientTypes, fromClient: ClientDataConnection) => void;
+};
+
+type UseHostPeerReturn = [
+  string | undefined,
+  () => void,
+  (data: HostTypes) => void,
+  () => void
+];
 
 // Connects to (multiple) remote clients
 export default function useHostPeer(
   props: UseHostPeerProps
-): [string | undefined, () => void, (data: HostTypes) => void] {
+): UseHostPeerReturn {
   const [hostID, setHostID] = useState<string>();
 
   const myPeer = useRef<Peer>();
   const connectedClients = useRef<ClientDataConnection[]>([]);
+  // const currentPlayersRef = useRef(props.currentPlayers);
 
   const cleanUp = useCallback(() => {
     console.log("peerjs cleanup");
-    connectedClients.current = [];
     if (myPeer.current) {
       console.log("destroying peer");
       myPeer.current.disconnect();
       myPeer.current.destroy();
     }
+    connectedClients.current = [];
   }, []);
 
   function startHosting() {
@@ -43,14 +55,37 @@ export default function useHostPeer(
       console.log("receiving connection");
 
       incomingConn.on("open", () => {
-        console.log("opened connection");
+        // TODO: Move this to data event, only add to list if connection was
+        // accepted
+        console.log("opened connection from", incomingConn.metadata.playerName);
         const prevConnectedClients = [...connectedClients.current];
         prevConnectedClients.push(incomingConn);
         connectedClients.current = prevConnectedClients;
       });
       incomingConn.on("data", (data: ClientTypes) => {
-        console.log("received data", data);
-        props.onMessage(data);
+        console.log("received data", incomingConn.metadata.playerName, data);
+
+        const currentPlayers = props.stateRef.current.players;
+        if (
+          data.type === ClientTypeConstants.NEW_CONNECTION &&
+          incomingConn.metadata.playerName in currentPlayers
+        ) {
+          // Let client know that the player name has been taken
+          const currPlayerNames: string[] = [];
+
+          for (const currPlayerName of Object.keys(currentPlayers)) {
+            currPlayerNames.push(currPlayerName);
+          }
+
+          incomingConn.send({
+            type: HostTypeConstants.PLAYER_NAME_TAKEN,
+            currentPlayers: currPlayerNames,
+          });
+          // TODO: Need to await on previous, then close the connection
+          // incomingConn.close();
+        } else {
+          props.onMessage(data, incomingConn);
+        }
       });
     });
 
@@ -78,11 +113,11 @@ export default function useHostPeer(
   const sendToClients = useCallback(
     (data: HostTypes) => {
       connectedClients.current.forEach((clientConnection) => {
-        clientConnection.send(data as HostTypes);
+        clientConnection.send(data);
       });
     },
     [connectedClients]
   );
 
-  return [hostID, startHosting, sendToClients];
+  return [hostID, startHosting, sendToClients, cleanUp];
 }
