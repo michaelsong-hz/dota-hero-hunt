@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Col, Modal, Spinner } from "react-bootstrap";
+import { Col, Spinner } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
-import { Redirect } from "react-router-dom";
 
 import { useStoreState } from "reducer/store";
 import { StorageConstants } from "utils/constants";
@@ -12,7 +11,6 @@ import { appendTheme } from "utils/utilities";
 interface ConnectionViewProps {
   playerName: string;
   isNameTaken: boolean;
-  peerError: string | undefined;
   connectToHost: () => void;
   setPlayerName: (playerName: string) => void;
   setIsNameTaken: (isTaken: boolean) => void;
@@ -21,15 +19,6 @@ interface ConnectionViewProps {
 function ConnectionView(props: ConnectionViewProps): JSX.Element {
   const state = useStoreState();
   const [isJoiningGame, setIsJoiningGame] = useState(false);
-  const [showError, setShowError] = useState(false);
-
-  const [toHomePage, setToHomePage] = useState(false);
-
-  useEffect(() => {
-    if (props.peerError) {
-      setShowError(true);
-    }
-  }, [props.peerError]);
 
   function joinGame(e: React.FormEvent) {
     // Prevent form post
@@ -67,43 +56,25 @@ function ConnectionView(props: ConnectionViewProps): JSX.Element {
     props.setIsNameTaken(false);
   }
 
+  // Re-enable button after name conflict error
   useEffect(() => {
     if (props.isNameTaken) {
       setIsJoiningGame(false);
     }
   }, [props.isNameTaken]);
 
-  if (toHomePage) {
-    return <Redirect to="/" />;
-  }
+  // Re-enable button after connection error
+  useEffect(() => {
+    if (state.modalToShow !== null) {
+      setIsJoiningGame(false);
+    }
+  }, [state.modalToShow]);
 
   return (
     <>
-      <Modal show={showError} onHide={() => setToHomePage(true)}>
-        <Modal.Header>
-          <Modal.Title>Error Joining Game Session</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Sorry, we were unable to connect you to the game session.</p>
-          <p>
-            Either the person who invited you has closed their game, or the
-            invite link you entered is incorrect. Please double check your
-            invite link and try again.
-          </p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant={appendTheme("primary", state.appSettings.isDark)}
-            onClick={() => setToHomePage(true)}
-          >
-            Return to home page
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
       <Row className="text-center">
         <Col>
-          <h5>Joining Game Session</h5>
+          <h3>Joining Game Session</h3>
         </Col>
       </Row>
       <Row className="justify-content-center text-center mt-3">

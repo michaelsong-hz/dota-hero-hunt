@@ -18,7 +18,7 @@ import { useStoreState, useStoreDispatch } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { heroList } from "utils/HeroList";
 import { SoundEffects } from "utils/SoundEffectList";
-import { appendTheme } from "utils/utilities";
+import { appendTheme, getPlayerNameFromConn } from "utils/utilities";
 
 function GameHostPage(): JSX.Element {
   const state = useStoreState();
@@ -35,7 +35,6 @@ function GameHostPage(): JSX.Element {
 
   const [hostID, startHosting, sendToClients, cleanUpConnections] = useHostPeer(
     {
-      playerName,
       stateRef,
       onMessage,
     }
@@ -109,7 +108,7 @@ function GameHostPage(): JSX.Element {
    * @param data
    */
   function onMessage(data: ClientTypes, incomingConn: ClientDataConnection) {
-    const fromPlayerName = incomingConn.metadata.playerName as string;
+    const fromPlayerName = getPlayerNameFromConn(incomingConn);
 
     if (data.type === ClientTypeConstants.PLAYER_ACTION) {
       // TODO: Error handling, checking received data

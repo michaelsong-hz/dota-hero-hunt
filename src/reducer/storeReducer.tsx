@@ -1,9 +1,13 @@
+import { captureException, captureMessage } from "@sentry/react";
+
 import { ApplicationSettings } from "models/ApplicationSettings";
 import {
   GameSettings,
   gridSizes,
   GridSizeTypes,
 } from "models/GameSettingsType";
+import { Modals, OtherErrorTypes } from "models/Modals";
+import { PeerError, PeerJSErrorTypes } from "models/PeerErrors";
 import { PlayerState } from "models/PlayerState";
 
 export enum StoreConstants {
@@ -14,6 +18,8 @@ export enum StoreConstants {
   SET_SETTINGS,
   SET_VOLUME,
   SET_THEME,
+  SET_PEER_ERROR,
+  SET_MODAL,
 }
 
 export type StoreReducer = {
@@ -25,6 +31,7 @@ export type StoreReducer = {
   currentHeroes: Array<Array<number>>;
   gameSettings: GameSettings;
   appSettings: ApplicationSettings;
+  modalToShow: Modals | null;
 };
 
 export type StoreActions =
@@ -59,6 +66,14 @@ export type StoreActions =
   | {
       type: StoreConstants.SET_THEME;
       isDark: boolean;
+    }
+  | {
+      type: StoreConstants.SET_PEER_ERROR;
+      error: PeerError;
+    }
+  | {
+      type: StoreConstants.SET_MODAL;
+      modal: OtherErrorTypes | null;
     };
 
 export const storeInitialState: StoreReducer = {
@@ -80,6 +95,7 @@ export const storeInitialState: StoreReducer = {
     volume: 30,
     isDark: true,
   },
+  modalToShow: null,
 };
 
 export function storeReducer(
@@ -133,6 +149,39 @@ export function storeReducer(
       return {
         ...state,
         appSettings: applicationSettings,
+      };
+    }
+    case StoreConstants.SET_PEER_ERROR: {
+      if (Object.values(PeerJSErrorTypes).includes(action.error.type)) {
+        return {
+          ...state,
+          modalToShow: action.error.type,
+        };
+      }
+      console.log("Unknown error encountered", action.error);
+      captureException(action.error);
+      return {
+        ...state,
+        modalToShow: OtherErrorTypes.GENERIC_ERROR,
+      };
+    }
+    case StoreConstants.SET_MODAL: {
+      if (action.modal === null) {
+        return {
+          ...state,
+          modalToShow: null,
+        };
+      } else if (Object.values(OtherErrorTypes).includes(action.modal)) {
+        return {
+          ...state,
+          modalToShow: action.modal,
+        };
+      }
+      console.log("Unknown modal encountered", action.modal);
+      captureMessage("Tried to show an unknown modal.");
+      return {
+        ...state,
+        modalToShow: OtherErrorTypes.GENERIC_ERROR,
       };
     }
     default:

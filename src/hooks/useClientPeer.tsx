@@ -7,7 +7,11 @@ import {
   HostDataConnection,
   ClientTypes,
 } from "models/MessageClientTypes";
-import { HostTypes } from "models/MessageHostTypes";
+import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
+import { OtherErrorTypes } from "models/Modals";
+import { PeerError } from "models/PeerErrors";
+import { useStoreDispatch } from "reducer/store";
+import { StoreConstants } from "reducer/storeReducer";
 import { getPeerConfig } from "utils/utilities";
 
 type UseClientPeerProps = {
@@ -19,28 +23,30 @@ type UseClientPeerProps = {
 type UseClientPeerReturn = [
   () => void,
   (data: ClientTypes) => void,
-  () => void,
-  string | undefined
+  () => void
 ];
 
 // Connects to a host peer
 export default function useClientPeer(
   props: UseClientPeerProps
 ): UseClientPeerReturn {
-  const [hostConnection, setHostConnection] = useState<
-    HostDataConnection | undefined
-  >();
-  const [error, setError] = useState();
-
   const myPeer = useRef<Peer>();
+  const isCleaningUp = useRef(false);
+  const dispatch = useStoreDispatch();
 
   const cleanUp = useCallback(() => {
-    console.log("peerjs cleanup");
-    setHostConnection(undefined);
+    isCleaningUp.current = true;
     if (myPeer.current) {
-      console.log("destroying peer");
-      myPeer.current.disconnect();
-      myPeer.current.destroy();
+      if (!myPeer.current.disconnected) {
+        myPeer.current.disconnect();
+      } else if (!myPeer.current.destroyed) {
+        myPeer.current.destroy();
+      } else {
+        console.log("Peer: cleanup complete");
+        myPeer.current = undefined;
+      }
+    } else {
+      console.log("Peer: nothing to cleanup");
     }
   }, []);
 
@@ -48,42 +54,70 @@ export default function useClientPeer(
     const peer = new Peer(getPeerConfig());
 
     peer.on("open", () => {
-      console.log("connect to host", props.remoteHostID);
-
-      const currentHostConnection: HostDataConnection = peer.connect(
+      const hostConnection: HostDataConnection = peer.connect(
         props.remoteHostID,
         { metadata: { playerName: props.playerName } }
       );
 
-      currentHostConnection.on("open", () => {
-        console.log("connection opened");
-        currentHostConnection.send({
+      hostConnection.on("open", () => {
+        hostConnection.send({
           type: ClientTypeConstants.NEW_CONNECTION,
         });
-        setHostConnection(currentHostConnection);
       });
-      currentHostConnection.on("data", (data: HostTypes) => {
-        console.log("received data", data);
+
+      hostConnection.on("data", (data: HostTypes) => {
+        console.log("Peer: received data", data);
+        if (data.type === HostTypeConstants.PLAYER_NAME_TAKEN) {
+          hostConnection.metadata = {
+            playerName: "",
+          };
+        }
         props.onMessageFromHost(data);
       });
-      currentHostConnection.on("error", (err: any) => {
-        console.log("connection error", err);
+
+      hostConnection.on("close", () => {
+        if (isCleaningUp.current === false) {
+          console.log("Peer: host closed connection");
+          dispatch({
+            type: StoreConstants.SET_MODAL,
+            modal: OtherErrorTypes.HOST_DISCONNECTED,
+          });
+        }
+      });
+
+      hostConnection.on("error", (err) => {
+        console.log("connection error", err.type, err);
       });
     });
 
     peer.on("disconnected", () => {
-      console.log("Peer disconnected");
+      if (isCleaningUp.current === false) {
+        console.log("Peer: disconnected");
+        dispatch({
+          type: StoreConstants.SET_MODAL,
+          modal: OtherErrorTypes.PEER_JS_SERVER_DISCONNECTED,
+        });
+      }
       cleanUp();
     });
 
     peer.on("close", () => {
-      console.log("Peer closed remotely");
+      if (isCleaningUp.current === false) {
+        console.log("Peer: destroyed");
+        dispatch({
+          type: StoreConstants.SET_MODAL,
+          modal: OtherErrorTypes.PEER_JS_SERVER_DISCONNECTED,
+        });
+      }
       cleanUp();
     });
 
-    peer.on("error", (error) => {
-      setError(error);
-      console.log("peer error", error);
+    peer.on("error", (error: PeerError) => {
+      dispatch({
+        type: StoreConstants.SET_PEER_ERROR,
+        error,
+      });
+      console.log("Peer: error", error.type, error);
       cleanUp();
     });
 
@@ -94,14 +128,17 @@ export default function useClientPeer(
     };
   }
 
-  const sendToHost = useCallback(
-    (data: ClientTypes) => {
-      if (hostConnection) {
-        hostConnection.send(data);
+  const sendToHost = useCallback((data: ClientTypes) => {
+    if (myPeer.current) {
+      for (const key in myPeer.current.connections) {
+        myPeer.current.connections[key].forEach(
+          (hostConnection: HostDataConnection) => {
+            hostConnection.send(data);
+          }
+        );
       }
-    },
-    [hostConnection]
-  );
+    }
+  }, []);
 
-  return [connectToHost, sendToHost, cleanUp, error];
+  return [connectToHost, sendToHost, cleanUp];
 }
