@@ -31,12 +31,7 @@ function GameClientPage(): JSX.Element {
   const [playerName, setPlayerName] = useState("");
   const [isNameTaken, setIsNameTaken] = useState(false);
 
-  const [
-    connectToHost,
-    sendToHost,
-    cleanUpConnections,
-    peerError,
-  ] = useClientPeer({
+  const [connectToHost, sendToHost, cleanUpConnections] = useClientPeer({
     playerName,
     remoteHostID,
     onMessageFromHost,
@@ -139,7 +134,6 @@ function GameClientPage(): JSX.Element {
         <ConnectionView
           playerName={playerName}
           isNameTaken={isNameTaken}
-          peerError={peerError}
           connectToHost={connectToHost}
           setPlayerName={setPlayerName}
           setIsNameTaken={setIsNameTaken}

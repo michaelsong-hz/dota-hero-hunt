@@ -1,3 +1,4 @@
+import { captureException } from "@sentry/react";
 import Peer from "peerjs";
 
 export function appendTheme(themeName: string, isDark: boolean): string {
@@ -17,4 +18,15 @@ export function getPeerConfig(): Peer.PeerJSOption {
     port: parseInt(process.env.REACT_APP_PEER_JS_PORT || ""),
     path: process.env.REACT_APP_PEER_JS_PATH,
   };
+}
+
+export function getPlayerNameFromConn(
+  incomingConn: Peer.DataConnection
+): string {
+  try {
+    return incomingConn.metadata.playerName;
+  } catch (err) {
+    captureException(err);
+    return "";
+  }
 }
