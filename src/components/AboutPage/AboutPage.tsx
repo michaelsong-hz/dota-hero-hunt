@@ -20,6 +20,11 @@ function AboutPage(): JSX.Element {
           </p>
         </Col>
       </Row>
+      <Row className="mt-2">
+        <Col>
+          <p>Version {process.env.REACT_APP_VERSION}</p>
+        </Col>
+      </Row>
     </Container>
   );
 }
