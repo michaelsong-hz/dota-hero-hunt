@@ -13,10 +13,13 @@ export default function useResetOnLeave(props: UseResetOnLeaveProps): void {
 
   const { cleanUpConnections } = props;
 
+  window.addEventListener("beforeunload", () => {
+    cleanUpConnections();
+  });
+
   // Reset round and player list if leaving the page
   useEffect(() => {
     return () => {
-      console.log("left game page, resetting state");
       cleanUpConnections();
       dispatch({
         type: StoreConstants.UPDATE_ROUND,
