@@ -1,6 +1,6 @@
 import { captureException, setContext } from "@sentry/react";
 import React from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 
 import ErrorModal from "components/Modals/ErrorModal";
@@ -20,7 +20,15 @@ function SharedModal(): JSX.Element {
       type: StoreConstants.SET_MODAL,
       modal: null,
     });
+  }
+
+  function handleReturnHome() {
+    handleHide();
     history.push("/");
+  }
+
+  function handleRefresh() {
+    window.location.reload();
   }
 
   function getModal(): JSX.Element {
@@ -49,7 +57,7 @@ function SharedModal(): JSX.Element {
                coordinator.`,
               "Please check your internet connection, or try again later.",
             ]}
-            dismissText="Try Again"
+            isDismissible={true}
           />
         );
       case PeerJSErrorTypes.PEER_UNAVAILABLE:
@@ -62,7 +70,7 @@ function SharedModal(): JSX.Element {
                invite link you entered is incorrect. Please double check your 
                invite link and try again.`,
             ]}
-            dismissText="Try Again"
+            isDismissible={true}
           />
         );
       case OtherErrorTypes.HOST_DISCONNECTED:
@@ -82,6 +90,38 @@ function SharedModal(): JSX.Element {
             ]}
           />
         );
+      case OtherErrorTypes.APP_VERSION_MISMATCH: {
+        const customFooter = (
+          <>
+            <Button
+              variant={appendTheme("secondary", state.appSettings.isDark)}
+              onClick={() => handleReturnHome()}
+            >
+              Return to Home Page
+            </Button>
+            <Button
+              variant={appendTheme("secondary", state.appSettings.isDark)}
+              onClick={() => handleRefresh()}
+            >
+              Refresh Page
+            </Button>
+            <Button
+              variant={appendTheme("primary", state.appSettings.isDark)}
+              onClick={() => handleHide()}
+            >
+              Try Again
+            </Button>
+          </>
+        );
+        return (
+          <ErrorModal
+            title="Application Version Mismatch"
+            bodyText={[]}
+            footer={customFooter}
+            isDismissible={true}
+          />
+        );
+      }
     }
 
     try {

@@ -17,4 +17,8 @@ export type ClientTypes =
 
 export interface HostDataConnection extends Peer.DataConnection {
   send(data: ClientTypes): void;
+  metadata: {
+    playerName: string;
+    version: string;
+  };
 }

@@ -33,6 +33,7 @@ export type StoreReducer = {
   gameSettings: GameSettings;
   appSettings: ApplicationSettings;
   modalToShow: Modals | null;
+  modalCustomMessage: string[];
 };
 
 export type StoreActions =
@@ -75,6 +76,7 @@ export type StoreActions =
   | {
       type: StoreConstants.SET_MODAL;
       modal: OtherErrorTypes | null;
+      customMessage?: string[];
     };
 
 export const storeInitialState: StoreReducer = {
@@ -97,6 +99,7 @@ export const storeInitialState: StoreReducer = {
     isDark: true,
   },
   modalToShow: null,
+  modalCustomMessage: [],
 };
 
 export function storeReducer(
@@ -172,21 +175,28 @@ export function storeReducer(
       };
     }
     case StoreConstants.SET_MODAL: {
+      let modalCustomMessage: string[] = [];
+      if (action.customMessage) {
+        modalCustomMessage = action.customMessage;
+      }
       if (action.modal === null) {
         return {
           ...state,
           modalToShow: null,
+          modalCustomMessage: [],
         };
       } else if (Object.values(OtherErrorTypes).includes(action.modal)) {
         return {
           ...state,
           modalToShow: action.modal,
+          modalCustomMessage,
         };
       }
       captureException(new Error("Tried to show an unknown modal."));
       return {
         ...state,
         modalToShow: OtherErrorTypes.GENERIC_ERROR,
+        modalCustomMessage,
       };
     }
     default:

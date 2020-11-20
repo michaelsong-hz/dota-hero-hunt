@@ -3,6 +3,8 @@ import { Container } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
+import { getAppVersion } from "utils/utilities";
+
 function AboutPage(): JSX.Element {
   return (
     <Container className="mt-4">
@@ -22,7 +24,7 @@ function AboutPage(): JSX.Element {
       </Row>
       <Row className="mt-2">
         <Col>
-          <p>Version {process.env.REACT_APP_VERSION}</p>
+          <p>Version {getAppVersion()}</p>
         </Col>
       </Row>
     </Container>

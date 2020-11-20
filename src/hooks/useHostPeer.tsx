@@ -1,6 +1,5 @@
 import { captureException, setContext } from "@sentry/react";
 import Peer from "peerjs";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { useState, useRef, useCallback } from "react";
 
 import { ClientTypeConstants, ClientTypes } from "models/MessageClientTypes";
@@ -13,7 +12,12 @@ import { OtherErrorTypes } from "models/Modals";
 import { PeerJSErrorTypes } from "models/PeerErrors";
 import { useStoreDispatch } from "reducer/store";
 import { StoreConstants, StoreReducer } from "reducer/storeReducer";
-import { getPlayerNameFromConn, getPeerConfig } from "utils/utilities";
+import {
+  getPlayerNameFromConn,
+  getPeerConfig,
+  getAppVersion,
+  getVersionFromConn,
+} from "utils/utilities";
 
 type UseHostPeerProps = {
   stateRef: React.MutableRefObject<StoreReducer>;
@@ -35,7 +39,7 @@ export default function useHostPeer(
 
   const myPeer = useRef<Peer>();
   const isCleaningUp = useRef(false);
-  const dupConnLabels = useRef<Set<string>>(new Set());
+  const invalidConnLabels = useRef<Set<string>>(new Set());
 
   const dispatch = useStoreDispatch();
   const { stateRef, onMessage } = props;
@@ -65,25 +69,41 @@ export default function useHostPeer(
 
     peer.on("connection", (incomingConn) => {
       incomingConn.on("data", (data: ClientTypes) => {
+        const appVersion = getAppVersion();
+        const incomingVersion = getVersionFromConn(incomingConn);
         const incomingPlayerName = getPlayerNameFromConn(incomingConn);
 
         const currentPlayers = stateRef.current.players;
-        if (
-          data.type === ClientTypeConstants.NEW_CONNECTION &&
-          incomingPlayerName in currentPlayers
-        ) {
-          // Let client know that the player name has been taken
-          const currPlayerNames: string[] = [];
+        if (data.type === ClientTypeConstants.NEW_CONNECTION) {
+          if (incomingVersion !== appVersion) {
+            invalidConnLabels.current.add(incomingConn.label);
 
-          for (const currPlayerName of Object.keys(currentPlayers)) {
-            currPlayerNames.push(currPlayerName);
+            incomingConn.send({
+              type: HostTypeConstants.APP_VERSION_MISMATCH,
+              hostVersion: appVersion,
+              clientVersion: incomingVersion,
+            });
           }
-          dupConnLabels.current.add(incomingConn.label);
+          // TODO: Perform validation on incomingPlayerName
+          else if (
+            incomingPlayerName in currentPlayers ||
+            incomingPlayerName === ""
+          ) {
+            // Let client know that the player name has been taken
+            const currPlayerNames: string[] = [];
 
-          incomingConn.send({
-            type: HostTypeConstants.PLAYER_NAME_TAKEN,
-            currentPlayers: currPlayerNames,
-          });
+            for (const currPlayerName of Object.keys(currentPlayers)) {
+              currPlayerNames.push(currPlayerName);
+            }
+            invalidConnLabels.current.add(incomingConn.label);
+
+            incomingConn.send({
+              type: HostTypeConstants.PLAYER_NAME_TAKEN,
+              currentPlayers: currPlayerNames,
+            });
+          } else {
+            onMessage(data, incomingConn);
+          }
         } else {
           onMessage(data, incomingConn);
         }
@@ -91,7 +111,7 @@ export default function useHostPeer(
 
       incomingConn.on("close", () => {
         // Remove player from player list on disconnect
-        if (!dupConnLabels.current.has(incomingConn.label)) {
+        if (!invalidConnLabels.current.has(incomingConn.label)) {
           const playerToRemove = getPlayerNameFromConn(incomingConn);
 
           const currPlayers = stateRef.current.players;
@@ -103,7 +123,7 @@ export default function useHostPeer(
         } else {
           // Remove connection from connections with duplicated player names
           // if they are in the list of duplicated player names
-          dupConnLabels.current.delete(incomingConn.label);
+          invalidConnLabels.current.delete(incomingConn.label);
         }
       });
 

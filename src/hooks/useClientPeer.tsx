@@ -12,7 +12,7 @@ import { OtherErrorTypes } from "models/Modals";
 import { PeerError } from "models/PeerErrors";
 import { useStoreDispatch } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
-import { getPeerConfig } from "utils/utilities";
+import { getAppVersion, getPeerConfig } from "utils/utilities";
 
 type UseClientPeerProps = {
   playerName: string;
@@ -56,7 +56,7 @@ export default function useClientPeer(
     peer.on("open", () => {
       const hostConnection: HostDataConnection = peer.connect(
         props.remoteHostID,
-        { metadata: { playerName: props.playerName } }
+        { metadata: { playerName: props.playerName, version: getAppVersion() } }
       );
 
       hostConnection.on("open", () => {
@@ -69,6 +69,7 @@ export default function useClientPeer(
         if (data.type === HostTypeConstants.PLAYER_NAME_TAKEN) {
           hostConnection.metadata = {
             playerName: "",
+            version: getAppVersion(),
           };
         }
         props.onMessageFromHost(data);

@@ -9,7 +9,8 @@ import { appendTheme } from "utils/utilities";
 type ErrorModalProps = {
   title: string;
   bodyText: string[];
-  dismissText?: string;
+  isDismissible?: boolean;
+  footer?: JSX.Element;
 };
 
 function ErrorModal(props: ErrorModalProps): JSX.Element {
@@ -17,7 +18,7 @@ function ErrorModal(props: ErrorModalProps): JSX.Element {
   const state = useStoreState();
   const dispatch = useStoreDispatch();
 
-  const { title, bodyText, dismissText } = props;
+  const { title, bodyText, isDismissible, footer } = props;
 
   function handleHide() {
     dispatch({
@@ -33,38 +34,46 @@ function ErrorModal(props: ErrorModalProps): JSX.Element {
 
   function getBodyText(): JSX.Element[] {
     const pTexts: JSX.Element[] = [];
-    bodyText.forEach((pText, i) => {
-      pTexts.push(<p key={`error-p${i}`}>{pText}</p>);
+    let index = 0;
+    state.modalCustomMessage.forEach((pText) => {
+      index += 1;
+      pTexts.push(<p key={`error-p${index}`}>{pText}</p>);
+    });
+    bodyText.forEach((pText) => {
+      index += 1;
+      pTexts.push(<p key={`error-p${index}`}>{pText}</p>);
     });
     return pTexts;
   }
 
   function getFooter(): JSX.Element {
-    if (dismissText !== undefined) {
+    if (footer) {
+      return footer;
+    } else if (isDismissible === undefined || isDismissible === false) {
       return (
-        <>
-          <Button
-            variant={appendTheme("secondary", state.appSettings.isDark)}
-            onClick={() => handleReturnHome()}
-          >
-            Return to Home Page
-          </Button>
-          <Button
-            variant={appendTheme("primary", state.appSettings.isDark)}
-            onClick={() => handleHide()}
-          >
-            {dismissText}
-          </Button>
-        </>
+        <Button
+          variant={appendTheme("primary", state.appSettings.isDark)}
+          onClick={() => handleReturnHome()}
+        >
+          Return to Home Page
+        </Button>
       );
     }
     return (
-      <Button
-        variant={appendTheme("primary", state.appSettings.isDark)}
-        onClick={() => handleReturnHome()}
-      >
-        Return to Home Page
-      </Button>
+      <>
+        <Button
+          variant={appendTheme("secondary", state.appSettings.isDark)}
+          onClick={() => handleReturnHome()}
+        >
+          Return to Home Page
+        </Button>
+        <Button
+          variant={appendTheme("primary", state.appSettings.isDark)}
+          onClick={() => handleHide()}
+        >
+          Try Again
+        </Button>
+      </>
     );
   }
 
@@ -72,7 +81,7 @@ function ErrorModal(props: ErrorModalProps): JSX.Element {
     <Modal
       show={true}
       onHide={() => handleHide()}
-      backdrop={dismissText ? true : "static"}
+      backdrop={isDismissible ? true : "static"}
       contentClassName={appendTheme("modal-content", state.appSettings.isDark)}
     >
       <Modal.Header>
