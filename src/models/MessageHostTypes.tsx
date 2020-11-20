@@ -9,6 +9,7 @@ export enum HostTypeConstants {
   CONNECTION_ACCEPTED,
   UPDATE_PLAYERS_LIST,
   PLAYER_NAME_TAKEN,
+  APP_VERSION_MISMATCH,
   UPDATE_FROM_CLICK,
   UPDATE_SETTINGS,
 }
@@ -37,6 +38,11 @@ export type HostTypes =
   | {
       type: HostTypeConstants.PLAYER_NAME_TAKEN;
       currentPlayers: string[];
+    }
+  | {
+      type: HostTypeConstants.APP_VERSION_MISMATCH;
+      hostVersion: string;
+      clientVersion: string;
     }
   | {
       type: HostTypeConstants.UPDATE_FROM_CLICK;

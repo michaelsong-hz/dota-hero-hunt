@@ -40,3 +40,30 @@ export function getPlayerNameFromConn(
     return "";
   }
 }
+
+export function getVersionFromConn(incomingConn: Peer.DataConnection): string {
+  try {
+    return incomingConn.metadata.version;
+  } catch (err) {
+    try {
+      setContext("Invalid Connection Metadata", {
+        connection: JSON.stringify(incomingConn),
+      });
+    } catch (err) {
+      setContext("Invalid Connection Metadata", {
+        error: err,
+      });
+    }
+
+    captureException(err);
+    return "";
+  }
+}
+
+export function getAppVersion(): string {
+  if (process.env.REACT_APP_VERSION) {
+    return process.env.REACT_APP_VERSION;
+  }
+  captureException(new Error("Env: REACT_APP_VERSION not set"));
+  return "";
+}

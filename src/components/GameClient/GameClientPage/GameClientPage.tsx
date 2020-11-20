@@ -13,6 +13,7 @@ import useResetOnLeave from "hooks/useResetOnLeave";
 import useSoundEffect from "hooks/useSoundEffect";
 import { ClientTypeConstants } from "models/MessageClientTypes";
 import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
+import { OtherErrorTypes } from "models/Modals";
 import { useStoreDispatch, useStoreState } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { SoundEffects } from "utils/SoundEffectList";
@@ -76,6 +77,23 @@ function GameClientPage(): JSX.Element {
       }
       case HostTypeConstants.PLAYER_NAME_TAKEN: {
         setIsNameTaken(true);
+        cleanUpConnections();
+        break;
+      }
+      case HostTypeConstants.APP_VERSION_MISMATCH: {
+        dispatch({
+          type: StoreConstants.SET_MODAL,
+          modal: OtherErrorTypes.APP_VERSION_MISMATCH,
+          customMessage: [
+            `The application version does not match between yourself, and the \
+             person who invited you.`,
+            `Your version: ${data.clientVersion}`,
+            `The inviter's version: ${data.hostVersion}`,
+            `Please try refreshing your game, or tell the person who invited \
+             you to refresh their game in order to get the latest update.`,
+          ],
+        });
+
         cleanUpConnections();
         break;
       }
