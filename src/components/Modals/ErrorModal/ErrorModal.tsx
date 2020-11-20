@@ -72,7 +72,7 @@ function ErrorModal(props: ErrorModalProps): JSX.Element {
     <Modal
       show={true}
       onHide={() => handleHide()}
-      backdrop={dismissText ? "false" : "static"}
+      backdrop={dismissText ? true : "static"}
       contentClassName={appendTheme("modal-content", state.appSettings.isDark)}
     >
       <Modal.Header>
