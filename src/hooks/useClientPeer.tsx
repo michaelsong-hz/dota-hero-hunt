@@ -66,7 +66,6 @@ export default function useClientPeer(
       });
 
       hostConnection.on("data", (data: HostTypes) => {
-        console.log("Peer: received data", data);
         if (data.type === HostTypeConstants.PLAYER_NAME_TAKEN) {
           hostConnection.metadata = {
             playerName: "",
@@ -77,7 +76,6 @@ export default function useClientPeer(
 
       hostConnection.on("close", () => {
         if (isCleaningUp.current === false) {
-          console.log("Peer: host closed connection");
           dispatch({
             type: StoreConstants.SET_MODAL,
             modal: OtherErrorTypes.HOST_DISCONNECTED,
@@ -85,14 +83,17 @@ export default function useClientPeer(
         }
       });
 
-      hostConnection.on("error", (err) => {
-        console.log("connection error", err.type, err);
+      hostConnection.on("error", (error: PeerError) => {
+        dispatch({
+          type: StoreConstants.SET_PEER_ERROR,
+          error,
+        });
+        cleanUp();
       });
     });
 
     peer.on("disconnected", () => {
       if (isCleaningUp.current === false) {
-        console.log("Peer: disconnected");
         dispatch({
           type: StoreConstants.SET_MODAL,
           modal: OtherErrorTypes.PEER_JS_SERVER_DISCONNECTED,
@@ -103,7 +104,6 @@ export default function useClientPeer(
 
     peer.on("close", () => {
       if (isCleaningUp.current === false) {
-        console.log("Peer: destroyed");
         dispatch({
           type: StoreConstants.SET_MODAL,
           modal: OtherErrorTypes.PEER_JS_SERVER_DISCONNECTED,
@@ -117,7 +117,6 @@ export default function useClientPeer(
         type: StoreConstants.SET_PEER_ERROR,
         error,
       });
-      console.log("Peer: error", error.type, error);
       cleanUp();
     });
 

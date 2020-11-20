@@ -1,4 +1,4 @@
-import { captureException } from "@sentry/react";
+import { captureException, setContext } from "@sentry/react";
 import Peer from "peerjs";
 
 export function appendTheme(themeName: string, isDark: boolean): string {
@@ -26,6 +26,16 @@ export function getPlayerNameFromConn(
   try {
     return incomingConn.metadata.playerName;
   } catch (err) {
+    try {
+      setContext("Invalid Connection Metadata", {
+        connection: JSON.stringify(incomingConn),
+      });
+    } catch (err) {
+      setContext("Invalid Connection Metadata", {
+        error: err,
+      });
+    }
+
     captureException(err);
     return "";
   }

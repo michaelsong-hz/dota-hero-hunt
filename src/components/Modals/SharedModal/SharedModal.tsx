@@ -1,3 +1,4 @@
+import { captureException, setContext } from "@sentry/react";
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
@@ -71,6 +72,26 @@ function SharedModal(): JSX.Element {
             bodyText={["The host has disconnected from the game."]}
           />
         );
+      case OtherErrorTypes.PEER_JS_SERVER_DISCONNECTED:
+        return (
+          <ErrorModal
+            title="Lost Connection to Server"
+            bodyText={[
+              "The connection to the game server has been lost.",
+              "Please check your internet connection, or try again later.",
+            ]}
+          />
+        );
+    }
+
+    try {
+      const unknownModal = (state.modalToShow as unknown) as string;
+      setContext("Unknown Modal", {
+        modal: unknownModal,
+      });
+      captureException(new Error("Tried to show an unknown modal"));
+    } catch (err) {
+      captureException(new Error("Tried to show an unknown modal"));
     }
 
     return (
