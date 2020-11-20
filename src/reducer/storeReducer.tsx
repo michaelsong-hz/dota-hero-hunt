@@ -1,4 +1,4 @@
-import { captureException, captureMessage } from "@sentry/react";
+import { captureException, setContext } from "@sentry/react";
 
 import { ApplicationSettings } from "models/ApplicationSettings";
 import {
@@ -9,6 +9,7 @@ import {
 import { Modals, OtherErrorTypes } from "models/Modals";
 import { PeerError, PeerJSErrorTypes } from "models/PeerErrors";
 import { PlayerState } from "models/PlayerState";
+import { setPlayersContext } from "reducer/setReducerContext";
 
 export enum StoreConstants {
   UPDATE_ROUND,
@@ -102,6 +103,7 @@ export function storeReducer(
   state: StoreReducer = storeInitialState,
   action: StoreActions
 ): StoreReducer {
+  setContext("Store State", state);
   switch (action.type) {
     case StoreConstants.UPDATE_ROUND:
       return {
@@ -112,14 +114,19 @@ export function storeReducer(
         selectedIcons: new Set(),
         invalidIcons: new Set(),
       };
-    case StoreConstants.UPDATE_SELECTED_ICONS:
+    case StoreConstants.UPDATE_SELECTED_ICONS: {
+      setPlayersContext(action.currentPlayers);
+
       return {
         ...state,
         selectedIcons: action.selectedIcons,
         invalidIcons: action.invalidIcons,
         players: action.currentPlayers,
       };
+    }
     case StoreConstants.UPDATE_PLAYERS_LIST: {
+      setPlayersContext(action.currentPlayers);
+
       return {
         ...state,
         players: action.currentPlayers,
@@ -158,7 +165,6 @@ export function storeReducer(
           modalToShow: action.error.type,
         };
       }
-      console.log("Unknown error encountered", action.error);
       captureException(action.error);
       return {
         ...state,
@@ -177,14 +183,15 @@ export function storeReducer(
           modalToShow: action.modal,
         };
       }
-      console.log("Unknown modal encountered", action.modal);
-      captureMessage("Tried to show an unknown modal.");
+      captureException(new Error("Tried to show an unknown modal."));
       return {
         ...state,
         modalToShow: OtherErrorTypes.GENERIC_ERROR,
       };
     }
     default:
+      setContext("Unknown Store Action", action);
+      captureException(new Error("Tried to execute an unknown action."));
       return state;
   }
 }

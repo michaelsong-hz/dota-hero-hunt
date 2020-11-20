@@ -1,3 +1,4 @@
+import { captureException, setContext } from "@sentry/react";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Container } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
@@ -138,6 +139,19 @@ function GameHostPage(): JSX.Element {
         type: StoreConstants.UPDATE_PLAYERS_LIST,
         currentPlayers,
       });
+    } else {
+      try {
+        const invalidData = JSON.stringify(data);
+        setContext("Invalid Data From Client", {
+          fromClient: fromPlayerName,
+          invalidData: invalidData,
+        });
+      } catch (err) {
+        setContext("Invalid Data From Client", {
+          fromClient: fromPlayerName,
+        });
+      }
+      captureException(new Error("Invalid data received from client"));
     }
   }
 
@@ -243,7 +257,6 @@ function GameHostPage(): JSX.Element {
    * Automatically sends updates to the clients when the game settings change
    */
   useEffect(() => {
-    console.log("game settings change");
     sendToClients({
       type: HostTypeConstants.UPDATE_SETTINGS,
       settings: state.gameSettings,

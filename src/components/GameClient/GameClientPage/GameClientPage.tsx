@@ -1,3 +1,4 @@
+import { captureException, setContext } from "@sentry/react";
 import React, { useEffect, useState } from "react";
 import { Container, Row } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
@@ -113,7 +114,15 @@ function GameClientPage(): JSX.Element {
         break;
       }
       default: {
-        console.log("Invalid message received", data);
+        try {
+          const invalidData = JSON.stringify(data);
+          setContext("Invalid Data From Host", {
+            fromHost: invalidData,
+          });
+        } catch (err) {
+          captureException(err);
+        }
+        captureException(new Error("Invalid data received from host"));
       }
     }
   }

@@ -1,3 +1,4 @@
+import { captureException, setContext } from "@sentry/react";
 import Peer from "peerjs";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { useState, useRef, useCallback } from "react";
@@ -65,7 +66,6 @@ export default function useHostPeer(
     peer.on("connection", (incomingConn) => {
       incomingConn.on("data", (data: ClientTypes) => {
         const incomingPlayerName = getPlayerNameFromConn(incomingConn);
-        console.log("Peer: received data", incomingPlayerName, data);
 
         const currentPlayers = stateRef.current.players;
         if (
@@ -90,8 +90,6 @@ export default function useHostPeer(
       });
 
       incomingConn.on("close", () => {
-        const incomingPlayerName = getPlayerNameFromConn(incomingConn);
-        console.log("Peer: disconnected", incomingPlayerName);
         // Remove player from player list on disconnect
         if (!dupConnLabels.current.has(incomingConn.label)) {
           const playerToRemove = getPlayerNameFromConn(incomingConn);
@@ -109,15 +107,24 @@ export default function useHostPeer(
         }
       });
 
-      incomingConn.on("error", () => {
-        const incomingPlayerName = getPlayerNameFromConn(incomingConn);
-        console.log("peer error", incomingPlayerName);
+      incomingConn.on("error", (err) => {
+        try {
+          setContext("Error From Peer", {
+            incomingConn: JSON.stringify(incomingConn),
+          });
+        } catch (error) {
+          const incomingPlayerName = getPlayerNameFromConn(incomingConn);
+          setContext("Error From Peer", {
+            incomingConn: incomingPlayerName,
+          });
+        }
+
+        captureException(err);
       });
     });
 
     peer.on("disconnected", () => {
       if (isCleaningUp.current === false) {
-        console.log("Server disconnected");
         dispatch({
           type: StoreConstants.SET_MODAL,
           modal: OtherErrorTypes.PEER_JS_SERVER_DISCONNECTED,
@@ -128,7 +135,6 @@ export default function useHostPeer(
 
     peer.on("close", () => {
       if (isCleaningUp.current === false) {
-        console.log("Server connection closed");
         dispatch({
           type: StoreConstants.SET_MODAL,
           modal: OtherErrorTypes.PEER_JS_SERVER_DISCONNECTED,
@@ -138,10 +144,14 @@ export default function useHostPeer(
     });
 
     peer.on("error", (error) => {
-      if (error.type === PeerJSErrorTypes.PEER_UNAVAILABLE) {
-        console.log("ERROR: Lost connection to peer", error);
-      } else {
-        console.log("Peer: Server error", error.type, error);
+      // Ignore if it was just losing connection to a fellow peer as it is a
+      // non-fatal error
+      if (error.type !== PeerJSErrorTypes.PEER_UNAVAILABLE) {
+        captureException(error);
+        dispatch({
+          type: StoreConstants.SET_PEER_ERROR,
+          error,
+        });
         cleanUp();
       }
     });
