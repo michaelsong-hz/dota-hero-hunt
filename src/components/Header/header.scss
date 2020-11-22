@@ -7,6 +7,14 @@
   z-index: 1000; //Place header above other page components, but below bootstrap modal (1050)
 }
 
+.navbar-brand {
+  margin-top: -1px;
+}
+
+.navbar-brand > img {
+  margin-top: -4px;
+}
+
 .tooltip [class$="inner"] {
   background-color: $overlay-tooltip-color;
   border: 1px solid $overlay-tooltip-color;

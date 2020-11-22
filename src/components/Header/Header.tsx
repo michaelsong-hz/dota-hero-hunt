@@ -14,6 +14,7 @@ import RangeSlider from "react-bootstrap-range-slider";
 import { Link } from "react-router-dom";
 import Switch from "react-switch";
 
+import HeroHuntIcon from "images/HeroHuntIcon.svg";
 import { useStoreState, useStoreDispatch } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { GlobalConstants, StorageConstants } from "utils/constants";
@@ -63,16 +64,24 @@ function Header(): JSX.Element {
       bg={appendTheme("header", state.appSettings.isDark)}
       expand="lg"
     >
-      <Link
-        to="/"
-        className={`navbar-brand font-weight-bold ${appendTheme(
-          "text",
-          !state.appSettings.isDark
-        )}`}
-        data-toggle="collapse"
-      >
-        Dota Hero Hunt
+      <Link to="/">
+        <Navbar.Brand
+          className={`align-middle font-weight-bold ${appendTheme(
+            "text",
+            !state.appSettings.isDark
+          )}`}
+        >
+          <img
+            alt="Dota Hero Hunt logo"
+            width="30"
+            height="30"
+            src={HeroHuntIcon}
+            className="mr-2"
+          />
+          <span>Dota Hero Hunt</span>
+        </Navbar.Brand>
       </Link>
+
       <Navbar.Toggle
         label="Toggle navigation"
         className={
@@ -83,8 +92,8 @@ function Header(): JSX.Element {
       />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <Link to="/" className="nav-link text-muted">
-            Home
+          <Link to="/play" className="nav-link text-muted">
+            Play
           </Link>
           <Link to="/about" className="nav-link text-muted">
             About
