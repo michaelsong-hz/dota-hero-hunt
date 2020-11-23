@@ -15,6 +15,10 @@
   margin-top: -4px;
 }
 
+.header-secondary {
+  color: #9e9689 !important;
+}
+
 .tooltip [class$="inner"] {
   background-color: $overlay-tooltip-color;
   border: 1px solid $overlay-tooltip-color;
@@ -27,6 +31,10 @@
 
 .header-btn {
   box-shadow: none !important;
+}
+
+.header-switch-wrapper {
+  margin-top: 1px;
 }
 
 // Set background colors for when switch is toggled
