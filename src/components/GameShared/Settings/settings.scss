@@ -1,3 +1,141 @@
+@import "styles/variables.scss";
+
 .settings-num-input {
   max-width: 80px;
+}
+
+// Sets background to be a gradient between the previous input color and the
+// next input color
+.settings-num-input-selected-light {
+  color: white !important;
+  border: none;
+  background-size: 200% 100%;
+  background-image: linear-gradient(
+    to left,
+    white 50%,
+    $primary-color-light 50%
+  );
+}
+
+.settings-num-input-selected-dark {
+  color: white !important;
+  border: none;
+  background-size: 200% 100%;
+  background-image: linear-gradient(
+    to left,
+    white 50%,
+    $primary-color-dark 50%
+  );
+}
+
+.settings-num-input-deselected-light {
+  background-size: 200% 100%;
+  background-image: linear-gradient(
+    to right,
+    white 50%,
+    $primary-color-light 50%
+  );
+}
+
+.settings-num-input-deselected-dark {
+  background-size: 200% 100%;
+  background-image: linear-gradient(
+    to right,
+    white 50%,
+    $primary-color-dark 50%
+  );
+}
+
+// Sets background to be a gradient between the previous button color and the
+// next button color
+.settings-inf-input {
+  color: white;
+  background-position: 5% 0%;
+  background-size: 220% 100%;
+}
+
+.settings-inf-input-selected-light {
+  background-image: linear-gradient(
+    to left,
+    $secondary-color-light 40%,
+    $primary-color-light 50%
+  );
+}
+.settings-inf-input-selected-light:hover {
+  color: white;
+  background-image: linear-gradient(
+    darken($primary-color-light, 10%),
+    darken($primary-color-light, 10%)
+  );
+}
+
+.settings-inf-input-selected-dark {
+  background-image: linear-gradient(
+    to left,
+    $secondary-color-dark 40%,
+    $primary-color-dark 50%
+  );
+}
+.settings-inf-input-selected-dark:hover {
+  color: white;
+  background-image: linear-gradient(
+    darken($primary-color-dark, 10%),
+    darken($primary-color-dark, 10%)
+  );
+}
+
+.settings-inf-input-deselected-light {
+  background-image: linear-gradient(
+    to left,
+    $primary-color-light 50%,
+    $secondary-color-light 40%
+  );
+}
+.settings-inf-input-deselected-light:hover {
+  color: white;
+  background-image: linear-gradient(
+    darken($secondary-color-light, 10%),
+    darken($secondary-color-light, 10%)
+  );
+}
+
+.settings-inf-input-deselected-dark {
+  background-image: linear-gradient(
+    to left,
+    $primary-color-dark 50%,
+    $secondary-color-dark 40%
+  );
+}
+.settings-inf-input-deselected-dark:hover {
+  color: white;
+  background-image: linear-gradient(
+    darken($secondary-color-dark, 10%),
+    darken($secondary-color-dark, 10%)
+  );
+}
+
+.settings-win-animate-left {
+  animation: slideWinLeft 0.1s linear;
+}
+
+.settings-win-animate-right {
+  animation: slideWinRight 0.1s linear;
+}
+
+@keyframes slideWinLeft {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+@keyframes slideWinRight {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
 }

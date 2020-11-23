@@ -1,6 +1,6 @@
 import { faInfinity } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { useRef } from "react";
 import {
   Button,
   Col,
@@ -27,6 +27,10 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
   const state = useStoreState();
   const dispatch = useStoreDispatch();
 
+  // Tracks whether to animate switching between points to win states
+  const prevTargetTotalScore = useRef(state.gameSettings.targetTotalScore);
+  const prevTargetTotalScore2 = useRef(state.gameSettings.targetTotalScore);
+
   function getGridSizeText(): string {
     switch (state.gameSettings.gridSize) {
       case GridSizeTypes.SMALL: {
@@ -47,6 +51,66 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
       }
     }
     return "";
+  }
+
+  function getPointsToWinInputClass(): string {
+    // Add animation if the number of points to win is toggled between infinite
+    // or a number
+    let baseName = "settings-num-input";
+    let willAnimate = false;
+    if (prevTargetTotalScore.current !== state.gameSettings.targetTotalScore) {
+      willAnimate = true;
+    }
+    prevTargetTotalScore.current = state.gameSettings.targetTotalScore;
+
+    if (state.gameSettings.targetTotalScore === null) {
+      if (willAnimate) {
+        baseName += " settings-win-animate-right";
+      }
+
+      return `${baseName} ${appendTheme(
+        "settings-num-input-deselected",
+        state.appSettings.isDark
+      )}`;
+    }
+
+    if (willAnimate) {
+      baseName += " settings-win-animate-left";
+    }
+
+    return `${baseName} ${appendTheme(
+      "settings-num-input-selected",
+      state.appSettings.isDark
+    )}`;
+  }
+
+  function getPointsToWinInfiniteClass(): string {
+    // Add animation if the number of points to win is toggled between infinite
+    // or a number
+    let baseName = "settings-inf-input";
+    let willAnimate = false;
+    if (prevTargetTotalScore2.current !== state.gameSettings.targetTotalScore) {
+      willAnimate = true;
+    }
+    prevTargetTotalScore2.current = state.gameSettings.targetTotalScore;
+
+    if (state.gameSettings.targetTotalScore !== null) {
+      if (willAnimate) {
+        baseName += " settings-win-animate-left";
+      }
+      return `${baseName} ${appendTheme(
+        "settings-inf-input-deselected",
+        state.appSettings.isDark
+      )}`;
+    }
+
+    if (willAnimate) {
+      baseName += " settings-win-animate-right";
+    }
+    return `${baseName} ${appendTheme(
+      "settings-inf-input-selected",
+      state.appSettings.isDark
+    )}`;
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -200,17 +264,19 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
                 <Col xs="auto" className="mr-2">
                   <Form.Control
                     type="number"
-                    className="settings-num-input"
+                    className={getPointsToWinInputClass()}
                     disabled={props.disabled}
                     value={getPointsToWinValue()}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       handlePointsToWinChange(e.target.value)
                     }
+                    placeholder="Inf"
                   />
                 </Col>
                 <Col xs="auto">
                   <Button
-                    variant={appendTheme("secondary", state.appSettings.isDark)}
+                    className={getPointsToWinInfiniteClass()}
+                    variant=""
                     disabled={props.disabled}
                     onClick={() => handlePointsToWinChange(null)}
                   >
