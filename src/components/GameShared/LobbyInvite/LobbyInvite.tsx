@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 
+import { OtherErrorTypes } from "models/Modals";
+import { PeerJSErrorTypes } from "models/PeerErrors";
 import { useStoreState } from "reducer/store";
 import { appendTheme } from "utils/utilities";
 
@@ -41,7 +43,7 @@ function LobbyInvite(props: LobbyInviteProps): JSX.Element {
     return "Copy";
   }
 
-  function handleClick() {
+  function handleGenerateInvite() {
     if (props.isSingleP) {
       if (props.startHosting) {
         setGeneratingLink(true);
@@ -53,6 +55,7 @@ function LobbyInvite(props: LobbyInviteProps): JSX.Element {
     }
   }
 
+  // Writes the invite link to the clipboard once we receive it from the server
   const prevIsSinglePRef = useRef<boolean>();
   useEffect(() => {
     async function writeLinkToClipboard() {
@@ -76,6 +79,18 @@ function LobbyInvite(props: LobbyInviteProps): JSX.Element {
     }
     prevIsSinglePRef.current = props.isSingleP;
   }, [props.inviteLink, props.isSingleP]);
+
+  // If there was an error with generating an invite link and the user tries
+  // again, reset the generate button to be enabled
+  const prevModalToShowRef = useRef<PeerJSErrorTypes | OtherErrorTypes | null>(
+    null
+  );
+  useEffect(() => {
+    if (prevModalToShowRef !== null && state.modalToShow === null) {
+      setGeneratingLink(false);
+    }
+    prevModalToShowRef.current = state.modalToShow;
+  }, [state.modalToShow]);
 
   return (
     <Col>
@@ -101,7 +116,7 @@ function LobbyInvite(props: LobbyInviteProps): JSX.Element {
             <Button
               disabled={generatingLink}
               variant={appendTheme("secondary", state.appSettings.isDark)}
-              onClick={() => handleClick()}
+              onClick={() => handleGenerateInvite()}
             >
               {getButtonText()}
             </Button>
