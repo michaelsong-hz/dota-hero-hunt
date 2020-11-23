@@ -1,5 +1,6 @@
 import { faInfinity } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { captureException } from "@sentry/react";
 import React, { useRef } from "react";
 import {
   Button,
@@ -45,11 +46,8 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
       case GridSizeTypes.LARGE_SQUARE: {
         return "Large";
       }
-      default: {
-        // TODO: Throw error
-        break;
-      }
     }
+    captureException(new Error("Invalid grid size specified for settings"));
     return "";
   }
 
