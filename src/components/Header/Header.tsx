@@ -58,6 +58,13 @@ function Header(): JSX.Element {
     localStorage.setItem(StorageConstants.THEME_IS_DARK, isDark.toString());
   }
 
+  function getHeaderSecondaryClass(): string {
+    if (state.appSettings.isDark) {
+      return "header-secondary";
+    }
+    return "text-muted";
+  }
+
   return (
     <Navbar
       className="navbar-expand-sm"
@@ -92,10 +99,10 @@ function Header(): JSX.Element {
       />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <Link to="/play" className="nav-link text-muted">
+          <Link to="/play" className={`nav-link ${getHeaderSecondaryClass()}`}>
             Play
           </Link>
-          <Link to="/about" className="nav-link text-muted">
+          <Link to="/about" className={`nav-link ${getHeaderSecondaryClass()}`}>
             About
           </Link>
         </Nav>
@@ -111,7 +118,7 @@ function Header(): JSX.Element {
             className="mr-1 header-btn"
             variant={appendTheme("navbar-brand", state.appSettings.isDark)}
           >
-            <div className="text-muted">
+            <div className={getHeaderSecondaryClass()}>
               {state.appSettings.volume > 0 ? (
                 <FontAwesomeIcon icon={faVolumeUp} />
               ) : (
@@ -120,7 +127,7 @@ function Header(): JSX.Element {
             </div>
           </Button>
         </OverlayTrigger>
-        <Form inline>
+        <Form inline className="header-switch-wrapper">
           <label>
             <Switch
               className={
