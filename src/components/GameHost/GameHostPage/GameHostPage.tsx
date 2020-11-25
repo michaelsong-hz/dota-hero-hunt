@@ -15,6 +15,7 @@ import {
   ClientDataConnection,
   HostTypeConstants,
 } from "models/MessageHostTypes";
+import { OtherErrorTypes } from "models/Modals";
 import { useStoreState, useStoreDispatch } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { heroList } from "utils/HeroList";
@@ -43,12 +44,27 @@ function GameHostPage(): JSX.Element {
   const [playAudio] = useSoundEffect();
   useResetOnLeave({ cleanUpConnections });
 
+  const reportTargetRoundScoreNotSet = useCallback(() => {
+    captureException(
+      new Error("Target round score was not set during the game.")
+    );
+    dispatch({
+      type: StoreConstants.SET_MODAL,
+      modal: OtherErrorTypes.GENERIC_ERROR,
+    });
+  }, [dispatch]);
+
   function addSelectedIcon(
     selectedIcon: number,
     selectedPlayerName: string
   ): void {
     // Retrieve current state from ref
     const currState = stateRef.current;
+
+    if (currState.gameSettings.targetRoundScore === null) {
+      reportTargetRoundScoreNotSet();
+      return;
+    }
 
     // Ignore if we have reached the target for selected icons, or the icon has
     // already been clicked this round, or the player is disabled
@@ -175,6 +191,11 @@ function GameHostPage(): JSX.Element {
         return array;
       }
 
+      if (state.gameSettings.targetRoundScore === null) {
+        reportTargetRoundScoreNotSet();
+        return;
+      }
+
       let round = state.round + 1;
       if (overrideRound) {
         round = overrideRound;
@@ -218,7 +239,15 @@ function GameHostPage(): JSX.Element {
       });
       console.log("round set to", round);
     },
-    [dispatch, sendToClients, state.gameSettings, state.round]
+    [
+      dispatch,
+      reportTargetRoundScoreNotSet,
+      sendToClients,
+      state.gameSettings.columns,
+      state.gameSettings.rows,
+      state.gameSettings.targetRoundScore,
+      state.round,
+    ]
   );
 
   /**

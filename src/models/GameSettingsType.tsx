@@ -21,6 +21,6 @@ export type GameSettings = {
   rows: number;
   columns: number;
   targetTotalScore: number | null;
-  targetRoundScore: number;
+  targetRoundScore: number | null;
   showTargetIcons: boolean;
 };
