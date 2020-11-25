@@ -164,11 +164,24 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
     dispatch({ type: StoreConstants.SET_SETTINGS, gameSettings: currSettings });
   }
 
+  function getAdvanceRoundValue(): string {
+    if (state.gameSettings.targetRoundScore === null) {
+      return "";
+    }
+    return state.gameSettings.targetRoundScore.toString();
+  }
+
   function handlePointsToAdvanceRoundChange(
-    e: React.ChangeEvent<HTMLInputElement>
+    pointsToAdvanceRound: string | null
   ) {
     const currSettings = { ...state.gameSettings };
-    currSettings.targetRoundScore = parseInt(e.target.value);
+
+    if (pointsToAdvanceRound) {
+      currSettings.targetRoundScore = parseInt(pointsToAdvanceRound);
+    } else {
+      currSettings.targetRoundScore = null;
+    }
+
     dispatch({ type: StoreConstants.SET_SETTINGS, gameSettings: currSettings });
   }
 
@@ -290,8 +303,10 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
                 type="number"
                 className="settings-num-input"
                 disabled={props.disabled}
-                value={state.gameSettings.targetRoundScore}
-                onChange={handlePointsToAdvanceRoundChange}
+                value={getAdvanceRoundValue()}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handlePointsToAdvanceRoundChange(e.target.value)
+                }
               />
             </Col>
           </Row>
