@@ -5,7 +5,7 @@ import Row from "react-bootstrap/Row";
 import Placeholder_icon from "images/Placeholder_icon.png";
 import { useStoreState } from "reducer/store";
 import { heroList } from "utils/HeroList";
-import { prependCDN } from "utils/utilities";
+import { getIconPath } from "utils/utilities";
 
 function GameStatusBar(): JSX.Element {
   const state = useStoreState();
@@ -17,8 +17,8 @@ function GameStatusBar(): JSX.Element {
     const loadImage = (heroNumber: number) => {
       return new Promise((resolve, reject) => {
         const loadImg = new Image();
-        loadImg.src = prependCDN(heroList[heroNumber].url);
-        loadImg.onload = () => resolve(prependCDN(heroList[heroNumber].url));
+        loadImg.src = getIconPath(heroList[heroNumber].url);
+        loadImg.onload = () => resolve(getIconPath(heroList[heroNumber].url));
         loadImg.onerror = (err) => reject(err);
       });
     };
@@ -52,7 +52,7 @@ function GameStatusBar(): JSX.Element {
               src={
                 loadingIcons
                   ? Placeholder_icon
-                  : prependCDN(heroList[targetHero].url)
+                  : getIconPath(heroList[targetHero].url)
               }
               alt={`${heroList[targetHero].name} icon`}
               draggable="false"

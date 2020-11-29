@@ -12,6 +12,11 @@ export function prependCDN(resourceString: string): string {
   return `${process.env.REACT_APP_CDN_URL}${resourceString}`;
 }
 
+export function getIconPath(fileName: string): string {
+  const pathName = `icons/${fileName}`;
+  return `${prependCDN(pathName)}`;
+}
+
 export function getPeerConfig(): Peer.PeerJSOption {
   return {
     host: process.env.REACT_APP_PEER_JS_HOST,
