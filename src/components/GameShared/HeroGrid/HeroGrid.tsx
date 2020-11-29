@@ -5,7 +5,7 @@ import GameStatusBar from "components/GameShared/StatusBar";
 import Placeholder_icon from "images/Placeholder_icon.png";
 import { useStoreState } from "reducer/store";
 import { heroList } from "utils/HeroList";
-import { prependCDN } from "utils/utilities";
+import { getIconPath } from "utils/utilities";
 
 interface HeroGridProps {
   handleClick: (heroNumber: number) => void;
@@ -21,8 +21,8 @@ function HeroGrid(props: HeroGridProps): JSX.Element {
     const loadImage = (heroNumber: number) => {
       return new Promise((resolve, reject) => {
         const loadImg = new Image();
-        loadImg.src = prependCDN(heroList[heroNumber].url);
-        loadImg.onload = () => resolve(prependCDN(heroList[heroNumber].url));
+        loadImg.src = getIconPath(heroList[heroNumber].url);
+        loadImg.onload = () => resolve(getIconPath(heroList[heroNumber].url));
         loadImg.onerror = (err) => reject(err);
       });
     };
@@ -56,7 +56,7 @@ function HeroGrid(props: HeroGridProps): JSX.Element {
           src={
             loadingImages
               ? Placeholder_icon
-              : prependCDN(heroList[heroNumber].url)
+              : getIconPath(heroList[heroNumber].url)
           }
           heroNumber={heroNumber}
           onClick={() => props.handleClick(heroNumber)}
