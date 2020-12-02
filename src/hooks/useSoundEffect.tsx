@@ -1,5 +1,11 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 
 import { useStoreState } from "reducer/store";
 import { SoundEffects, soundEffectList } from "utils/SoundEffectList";
@@ -20,12 +26,14 @@ export default function useSoundEffect(): [
     stateRef.current = state;
   }, [state]);
 
-  const [soundEffects] = useState<SoundEffectsFile>({
-    0: new Audio(prependCDN(soundEffectList[0].url)),
-    1: new Audio(prependCDN(soundEffectList[1].url)),
-    2: new Audio(prependCDN(soundEffectList[2].url)),
-    3: new Audio(prependCDN(soundEffectList[3].url)),
-  });
+  const soundEffects = useMemo(() => {
+    return {
+      0: new Audio(prependCDN(soundEffectList[0].url)),
+      1: new Audio(prependCDN(soundEffectList[1].url)),
+      2: new Audio(prependCDN(soundEffectList[2].url)),
+      3: new Audio(prependCDN(soundEffectList[3].url)),
+    };
+  }, []);
 
   const playAudio = useCallback(
     (soundEffect: SoundEffects) => {
