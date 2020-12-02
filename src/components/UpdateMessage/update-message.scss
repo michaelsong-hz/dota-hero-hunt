@@ -1,0 +1,30 @@
+@import "styles/variables.scss";
+
+.update-alert {
+  justify-content: center;
+  white-space: pre-wrap;
+  padding-top: 3px;
+  padding-bottom: 5px;
+}
+.update-alert-light {
+  color: black;
+  background-color: lighten($secondary-color-light, 20%);
+}
+.update-alert-dark {
+  color: white;
+  background-color: $secondary-color-dark;
+}
+
+.update-alert-refresh {
+  color: $primary-color-dark;
+}
+.update-alert-refresh:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+.update-alert-refresh-light {
+  color: $primary-color-light;
+}
+.update-alert-refresh-dark {
+  color: lighten($primary-color-dark, 20%);
+}

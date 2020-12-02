@@ -6,6 +6,7 @@ import {
   gridSizes,
   GridSizeTypes,
 } from "models/GameSettingsType";
+import { InstallStatus } from "models/InstallStatus";
 import { Modals, OtherErrorTypes } from "models/Modals";
 import { PeerError, PeerJSErrorTypes } from "models/PeerErrors";
 import { PlayerState } from "models/PlayerState";
@@ -21,6 +22,7 @@ export enum StoreConstants {
   SET_THEME,
   SET_PEER_ERROR,
   SET_MODAL,
+  SET_INSTALL_STATUS,
 }
 
 export type StoreReducer = {
@@ -34,6 +36,7 @@ export type StoreReducer = {
   appSettings: ApplicationSettings;
   modalToShow: Modals | null;
   modalCustomMessage: string[];
+  installStatus: InstallStatus;
 };
 
 export type StoreActions =
@@ -77,6 +80,10 @@ export type StoreActions =
       type: StoreConstants.SET_MODAL;
       modal: OtherErrorTypes | null;
       customMessage?: string[];
+    }
+  | {
+      type: StoreConstants.SET_INSTALL_STATUS;
+      status: InstallStatus;
     };
 
 export const storeInitialState: StoreReducer = {
@@ -100,6 +107,7 @@ export const storeInitialState: StoreReducer = {
   },
   modalToShow: null,
   modalCustomMessage: [],
+  installStatus: InstallStatus.CHECKING,
 };
 
 export function storeReducer(
@@ -197,6 +205,12 @@ export function storeReducer(
         ...state,
         modalToShow: OtherErrorTypes.GENERIC_ERROR,
         modalCustomMessage,
+      };
+    }
+    case StoreConstants.SET_INSTALL_STATUS: {
+      return {
+        ...state,
+        installStatus: action.status,
       };
     }
     default:

@@ -8,12 +8,14 @@ import Header from "components/Header";
 import HelmetWrapper from "components/HelmetWrapper";
 import HomePage from "components/HomePage";
 import SharedModal from "components/Modals/SharedModal";
+import UpdateMessage from "components/UpdateMessage";
 import { StoreContextProvider } from "reducer/store";
 
 function App(): JSX.Element {
   return (
     <StoreContextProvider>
       <HelmetWrapper />
+      <UpdateMessage />
       <Router>
         <SharedModal />
         <Header />
