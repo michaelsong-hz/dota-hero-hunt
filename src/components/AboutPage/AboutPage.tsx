@@ -20,17 +20,17 @@ function AboutPage(): JSX.Element {
         return (
           <p>
             Downloading assets for Dota Hero Hunt to optimize your gameplay
-            experience and enable offline experiences...
+            experience...
           </p>
         );
       }
       case InstallStatus.INSTALLED: {
         return (
           <p>
-            Assets for Dota Hero Hunt have been saved for offline use. Now, you
-            can visit the application while offline on this device to play in
-            single player mode! This also speeds up the performance of Dota Hero
-            Hunt during regular gameplay.
+            Assets for Dota Hero Hunt have been saved for offline use, allowing
+            you to play in single player mode without an internet connection!
+            This also speeds up the performance of Dota Hero Hunt during regular
+            gameplay.
           </p>
         );
       }
