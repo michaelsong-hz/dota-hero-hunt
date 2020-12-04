@@ -3,8 +3,8 @@
 .update-alert {
   justify-content: center;
   white-space: pre-wrap;
-  padding-top: 3px;
-  padding-bottom: 5px;
+  padding: 3px 5px 5px 5px;
+  flex-wrap: wrap;
 }
 .update-alert-light {
   color: black;
