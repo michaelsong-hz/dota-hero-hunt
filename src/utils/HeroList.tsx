@@ -84,7 +84,6 @@ export const heroList = [
   { name: "Shadow Fiend", url: "Shadow_Fiend_minimap_icon.png" },
   { name: "Shadow Shaman", url: "Shadow_Shaman_minimap_icon.png" },
   { name: "Silencer", url: "Silencer_minimap_icon.png" },
-  { name: "Skeleton King", url: "Skeleton_King_minimap_icon.png" },
   { name: "Skywrath Mage", url: "Skywrath_Mage_minimap_icon.png" },
   { name: "Slardar", url: "Slardar_minimap_icon.png" },
   { name: "Slark", url: "Slark_minimap_icon.png" },
