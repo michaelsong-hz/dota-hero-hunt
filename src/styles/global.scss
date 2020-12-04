@@ -143,3 +143,24 @@ code {
     opacity: 1;
   }
 }
+
+.slide-down-appear {
+  -webkit-animation: slideDownAppear 0.2s;
+  -moz-animation: slideDownAppear 0.2s;
+  animation: slideDownAppear 0.2s;
+}
+@-webkit-keyframes slideDownAppear {
+  from {
+    margin-top: -15px;
+  }
+}
+@-moz-keyframes slideDownAppear {
+  from {
+    margin-top: -15px;
+  }
+}
+@keyframes slideDownAppear {
+  from {
+    margin-top: -15px;
+  }
+}

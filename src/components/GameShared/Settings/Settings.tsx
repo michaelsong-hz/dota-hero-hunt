@@ -1,7 +1,7 @@
 import { faInfinity } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { captureException } from "@sentry/react";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   Button,
   Col,
@@ -27,6 +27,12 @@ interface GameSettingsProps {
 function GameSettings(props: GameSettingsProps): JSX.Element {
   const state = useStoreState();
   const dispatch = useStoreDispatch();
+
+  const [pointsToWinInvalid, setPointsToWinInvalid] = useState<string>();
+  const [
+    pointsToAdvanceInvalid,
+    setPointsToAdvanceInvalid,
+  ] = useState<string>();
 
   // Tracks whether to animate switching between points to win states
   const prevTargetTotalScore = useRef(state.gameSettings.targetTotalScore);
@@ -116,8 +122,58 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
     e.preventDefault();
 
     if (props.startGame) {
-      props.startGame();
+      let isValid = true;
+      const numHeroIcons = state.gameSettings.columns * state.gameSettings.rows;
+
+      // Validate our form fields
+      if (
+        state.gameSettings.targetTotalScore !== null &&
+        state.gameSettings.targetTotalScore <= 0
+      ) {
+        isValid = false;
+        setPointsToWinInvalid(
+          "The total points to win must be greater than 0."
+        );
+      }
+
+      if (
+        state.gameSettings.targetRoundScore === null ||
+        state.gameSettings.targetRoundScore === undefined
+      ) {
+        isValid = false;
+        setPointsToAdvanceInvalid(
+          "You must set a target score for each round."
+        );
+      } else if (state.gameSettings.targetRoundScore > numHeroIcons) {
+        isValid = false;
+        setPointsToAdvanceInvalid(
+          `The points to advance a round must not be larger than the total 
+          number of hero icons (${numHeroIcons}).`
+        );
+      } else if (state.gameSettings.targetRoundScore <= 0) {
+        isValid = false;
+        setPointsToAdvanceInvalid(
+          "The points to advance a round must be greater than 0."
+        );
+      }
+
+      if (isValid) {
+        props.startGame();
+      }
     }
+  }
+
+  function getInvalidJSX(invalidText: string | undefined): JSX.Element {
+    if (invalidText) {
+      return (
+        <Row className="slide-down-appear">
+          <Col>
+            <p className="mt-2 mb-0 text-danger">{invalidText}</p>
+          </Col>
+        </Row>
+      );
+    }
+    return <></>;
   }
 
   function onShowTargetIconsChange(show: boolean) {
@@ -153,6 +209,7 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
   }
 
   function handlePointsToWinChange(pointsToWin: string | null) {
+    setPointsToWinInvalid(undefined);
     const currSettings = { ...state.gameSettings };
 
     if (pointsToWin) {
@@ -174,6 +231,7 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
   function handlePointsToAdvanceRoundChange(
     pointsToAdvanceRound: string | null
   ) {
+    setPointsToAdvanceInvalid(undefined);
     const currSettings = { ...state.gameSettings };
 
     if (pointsToAdvanceRound) {
@@ -295,6 +353,7 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
                   </Button>
                 </Col>
               </Row>
+              {getInvalidJSX(pointsToWinInvalid)}
             </Col>
 
             <Col xs="12" md="6" className="pb-3">
@@ -308,6 +367,7 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
                   handlePointsToAdvanceRoundChange(e.target.value)
                 }
               />
+              {getInvalidJSX(pointsToAdvanceInvalid)}
             </Col>
           </Row>
         </Form>
