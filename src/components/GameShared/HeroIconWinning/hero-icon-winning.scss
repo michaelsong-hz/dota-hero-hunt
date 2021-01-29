@@ -9,7 +9,7 @@
 .hero-icon-winning {
   pointer-events: none;
   position: fixed;
-  bottom: -50px;
+  bottom: -150px;
   animation-iteration-count: infinite;
   animation-timing-function: ease-in, linear;
   z-index: 1001; // Place above everything else - including header
@@ -17,7 +17,7 @@
 
 @keyframes flyUp {
   from {
-    bottom: -50px;
+    bottom: -150px;
   }
   to {
     bottom: 210%;

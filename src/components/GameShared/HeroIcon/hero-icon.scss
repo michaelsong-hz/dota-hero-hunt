@@ -3,8 +3,8 @@
 .hero-icon-wrapper {
   margin: 1px;
   width: 100%;
-  max-height: 60px;
-  max-width: 60px;
+  max-height: 100px;
+  max-width: 100px;
   height: intrinsic; // Forces images to fill height on Safari THANKS TIM
   border-radius: 7px;
 }
@@ -28,10 +28,10 @@
 }
 
 .hero-icon {
-  padding: 4px;
+  padding: 0;
   width: 100%;
-  max-height: 60px;
-  max-width: 60px;
+  max-height: 100px;
+  max-width: 100px;
   height: intrinsic;
   -webkit-user-select: none;
   -khtml-user-select: none;

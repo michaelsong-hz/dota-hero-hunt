@@ -21,7 +21,7 @@ export function prependCDN(resourceString: string): string {
 }
 
 export function getIconPath(fileName: string): string {
-  const pathName = `icons/${fileName}`;
+  const pathName = `pokemon/${fileName}`;
   return `${prependCDN(pathName)}`;
 }
 
