@@ -1,18 +1,9 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useEffect, useRef, useCallback, useMemo } from "react";
 
 import { useStoreState } from "reducer/store";
 import { SoundEffects, soundEffectList } from "utils/SoundEffectList";
 import { GlobalConstants } from "utils/constants";
 import { prependCDN } from "utils/utilities";
-
-type SoundEffectsFile = Record<SoundEffects, HTMLAudioElement>;
 
 export default function useSoundEffect(): [
   (soundEffect: SoundEffects) => void

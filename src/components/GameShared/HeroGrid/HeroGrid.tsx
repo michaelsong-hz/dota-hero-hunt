@@ -23,6 +23,7 @@ function HeroGrid(props: HeroGridProps): JSX.Element {
         const loadImg = new Image();
         loadImg.src = getIconPath(heroList[heroNumber].url);
         loadImg.onload = () => resolve(getIconPath(heroList[heroNumber].url));
+        // TODO: Handle cases where images don't load
         loadImg.onerror = (err: any) => reject(err);
       });
     };
