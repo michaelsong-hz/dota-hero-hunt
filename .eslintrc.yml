@@ -5,11 +5,14 @@ env:
   node: true
 
 extends:
-  - "eslint:recommended"
-  - "plugin:@typescript-eslint/eslint-recommended"
-  - "plugin:@typescript-eslint/recommended"
+  # Core React and Typescript rules
   - "plugin:react/recommended"
-  - "prettier/@typescript-eslint"
+  - "plugin:react-hooks/recommended"
+  - "plugin:@typescript-eslint/recommended"
+  # Disable eslint rules that will conflict with prettier
+  - "plugin:react/recommended"
+  - "plugin:prettier/recommended"
+  # Import order plugin
   - "plugin:import/errors"
   - "plugin:import/warnings"
   - "plugin:import/typescript"
@@ -30,6 +33,10 @@ plugins:
 rules:
   react-hooks/rules-of-hooks: "error"
   react-hooks/exhaustive-deps: "warn"
+  # Disable typescript warnings on React imports
+  "@typescript-eslint/no-unused-vars":
+    - warn
+    - varsIgnorePattern: "React"
   no-console: warn
   no-multiple-empty-lines: error
   # Prevent relative imports above the current directory
@@ -53,6 +60,8 @@ rules:
   import/newline-after-import:
     - error
     - count: 1
+  # Override prettier errors to be warnings instead
+  prettier/prettier: "warn"
 
 settings:
   react:
