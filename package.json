@@ -31,7 +31,8 @@
     "lint:fix": "eslint --fix \"src/**/*.+(ts|tsx|js|jsx)\"",
     "lint-style": "prettier --check \"**/*.+(ts|tsx|js|jsx|json|yml|yaml|scss|css|md)\"",
     "lint-style:fix": "prettier --write \"**/*.+(ts|tsx|js|jsx|json|yml|yaml|scss|css|md)\"",
-    "get-version": "echo ${npm_package_version}"
+    "get-version": "echo ${npm_package_version}",
+    "deploy": "./deploy.sh"
   },
   "eslintConfig": {
     "extends": "react-app"
