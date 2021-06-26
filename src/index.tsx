@@ -10,8 +10,7 @@ import "react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css";
 // Sentry error logging in production
 if (process.env.NODE_ENV === "production") {
   init({
-    dsn:
-      "https://a2a3f71a08d2493a9577082e08d93939@o468033.ingest.sentry.io/5495363",
+    dsn: "https://a2a3f71a08d2493a9577082e08d93939@o468033.ingest.sentry.io/5495363",
     integrations: [new Integrations.BrowserTracing()],
     tracesSampleRate: 1.0,
     release: process.env.REACT_APP_VERSION,

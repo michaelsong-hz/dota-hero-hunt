@@ -125,7 +125,7 @@ function SharedModal(): JSX.Element {
     }
 
     try {
-      const unknownModal = (state.modalToShow as unknown) as string;
+      const unknownModal = state.modalToShow as unknown as string;
       setContext("Unknown Modal", {
         modal: unknownModal,
       });

@@ -29,10 +29,8 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
   const dispatch = useStoreDispatch();
 
   const [pointsToWinInvalid, setPointsToWinInvalid] = useState<string>();
-  const [
-    pointsToAdvanceInvalid,
-    setPointsToAdvanceInvalid,
-  ] = useState<string>();
+  const [pointsToAdvanceInvalid, setPointsToAdvanceInvalid] =
+    useState<string>();
 
   // Tracks whether to animate switching between points to win states
   const prevTargetTotalScore = useRef(state.gameSettings.targetTotalScore);

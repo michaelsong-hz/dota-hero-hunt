@@ -11,10 +11,8 @@ function UpdateMessage(): JSX.Element {
   const dispatch = useStoreDispatch();
 
   const [swUpdateReady, setSWUpdateReady] = useState(false);
-  const [
-    swRegistration,
-    setSWRegistration,
-  ] = useState<ServiceWorkerRegistration | null>(null);
+  const [swRegistration, setSWRegistration] =
+    useState<ServiceWorkerRegistration | null>(null);
 
   useEffect(() => {
     // Event for the first time application data was successfully cached
