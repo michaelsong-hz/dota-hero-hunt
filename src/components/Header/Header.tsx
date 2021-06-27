@@ -99,9 +99,6 @@ function Header(): JSX.Element {
       />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <Link to="/play" className={`nav-link ${getHeaderSecondaryClass()}`}>
-            Play
-          </Link>
           <Link to="/about" className={`nav-link ${getHeaderSecondaryClass()}`}>
             About
           </Link>

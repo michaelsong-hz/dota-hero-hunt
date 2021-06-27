@@ -1,0 +1,26 @@
+.conn-player-name {
+  flex: 1;
+  min-width: 0;
+  h4 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.connected-players {
+  min-width: 0; // Allows trailing ellipses for long names
+  max-width: default;
+}
+
+@media (min-width: 768px) {
+  .connected-players {
+    max-width: 33vw;
+  }
+}
+
+@media (min-width: 1200px) {
+  .connected-players {
+    max-width: 320px;
+  }
+}

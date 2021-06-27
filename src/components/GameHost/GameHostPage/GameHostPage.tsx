@@ -1,11 +1,7 @@
 import { captureException, setContext } from "@sentry/react";
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { Container } from "react-bootstrap";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
 
-import ConnectedPlayers from "components/GameShared/ConnectedPlayers";
-import HeroGrid from "components/GameShared/HeroGrid";
+import GamePage from "components/GameShared/GamePage";
 import LobbyView from "components/GameShared/LobbyView";
 import useHostPeer from "hooks/useHostPeer";
 import useResetOnLeave from "hooks/useResetOnLeave";
@@ -16,11 +12,13 @@ import {
   HostTypeConstants,
 } from "models/MessageHostTypes";
 import { OtherErrorTypes } from "models/Modals";
+import { PlayerState } from "models/PlayerState";
 import { useStoreState, useStoreDispatch } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { heroList } from "utils/HeroList";
 import { SoundEffects } from "utils/SoundEffectList";
-import { appendTheme, getPlayerNameFromConn } from "utils/utilities";
+import { StorageConstants } from "utils/constants";
+import { getPlayerNameFromConn } from "utils/utilities";
 
 function GameHostPage(): JSX.Element {
   const state = useStoreState();
@@ -197,7 +195,7 @@ function GameHostPage(): JSX.Element {
       }
 
       let round = state.round + 1;
-      if (overrideRound) {
+      if (overrideRound !== undefined) {
         round = overrideRound;
       }
 
@@ -250,6 +248,30 @@ function GameHostPage(): JSX.Element {
     ]
   );
 
+  // Initializes the game on page load
+  useEffect(() => {
+    // Retrieve the stored player name
+    const storedPlayerName =
+      localStorage.getItem(StorageConstants.PLAYER_NAME) || "";
+
+    const currentPlayers: Record<string, PlayerState> = {};
+    currentPlayers[storedPlayerName] = {
+      score: 0,
+      isDisabled: false,
+    };
+
+    // Add self to players list
+    dispatch({
+      type: StoreConstants.UPDATE_PLAYERS_LIST,
+      currentPlayers,
+    });
+    setPlayerName(storedPlayerName);
+
+    // Generates the first game state and starts the game
+    incrementRound(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   /**
    * Automatically sends updates to the clients when the
    * game state change
@@ -296,8 +318,33 @@ function GameHostPage(): JSX.Element {
     let path = window.location.href;
     path =
       path[path.length - 1] === "/" ? path.substr(0, path.length - 1) : path;
-    return `${path}/${hostID}`;
+    return `${path}/play/${hostID}`;
   }
+
+  const endGame = useCallback(() => {
+    // Reset round to 0 (sends players back to the lobby)
+    incrementRound(0);
+
+    // Reset scores to 0
+    // Retrieve current state from ref
+    const currState = stateRef.current;
+    const players = { ...currState.players };
+
+    for (const key in players) {
+      const currentPlayer = players[key];
+      currentPlayer.score = 0;
+      players[key] = currentPlayer;
+    }
+
+    sendToClients({
+      type: HostTypeConstants.UPDATE_PLAYERS_LIST,
+      players,
+    });
+    dispatch({
+      type: StoreConstants.UPDATE_PLAYERS_LIST,
+      currentPlayers: players,
+    });
+  }, [dispatch, incrementRound, sendToClients]);
 
   // Game lobby
   if (state.round === 0) {
@@ -307,6 +354,7 @@ function GameHostPage(): JSX.Element {
         inviteLink={getInviteLink()}
         isSingleP={hostID ? false : true}
         setPlayerName={setPlayerName}
+        sendToClients={sendToClients}
         startGame={() => incrementRound(1)}
         startHosting={() => startHosting()}
       />
@@ -315,32 +363,12 @@ function GameHostPage(): JSX.Element {
 
   // Actual game
   return (
-    <Container className="mt-3">
-      <Row>
-        <Col
-          className={`${appendTheme(
-            "content-holder",
-            state.appSettings.isDark
-          )} mt-3 mx-3`}
-        >
-          <ConnectedPlayers />
-        </Col>
-        <Col
-          sm="12"
-          md="8"
-          className={`${appendTheme(
-            "content-holder",
-            state.appSettings.isDark
-          )} mt-3 py-2`}
-        >
-          <HeroGrid
-            handleClick={(heroNumber: number) =>
-              addSelectedIcon(heroNumber, playerName)
-            }
-          />
-        </Col>
-      </Row>
-    </Container>
+    <GamePage
+      handleAddSelectedIcon={(heroNumber) =>
+        addSelectedIcon(heroNumber, playerName)
+      }
+      handleEndGame={endGame}
+    ></GamePage>
   );
 }
 

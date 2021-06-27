@@ -1,12 +1,10 @@
 import { captureException, setContext } from "@sentry/react";
 import React, { useEffect, useState } from "react";
-import { Container, Row } from "react-bootstrap";
-import Col from "react-bootstrap/Col";
+import { Container } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 
 import ConnectionView from "components/GameClient/ConnectionView";
-import ConnectedPlayers from "components/GameShared/ConnectedPlayers";
-import HeroGrid from "components/GameShared/HeroGrid";
+import GamePage from "components/GameShared/GamePage";
 import LobbyView from "components/GameShared/LobbyView";
 import useClientPeer from "hooks/useClientPeer";
 import useResetOnLeave from "hooks/useResetOnLeave";
@@ -18,7 +16,6 @@ import { useStoreDispatch, useStoreState } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { SoundEffects } from "utils/SoundEffectList";
 import { StorageConstants } from "utils/constants";
-import { appendTheme } from "utils/utilities";
 
 interface GameClientPageParams {
   remoteHostID: string;
@@ -145,7 +142,7 @@ function GameClientPage(): JSX.Element {
     }
   }
 
-  function handleClick(heroNumber: number) {
+  function addSelectedIcon(heroNumber: number) {
     sendToHost({
       type: ClientTypeConstants.PLAYER_ACTION,
       selected: heroNumber,
@@ -182,30 +179,7 @@ function GameClientPage(): JSX.Element {
   }
 
   // Actual game
-  return (
-    <Container className="mt-3">
-      <Row>
-        <Col
-          className={`${appendTheme(
-            "content-holder",
-            state.appSettings.isDark
-          )} mt-3 mx-3`}
-        >
-          <ConnectedPlayers />
-        </Col>
-        <Col
-          sm="12"
-          md="8"
-          className={`${appendTheme(
-            "content-holder",
-            state.appSettings.isDark
-          )} mt-3 py-2`}
-        >
-          <HeroGrid handleClick={handleClick} />
-        </Col>
-      </Row>
-    </Container>
-  );
+  return <GamePage handleAddSelectedIcon={addSelectedIcon}></GamePage>;
 }
 
 export default GameClientPage;

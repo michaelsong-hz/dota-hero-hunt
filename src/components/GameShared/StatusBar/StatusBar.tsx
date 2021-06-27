@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
 
 import Placeholder_icon from "images/Placeholder_icon.png";
 import { useStoreState } from "reducer/store";
@@ -67,29 +66,29 @@ function GameStatusBar(): JSX.Element {
   }
 
   return (
-    <Row>
-      <Col xs="12">
+    <div className="d-flex flex-column">
+      <div>
         {state.gameSettings.targetRoundScore === state.selectedIcons.size ? (
           <h3>All heroes found! Get ready for the next round...</h3>
         ) : (
           <h3>Find the following heroes:</h3>
         )}
-      </Col>
-      <Col xs="12">
-        <Row
+      </div>
+      <div>
+        <div
           className="justify-content-center"
           style={{ display: loading ? "flex" : "none" }}
         >
           {renderHeroesToFind(true)}
-        </Row>
-        <Row
+        </div>
+        <div
           className="justify-content-center"
           style={{ display: loading ? "none" : "flex" }}
         >
           {renderHeroesToFind(false)}
-        </Row>
-      </Col>
-    </Row>
+        </div>
+      </div>
+    </div>
   );
 }
 

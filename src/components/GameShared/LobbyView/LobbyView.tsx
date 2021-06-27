@@ -2,10 +2,10 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 
 import PlayerNameModal from "components/GameHost/PlayerNameModal";
+import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
 import { PlayerState } from "models/PlayerState";
 import { useStoreDispatch, useStoreState } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
-import { StorageConstants } from "utils/constants";
 import { appendTheme } from "utils/utilities";
 
 import ConnectedPlayers from "../ConnectedPlayers";
@@ -17,6 +17,7 @@ interface LobbyViewProps {
   inviteLink: string;
   isSingleP: boolean;
   setPlayerName: (playerName: string) => void;
+  sendToClients?: (data: HostTypes) => void;
   startGame?: () => void;
   startHosting?: () => void;
 }
@@ -33,7 +34,14 @@ function LobbyView(props: LobbyViewProps): JSX.Element {
     startHosting,
   } = props;
 
-  const [showPlayerNameModal, setShowPlayerNameModal] = useState(true);
+  const [showPlayerNameModal, setShowPlayerNameModal] = useState(false);
+
+  // Prompts for the player's name if it isn't set
+  useEffect(() => {
+    if (playerName === "") {
+      setShowPlayerNameModal(true);
+    }
+  }, [playerName]);
 
   // Sets the player name
   const submitPlayerName = useCallback(
@@ -41,36 +49,39 @@ function LobbyView(props: LobbyViewProps): JSX.Element {
       setShowPlayerNameModal(false);
 
       const currentPlayers: Record<string, PlayerState> = {};
-      currentPlayers[submittedPlayerName] = {
-        score: 0,
-        isDisabled: false,
-      };
+
+      // Omits old name in the new player list, adds new name
+      for (const [storePlayerName, storePlayer] of Object.entries(
+        state.players
+      )) {
+        if (storePlayerName !== playerName) {
+          currentPlayers[storePlayerName] = storePlayer;
+        } else {
+          currentPlayers[submittedPlayerName] = storePlayer;
+        }
+      }
 
       // Add self to players list
+      if (props.sendToClients) {
+        props.sendToClients({
+          type: HostTypeConstants.UPDATE_PLAYERS_LIST,
+          players: currentPlayers,
+        });
+      }
       dispatch({
         type: StoreConstants.UPDATE_PLAYERS_LIST,
         currentPlayers,
       });
+      setPlayerName(submittedPlayerName);
     },
-    [dispatch]
+    [dispatch, playerName, props, setPlayerName, state.players]
   );
-
-  // Retrieve the saved player name
-  useEffect(() => {
-    const storedPlayerName =
-      localStorage.getItem(StorageConstants.PLAYER_NAME) || "";
-    if (storedPlayerName !== "") {
-      submitPlayerName(storedPlayerName);
-    }
-    setPlayerName(storedPlayerName);
-  }, [setPlayerName, submitPlayerName]);
 
   return (
     <Container className="mt-3">
       <PlayerNameModal
         playerName={playerName}
         showPlayerNameModal={showPlayerNameModal}
-        setPlayerName={setPlayerName}
         submitPlayerName={submitPlayerName}
       />
       <Row>

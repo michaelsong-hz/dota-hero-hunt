@@ -10,21 +10,21 @@ import { appendTheme } from "utils/utilities";
 interface PlayerNameModalProps {
   playerName: string;
   showPlayerNameModal: boolean;
-  setPlayerName: (playerName: string) => void;
   submitPlayerName: (playerName: string) => void;
 }
 
 function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
   const state = useStoreState();
   const [isInvalidName, setIsInvalidName] = useState(false);
+  const [typedPlayerName, setTypedPlayerName] = useState(props.playerName);
 
   function handleClose() {
     // TODO: Check that the player name hasn't been taken
-    if (!isStringValid(props.playerName)) {
+    if (!isStringValid(typedPlayerName)) {
       setIsInvalidName(true);
     } else {
-      localStorage.setItem(StorageConstants.PLAYER_NAME, props.playerName);
-      props.submitPlayerName(props.playerName);
+      localStorage.setItem(StorageConstants.PLAYER_NAME, typedPlayerName);
+      props.submitPlayerName(typedPlayerName);
     }
   }
 
@@ -44,7 +44,7 @@ function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
 
   function setPlayerName(playerName: string) {
     setIsInvalidName(false);
-    props.setPlayerName(playerName);
+    setTypedPlayerName(playerName);
   }
 
   return (
@@ -59,7 +59,7 @@ function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
               isInvalid={isInvalidName}
               type="text"
               placeholder="Enter your name"
-              defaultValue={props.playerName}
+              defaultValue={typedPlayerName}
               onChange={(e) => setPlayerName(e.target.value)}
             />
             <Form.Control.Feedback type="invalid">

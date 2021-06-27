@@ -1,5 +1,4 @@
 import React from "react";
-import { Col, Row } from "react-bootstrap";
 
 import { useStoreState } from "reducer/store";
 
@@ -8,29 +7,40 @@ function ConnectedPlayers(): JSX.Element {
 
   const connectedPlayers: JSX.Element[] = [];
 
-  for (const [playerName, player] of Object.entries(state.players)) {
+  for (const [readPlayerName, player] of Object.entries(state.players)) {
+    let playerName = readPlayerName;
+    if (playerName === "" && state.round > 0) {
+      playerName = "Your score:";
+    }
     connectedPlayers.push(
-      <Row key={`player-${playerName}`} className="d-flex ">
-        <Col xs="auto" className="mr-auto align-self-center">
+      <div
+        key={`player-${playerName}`}
+        className="d-flex flex-row justify-content-between"
+      >
+        <div className="conn-player-name align-self-center">
           <h4>{playerName}</h4>
-        </Col>
+        </div>
         {state.round > 0 && (
-          <Col xs="auto" className="align-self-center">
+          <div className="align-self-center ml-3">
             <h5 className="">{player.score}</h5>
-          </Col>
+          </div>
         )}
-      </Row>
+      </div>
     );
   }
+
+  function getHeaderText() {
+    if (connectedPlayers.length > 1 || state.round === 0) {
+      return <h2>Players</h2>;
+    }
+    return <></>;
+  }
+
   return (
-    <>
-      <Row>
-        <Col>
-          <h2 className="pt-1">Players</h2>
-        </Col>
-      </Row>
+    <div className="connected-players mt-1">
+      {getHeaderText()}
       {connectedPlayers}
-    </>
+    </div>
   );
 }
 

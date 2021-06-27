@@ -6,7 +6,6 @@ import GameClientPage from "components/GameClient/GameClientPage";
 import GameHostPage from "components/GameHost/GameHostPage";
 import Header from "components/Header";
 import HelmetWrapper from "components/HelmetWrapper";
-import HomePage from "components/HomePage";
 import SharedModal from "components/Modals/SharedModal";
 import UpdateMessage from "components/UpdateMessage";
 import { StoreContextProvider } from "reducer/store";
@@ -23,14 +22,11 @@ function App(): JSX.Element {
           <Route path="/play/:remoteHostID">
             <GameClientPage />
           </Route>
-          <Route path="/play">
-            <GameHostPage />
-          </Route>
           <Route path="/about">
             <AboutPage />
           </Route>
           <Route path="/">
-            <HomePage />
+            <GameHostPage />
           </Route>
         </Switch>
       </Router>
