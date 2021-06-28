@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { MutableRefObject, useEffect, useRef, useState } from "react";
 import { Modal } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -11,6 +11,7 @@ interface PlayerNameModalProps {
   playerName: string;
   showPlayerNameModal: boolean;
   submitPlayerName: (playerName: string) => void;
+  goBack: () => void;
 }
 
 function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
@@ -47,27 +48,56 @@ function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
     setTypedPlayerName(playerName);
   }
 
+  // Autofocuses the text field
+  function NameInput() {
+    const innerRef = useRef<HTMLInputElement>();
+    useEffect(() => innerRef.current && innerRef.current.focus());
+
+    return (
+      <Form.Control
+        ref={innerRef as MutableRefObject<HTMLInputElement | null>}
+        isInvalid={isInvalidName}
+        type="text"
+        placeholder="Enter your name"
+        defaultValue={typedPlayerName}
+        onChange={(e) => setPlayerName(e.target.value)}
+      />
+    );
+  }
+
+  function handleCancel() {
+    // Go back if a name was not entered (required to invite friends)
+    if (props.playerName === "") {
+      props.goBack();
+    } else {
+      // Reset typed name in the modal in case it is reopened
+      setTypedPlayerName(props.playerName);
+      // Submit the old name to close the modal
+      props.submitPlayerName(props.playerName);
+    }
+  }
+
   return (
-    <Modal show={props.showPlayerNameModal} onHide={() => handleClose()}>
+    <Modal show={props.showPlayerNameModal} onHide={() => handleCancel()}>
       <Form onSubmit={handleSubmit}>
         <Modal.Header>
           <Modal.Title>Set Your Player Name</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Group>
-            <Form.Control
-              isInvalid={isInvalidName}
-              type="text"
-              placeholder="Enter your name"
-              defaultValue={typedPlayerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-            />
+            {NameInput()}
             <Form.Control.Feedback type="invalid">
               Please enter a player name.
             </Form.Control.Feedback>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
+          <Button
+            variant={appendTheme("secondary", state.appSettings.isDark)}
+            onClick={handleCancel}
+          >
+            {props.playerName === "" ? "Go Back" : "Cancel"}
+          </Button>
           <Button
             variant={appendTheme("primary", state.appSettings.isDark)}
             type="submit"

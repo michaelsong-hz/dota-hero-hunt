@@ -83,6 +83,9 @@ function LobbyView(props: LobbyViewProps): JSX.Element {
         playerName={playerName}
         showPlayerNameModal={showPlayerNameModal}
         submitPlayerName={submitPlayerName}
+        goBack={() => {
+          if (startGame) startGame();
+        }}
       />
       <Row>
         <Col
