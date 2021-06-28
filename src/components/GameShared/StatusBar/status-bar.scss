@@ -5,3 +5,13 @@
   -o-user-select: none;
   user-select: none;
 }
+
+.status-hero-name {
+  font-size: 5vw;
+}
+
+@media (min-width: 576px) {
+  .status-hero-name {
+    font-size: 1.5rem;
+  }
+}

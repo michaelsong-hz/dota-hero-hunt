@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Row } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 
 import Placeholder_icon from "images/Placeholder_icon.png";
@@ -45,7 +46,7 @@ function GameStatusBar(): JSX.Element {
     const heroesToFind: JSX.Element[] = [];
     state.targetHeroes.forEach((targetHero) => {
       heroesToFind.push(
-        <Col key={`${heroList[targetHero].name}-icon`} xs="auto">
+        <Col key={`${heroList[targetHero].name}-icon`} xs="4" md="auto">
           {state.gameSettings.showTargetIcons === true && (
             <img
               className="status-hero-icon fast-fade-reveal"
@@ -58,7 +59,7 @@ function GameStatusBar(): JSX.Element {
               draggable="false"
             ></img>
           )}
-          <h5 className="mb-3">{heroList[targetHero].name}</h5>
+          <h5 className="status-hero-name mb-3">{heroList[targetHero].name}</h5>
         </Col>
       );
     });
@@ -75,18 +76,18 @@ function GameStatusBar(): JSX.Element {
         )}
       </div>
       <div>
-        <div
+        <Row
           className="justify-content-center"
           style={{ display: loading ? "flex" : "none" }}
         >
           {renderHeroesToFind(true)}
-        </div>
-        <div
+        </Row>
+        <Row
           className="justify-content-center"
           style={{ display: loading ? "none" : "flex" }}
         >
           {renderHeroesToFind(false)}
-        </div>
+        </Row>
       </div>
     </div>
   );

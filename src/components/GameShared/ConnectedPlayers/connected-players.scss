@@ -9,7 +9,7 @@
 }
 
 .connected-players {
-  min-width: 0; // Allows trailing ellipses for long names
+  min-width: 200px; // Allows trailing ellipses for long names
   max-width: default;
 }
 
