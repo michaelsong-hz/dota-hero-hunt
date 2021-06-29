@@ -40,6 +40,7 @@ function Header(): JSX.Element {
     <Tooltip id="button-tooltip" className="tooltip" {...props}>
       <RangeSlider
         tooltipLabel={(currentValue) => `${currentValue}%`}
+        tooltipPlacement="top"
         value={state.appSettings.volume}
         onChange={(changeEvent) => {
           const volume = parseInt(changeEvent.target.value);
