@@ -1,3 +1,4 @@
+import { Howler } from "howler";
 import React, { createContext, useReducer, Dispatch, useMemo } from "react";
 
 import {
@@ -20,6 +21,7 @@ function getStoredVolume(): number {
     const storedVolumeNumber = parseInt(storedVolume);
     if (storedVolumeNumber >= 0 && storedVolumeNumber <= 100) {
       volume = storedVolumeNumber;
+      Howler.volume(volume / 100);
     }
   }
 

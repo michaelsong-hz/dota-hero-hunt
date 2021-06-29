@@ -1,6 +1,7 @@
 import { faSun, faMoon } from "@fortawesome/free-regular-svg-icons";
 import { faVolumeUp, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Howler } from "howler";
 import React, { useState } from "react";
 import {
   Navbar,
@@ -38,13 +39,16 @@ function Header(): JSX.Element {
   const renderTooltip = (props: unknown) => (
     <Tooltip id="button-tooltip" className="tooltip" {...props}>
       <RangeSlider
+        tooltipLabel={(currentValue) => `${currentValue}%`}
         value={state.appSettings.volume}
-        onChange={(changeEvent) =>
+        onChange={(changeEvent) => {
+          const volume = parseInt(changeEvent.target.value);
           dispatch({
             type: StoreConstants.SET_VOLUME,
-            volume: parseInt(changeEvent.target.value),
-          })
-        }
+            volume: volume,
+          });
+          Howler.volume(volume / 100);
+        }}
         step={GlobalConstants.VOLUME_STEP}
       />
     </Tooltip>
