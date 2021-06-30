@@ -20,7 +20,7 @@ function GameStatusBar(): JSX.Element {
         loadImg.src = getIconPath(heroList[heroNumber].url);
         loadImg.onload = () => resolve(getIconPath(heroList[heroNumber].url));
         // TODO: Handle cases where images don't load
-        loadImg.onerror = (err: any) => reject(err);
+        loadImg.onerror = (err: unknown) => reject(err);
       });
     };
 

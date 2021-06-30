@@ -235,7 +235,6 @@ function GameHostPage(): JSX.Element {
         targetHeroes: new Set(targetHeroes),
         currentHeroes: currentHeroes,
       });
-      console.log("round set to", round);
     },
     [
       dispatch,
@@ -284,7 +283,6 @@ function GameHostPage(): JSX.Element {
       !preparingNextRound
     ) {
       // Prepare next round
-      console.log("set next round timer");
       nextRoundTimer = setTimeout(() => setPreparingNextRound(true), 3000);
     }
 
@@ -294,7 +292,6 @@ function GameHostPage(): JSX.Element {
     }
 
     return () => {
-      console.log("cleared next round timer");
       clearTimeout(nextRoundTimer);
     };
   }, [

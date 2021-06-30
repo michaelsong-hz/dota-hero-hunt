@@ -42,11 +42,8 @@ export default function useClientPeer(
       } else if (!myPeer.current.destroyed) {
         myPeer.current.destroy();
       } else {
-        console.log("Peer: cleanup complete");
         myPeer.current = undefined;
       }
-    } else {
-      console.log("Peer: nothing to cleanup");
     }
   }, []);
 
