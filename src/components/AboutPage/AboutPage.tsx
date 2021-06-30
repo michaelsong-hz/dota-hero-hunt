@@ -11,6 +11,26 @@ import { getAppVersion } from "utils/utilities";
 function AboutPage(): JSX.Element {
   const state = useStoreState();
 
+  function getInstallStatus() {
+    switch (state.installStatus) {
+      case InstallStatus.CHECKING: {
+        return "Checking";
+      }
+      case InstallStatus.INSTALLING: {
+        return "Installing";
+      }
+      case InstallStatus.INSTALLED: {
+        return "Installed";
+      }
+      case InstallStatus.NOT_SUPPORTED: {
+        return "Not Supported";
+      }
+      case InstallStatus.ERROR: {
+        return "Error";
+      }
+    }
+  }
+
   function getInstallStatusText(): JSX.Element {
     switch (state.installStatus) {
       case InstallStatus.CHECKING: {
@@ -88,8 +108,9 @@ function AboutPage(): JSX.Element {
         </Col>
       </Row>
       <Row className="mt-3">
-        <Col>
-          <h2 className="mb-1">Installation Status</h2>
+        <Col className="about-install mb-1">
+          <h2>Installation Status:</h2>
+          <h2 className="text-muted"> {`${getInstallStatus()}`}</h2>
         </Col>
       </Row>
       <Row className="mt-1">
