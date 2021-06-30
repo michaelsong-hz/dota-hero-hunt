@@ -1,4 +1,4 @@
-import { SWConfig } from "models/SWConfig";
+import { SWConfig, SWRegistrationStatus } from "models/SWConfig";
 
 const isLocalhost = Boolean(
   window.location.hostname === "localhost" ||
@@ -10,7 +10,7 @@ const isLocalhost = Boolean(
     )
 );
 
-export function register(config: SWConfig): void {
+export function register(swEvent: SWConfig): void {
   if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href);
@@ -26,7 +26,7 @@ export function register(config: SWConfig): void {
 
       if (isLocalhost) {
         // This is running on localhost. Let's check if a service worker still exists or not.
-        checkValidServiceWorker(swUrl, config);
+        checkValidServiceWorker(swUrl, swEvent);
 
         // Add some additional logging to localhost, pointing developers to the
         // service worker/PWA documentation.
@@ -39,17 +39,19 @@ export function register(config: SWConfig): void {
         });
       } else {
         // Is not localhost. Just register service worker
-        registerValidSW(swUrl, config);
+        registerValidSW(swUrl, swEvent);
       }
     });
+  } else {
+    swEvent(SWRegistrationStatus.NOT_SUPPORTED);
   }
 }
 
-function registerValidSW(swUrl: string, config: SWConfig) {
+function registerValidSW(swUrl: string, swEvent: SWConfig) {
   navigator.serviceWorker
     .register(swUrl)
     .then((registration) => {
-      config.onRegister(registration);
+      swEvent(SWRegistrationStatus.REGISTERED, registration);
       registration.onupdatefound = () => {
         const installingWorker = registration.installing;
         if (installingWorker == null) {
@@ -62,15 +64,16 @@ function registerValidSW(swUrl: string, config: SWConfig) {
               // but the previous service worker will still serve the older
               // content until all client tabs are closed.
 
-              // Activate the new service worker immediately
+              // Activate the new service worker immediately if new tabs
+              // for dotaherohunt are opened
               registration.waiting?.postMessage({ type: "SKIP_WAITING" });
-              config.onUpdate(registration);
+
+              // Let the user know that there is an update waiting
+              swEvent(SWRegistrationStatus.UPDATE_FOUND, registration);
             } else {
               // At this point, everything has been precached.
-              // It's the perfect time to display a
-              // "Content is cached for offline use." message.
-
-              config.onSuccess(registration);
+              // We can let the user know that offline assets have been saved
+              swEvent(SWRegistrationStatus.SUCCESS, registration);
             }
           }
         };
@@ -79,10 +82,11 @@ function registerValidSW(swUrl: string, config: SWConfig) {
     .catch((error) => {
       // eslint-disable-next-line no-console
       console.error("Error during service worker registration:", error);
+      swEvent(SWRegistrationStatus.ERROR);
     });
 }
 
-function checkValidServiceWorker(swUrl: string, config: SWConfig) {
+function checkValidServiceWorker(swUrl: string, swEvent: SWConfig) {
   // Check if the service worker can be found. If it can't reload the page.
   fetch(swUrl, {
     headers: { "Service-Worker": "script" },
@@ -102,7 +106,7 @@ function checkValidServiceWorker(swUrl: string, config: SWConfig) {
         });
       } else {
         // Service worker found. Proceed as normal.
-        registerValidSW(swUrl, config);
+        registerValidSW(swUrl, swEvent);
       }
     })
     .catch(() => {

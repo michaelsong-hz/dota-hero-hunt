@@ -1,5 +1,12 @@
-export type SWConfig = {
-  onSuccess: (registration: ServiceWorkerRegistration) => void;
-  onUpdate: (registration: ServiceWorkerRegistration) => void;
-  onRegister: (registration: ServiceWorkerRegistration) => void;
-};
+export type SWConfig = (
+  status: SWRegistrationStatus,
+  event?: ServiceWorkerRegistration
+) => void;
+
+export enum SWRegistrationStatus {
+  REGISTERED,
+  SUCCESS,
+  UPDATE_FOUND,
+  NOT_SUPPORTED,
+  ERROR,
+}

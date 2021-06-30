@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { InstallStatus } from "models/InstallStatus";
+import { SWConfig, SWRegistrationStatus } from "models/SWConfig";
 import { useStoreDispatch, useStoreState } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { register } from "serviceWorkerRegistration";
@@ -15,36 +16,50 @@ function UpdateMessage(): JSX.Element {
     useState<ServiceWorkerRegistration | null>(null);
 
   useEffect(() => {
-    // Event for the first time application data was successfully cached
-    const onSWSuccess = (registration: ServiceWorkerRegistration) => {
-      setSWRegistration(registration);
-      dispatch({
-        type: StoreConstants.SET_INSTALL_STATUS,
-        status: InstallStatus.INSTALLED,
-      });
+    // Handle various service worker events
+    const onSWEvent: SWConfig = (
+      status: SWRegistrationStatus,
+      registration?: ServiceWorkerRegistration
+    ) => {
+      if (registration !== undefined) {
+        setSWRegistration(registration);
+      } else {
+        setSWRegistration(null);
+      }
+
+      switch (status) {
+        case SWRegistrationStatus.REGISTERED:
+          dispatch({
+            type: StoreConstants.SET_INSTALL_STATUS,
+            status: InstallStatus.INSTALLING,
+          });
+          break;
+        case SWRegistrationStatus.SUCCESS:
+          dispatch({
+            type: StoreConstants.SET_INSTALL_STATUS,
+            status: InstallStatus.INSTALLED,
+          });
+          break;
+        case SWRegistrationStatus.UPDATE_FOUND:
+          setSWUpdateReady(true);
+          break;
+        case SWRegistrationStatus.NOT_SUPPORTED:
+          dispatch({
+            type: StoreConstants.SET_INSTALL_STATUS,
+            status: InstallStatus.NOT_SUPPORTED,
+          });
+          break;
+        case SWRegistrationStatus.ERROR:
+          dispatch({
+            type: StoreConstants.SET_INSTALL_STATUS,
+            status: InstallStatus.ERROR,
+          });
+          break;
+      }
     };
 
-    // Event for when an update was found for the application
-    const onSWUpdate = (registration: ServiceWorkerRegistration) => {
-      setSWRegistration(registration);
-      setSWUpdateReady(true);
-    };
-
-    // Event for when the SW is registered and working
-    const onSWRegister = (registration: ServiceWorkerRegistration) => {
-      setSWRegistration(registration);
-      dispatch({
-        type: StoreConstants.SET_INSTALL_STATUS,
-        status: InstallStatus.INSTALLING,
-      });
-    };
-
-    // Register SW for PWA
-    register({
-      onSuccess: onSWSuccess,
-      onUpdate: onSWUpdate,
-      onRegister: onSWRegister,
-    });
+    // Register SW for PWA support
+    register(onSWEvent);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

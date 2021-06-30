@@ -28,10 +28,29 @@ function AboutPage(): JSX.Element {
         return (
           <p>
             Assets for Dota Hero Hunt have been saved for offline use, allowing
-            you to play in single player mode without an internet connection!
-            This also speeds up the performance of Dota Hero Hunt during regular
-            gameplay.
+            you to play in single player mode without an internet connection.
+            This takes up approximately 3 MB of device space. This also speeds
+            up the performance of Dota Hero Hunt when loading hero icons between
+            rounds.
           </p>
+        );
+      }
+      case InstallStatus.NOT_SUPPORTED: {
+        return (
+          <>
+            <p>
+              Dota Hero Hunt would like to save some files in your browser so
+              that you can play in single player mode without an internet
+              connection, and to speed up the performance of Dota Hero Hunt when
+              loading hero icons between rounds. This takes up approximately 3
+              MB of device space.
+            </p>
+            <p>
+              Your current browser does not support this. To take advantage of
+              this feature, you could try turning off incognito or private mode,
+              or try downloading the latest version of Firefox or Google Chrome.
+            </p>
+          </>
         );
       }
       case InstallStatus.ERROR: {
