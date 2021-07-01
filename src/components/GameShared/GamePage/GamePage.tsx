@@ -10,6 +10,7 @@ import SettingsButton from "../SettingsButton";
 
 interface GamePageProps {
   handleAddSelectedIcon: (heroNumber: number) => void;
+  handleNewGame?: () => void;
   handleEndGame?: () => void;
 }
 
@@ -38,7 +39,10 @@ function GamePage(props: GamePageProps): JSX.Element {
             state.appSettings.isDark
           )} px-2 py-2`}
         >
-          <HeroGrid handleClick={props.handleAddSelectedIcon} />
+          <HeroGrid
+            handleClick={props.handleAddSelectedIcon}
+            handleNewGame={props.handleNewGame}
+          />
         </div>
       </div>
     </Container>

@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 
+import { GameStatus } from "models/GameStatus";
 import { useStoreState } from "reducer/store";
 import { appendTheme } from "utils/utilities";
 
-interface IHeroIconProps {
+interface HeroIconProps {
   key: string;
   src: string;
   heroNumber: number;
   onClick: () => void;
 }
 
-function HeroIcon(props: IHeroIconProps): JSX.Element {
+function HeroIcon(props: HeroIconProps): JSX.Element {
   const state = useStoreState();
 
   const [isHighlightedValid, setIsHighlightedValid] = useState(false);
@@ -56,7 +57,10 @@ function HeroIcon(props: IHeroIconProps): JSX.Element {
       baseName += " hero-icon-invalid";
     }
 
-    if (state.gameSettings.targetRoundScore === state.selectedIcons.size) {
+    if (
+      state.gameStatus === GameStatus.PLAYING_ROUND_END ||
+      state.gameStatus === GameStatus.FINISHED
+    ) {
       baseName += " hero-icon-rotate";
     }
     return baseName;

@@ -7,3 +7,7 @@ export enum StorageConstants {
 export enum GlobalConstants {
   VOLUME_STEP = 10,
 }
+
+export const Constants = {
+  GAME_STATUS_DEFAULT: "Find the following heroes:",
+};

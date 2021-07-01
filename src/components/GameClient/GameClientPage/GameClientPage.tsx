@@ -9,6 +9,7 @@ import LobbyView from "components/GameShared/LobbyView";
 import useClientPeer from "hooks/useClientPeer";
 import useResetOnLeave from "hooks/useResetOnLeave";
 import useSoundEffect from "hooks/useSoundEffect";
+import { GameStatus } from "models/GameStatus";
 import { ClientTypeConstants } from "models/MessageClientTypes";
 import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
 import { OtherErrorTypes } from "models/Modals";
@@ -56,12 +57,16 @@ function GameClientPage(): JSX.Element {
           round: data.round,
           targetHeroes: new Set(data.targetHeroes),
           currentHeroes: data.currentHeroes,
+          statusText: data.statusText,
+          gameStatus: data.gameStatus,
         });
         dispatch({
           type: StoreConstants.UPDATE_SELECTED_ICONS,
           selectedIcons: new Set(data.selected),
           invalidIcons: new Set(data.invalidIcons),
           currentPlayers: data.players,
+          statusText: data.statusText,
+          gameStatus: data.gameStatus,
         });
         break;
       }
@@ -107,11 +112,15 @@ function GameClientPage(): JSX.Element {
           round: data.round,
           targetHeroes: new Set(data.targetHeroes),
           currentHeroes: data.currentHeroes,
+          statusText: data.statusText,
+          gameStatus: data.gameStatus,
         });
         break;
       }
       case HostTypeConstants.UPDATE_FROM_CLICK: {
-        if (data.lastClickedPlayerName === playerName) {
+        if (data.gameStatus === GameStatus.FINISHED) {
+          playAudio(SoundEffects.Applause);
+        } else if (data.lastClickedPlayerName === playerName) {
           if (data.isCorrectHero) {
             playAudio(SoundEffects.PartyHorn);
           } else {
@@ -125,6 +134,8 @@ function GameClientPage(): JSX.Element {
           invalidIcons: new Set(data.invalidIcons),
           selectedIcons: new Set(data.selected),
           currentPlayers: data.players,
+          statusText: data.statusText,
+          gameStatus: data.gameStatus,
         });
         break;
       }

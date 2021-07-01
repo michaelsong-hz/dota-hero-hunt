@@ -1,6 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { useEffect } from "react";
 
+import { GameStatus } from "models/GameStatus";
 import { useStoreDispatch } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 
@@ -26,6 +27,8 @@ export default function useResetOnLeave(props: UseResetOnLeaveProps): void {
         round: 0,
         targetHeroes: new Set(),
         currentHeroes: [],
+        statusText: "",
+        gameStatus: GameStatus.SETTINGS,
       });
       dispatch({
         type: StoreConstants.UPDATE_PLAYERS_LIST,

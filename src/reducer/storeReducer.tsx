@@ -6,6 +6,7 @@ import {
   gridSizes,
   GridSizeTypes,
 } from "models/GameSettingsType";
+import { GameStatus } from "models/GameStatus";
 import { InstallStatus } from "models/InstallStatus";
 import { Modals, OtherErrorTypes } from "models/Modals";
 import { PeerError, PeerJSErrorTypes } from "models/PeerErrors";
@@ -37,6 +38,8 @@ export type StoreReducer = {
   modalToShow: Modals | null;
   modalCustomMessage: string[];
   installStatus: InstallStatus;
+  statusText: string;
+  gameStatus: GameStatus;
 };
 
 export type StoreActions =
@@ -45,12 +48,16 @@ export type StoreActions =
       round: number;
       targetHeroes: Set<number>;
       currentHeroes: number[][];
+      statusText: string;
+      gameStatus: GameStatus;
     }
   | {
       type: StoreConstants.UPDATE_SELECTED_ICONS;
       selectedIcons: Set<number>;
       invalidIcons: Set<number>;
       currentPlayers: Record<string, PlayerState>;
+      statusText: string;
+      gameStatus: GameStatus;
     }
   | {
       type: StoreConstants.UPDATE_PLAYERS_LIST;
@@ -108,6 +115,8 @@ export const storeInitialState: StoreReducer = {
   modalToShow: null,
   modalCustomMessage: [],
   installStatus: InstallStatus.CHECKING,
+  statusText: "",
+  gameStatus: GameStatus.PLAYING,
 };
 
 export function storeReducer(
@@ -124,6 +133,8 @@ export function storeReducer(
         currentHeroes: action.currentHeroes,
         selectedIcons: new Set(),
         invalidIcons: new Set(),
+        statusText: action.statusText,
+        gameStatus: action.gameStatus,
       };
     case StoreConstants.UPDATE_SELECTED_ICONS: {
       setPlayersContext(action.currentPlayers);
@@ -133,6 +144,8 @@ export function storeReducer(
         selectedIcons: action.selectedIcons,
         invalidIcons: action.invalidIcons,
         players: action.currentPlayers,
+        statusText: action.statusText,
+        gameStatus: action.gameStatus,
       };
     }
     case StoreConstants.UPDATE_PLAYERS_LIST: {

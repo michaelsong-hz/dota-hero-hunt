@@ -1,6 +1,7 @@
 import Peer from "peerjs";
 
 import { GameSettings } from "./GameSettingsType";
+import { GameStatus } from "./GameStatus";
 import { PlayerState } from "./PlayerState";
 
 // Definitions for messages from the host to the client
@@ -20,6 +21,8 @@ export type HostTypes =
       round: number;
       targetHeroes: number[];
       currentHeroes: number[][];
+      statusText: string;
+      gameStatus: GameStatus;
     }
   | {
       type: HostTypeConstants.CONNECTION_ACCEPTED;
@@ -30,6 +33,8 @@ export type HostTypes =
       currentHeroes: number[][];
       selected: number[];
       invalidIcons: number[];
+      statusText: string;
+      gameStatus: GameStatus;
     }
   | {
       type: HostTypeConstants.UPDATE_PLAYERS_LIST;
@@ -54,6 +59,8 @@ export type HostTypes =
       // Maybe revisit in the future to see if they make an update to support sets.
       selected: number[];
       invalidIcons: number[];
+      statusText: string;
+      gameStatus: GameStatus;
     }
   | {
       type: HostTypeConstants.UPDATE_SETTINGS;

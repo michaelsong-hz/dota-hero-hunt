@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Row } from "react-bootstrap";
+import { Button, Row } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 
 import Placeholder_icon from "images/Placeholder_icon.png";
+import { GameStatus } from "models/GameStatus";
 import { useStoreState } from "reducer/store";
 import { heroList } from "utils/HeroList";
-import { getIconPath } from "utils/utilities";
+import { appendTheme, getIconPath } from "utils/utilities";
 
-function GameStatusBar(): JSX.Element {
+interface GameStatusProps {
+  handleNewGame?: () => void;
+}
+
+function GameStatusBar(props: GameStatusProps): JSX.Element {
   const state = useStoreState();
   const [loading, setLoading] = useState(true);
 
@@ -42,6 +47,22 @@ function GameStatusBar(): JSX.Element {
     }
   }, [state.gameSettings.showTargetIcons, state.targetHeroes]);
 
+  function getNewGameButton() {
+    if (state.gameStatus === GameStatus.FINISHED && props.handleNewGame) {
+      return (
+        <div className="mb-3">
+          <Button
+            variant={appendTheme("primary", state.appSettings.isDark)}
+            onClick={props.handleNewGame}
+          >
+            New Game
+          </Button>
+        </div>
+      );
+    }
+    return <></>;
+  }
+
   function renderHeroesToFind(loadingIcons: boolean): JSX.Element[] {
     const heroesToFind: JSX.Element[] = [];
     state.targetHeroes.forEach((targetHero) => {
@@ -69,12 +90,9 @@ function GameStatusBar(): JSX.Element {
   return (
     <div className="d-flex flex-column">
       <div>
-        {state.gameSettings.targetRoundScore === state.selectedIcons.size ? (
-          <h3>All heroes found! Get ready for the next round...</h3>
-        ) : (
-          <h3>Find the following heroes:</h3>
-        )}
+        <h3>{state.statusText}</h3>
       </div>
+      {getNewGameButton()}
       <div>
         <Row
           className="justify-content-center"

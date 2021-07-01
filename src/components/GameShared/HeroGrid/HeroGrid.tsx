@@ -9,6 +9,7 @@ import { getIconPath } from "utils/utilities";
 
 interface HeroGridProps {
   handleClick: (heroNumber: number) => void;
+  handleNewGame?: () => void;
 }
 
 function HeroGrid(props: HeroGridProps): JSX.Element {
@@ -81,7 +82,7 @@ function HeroGrid(props: HeroGridProps): JSX.Element {
 
   return (
     <div className="text-center">
-      <GameStatusBar />
+      <GameStatusBar handleNewGame={props.handleNewGame} />
       <div style={{ display: loading ? "block" : "none" }}>
         {createHeroImages(true)}
       </div>

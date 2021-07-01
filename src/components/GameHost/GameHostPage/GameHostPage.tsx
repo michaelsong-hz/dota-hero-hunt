@@ -6,6 +6,7 @@ import LobbyView from "components/GameShared/LobbyView";
 import useHostPeer from "hooks/useHostPeer";
 import useResetOnLeave from "hooks/useResetOnLeave";
 import useSoundEffect from "hooks/useSoundEffect";
+import { GameStatus } from "models/GameStatus";
 import { ClientTypeConstants, ClientTypes } from "models/MessageClientTypes";
 import {
   ClientDataConnection,
@@ -17,7 +18,7 @@ import { useStoreState, useStoreDispatch } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { heroList } from "utils/HeroList";
 import { SoundEffects } from "utils/SoundEffectList";
-import { StorageConstants } from "utils/constants";
+import { Constants, StorageConstants } from "utils/constants";
 import { getPlayerNameFromConn } from "utils/utilities";
 
 function GameHostPage(): JSX.Element {
@@ -70,7 +71,8 @@ function GameHostPage(): JSX.Element {
       currState.selectedIcons.size >= currState.gameSettings.targetRoundScore ||
       currState.selectedIcons.has(selectedIcon) ||
       currState.invalidIcons.has(selectedIcon) ||
-      currState.players[selectedPlayerName].isDisabled
+      currState.players[selectedPlayerName].isDisabled ||
+      currState.gameStatus !== GameStatus.PLAYING
     ) {
       return;
     }
@@ -78,7 +80,9 @@ function GameHostPage(): JSX.Element {
     const selectedIcons = new Set(currState.selectedIcons);
     const invalidIcons = new Set(currState.invalidIcons);
     const players = { ...currState.players };
+    let gameStatus: GameStatus = currState.gameStatus;
     let isCorrectHero;
+    let statusText = Constants.GAME_STATUS_DEFAULT;
 
     if (!currState.targetHeroes.has(selectedIcon)) {
       isCorrectHero = false;
@@ -91,12 +95,30 @@ function GameHostPage(): JSX.Element {
     } else {
       isCorrectHero = true;
       selectedIcons.add(selectedIcon);
-
       players[selectedPlayerName].score += 1;
-      if (selectedPlayerName === playerName) {
-        playAudio(SoundEffects.PartyHorn);
+
+      if (
+        currState.gameSettings.targetTotalScore ===
+        players[selectedPlayerName].score
+      ) {
+        // A player has won the game
+        playAudio(SoundEffects.Applause);
+        if (selectedPlayerName === "") {
+          statusText = "You win!";
+        } else {
+          statusText = `${selectedPlayerName} wins!`;
+        }
+        gameStatus = GameStatus.FINISHED;
       } else {
-        playAudio(SoundEffects.Frog);
+        if (selectedPlayerName === playerName) {
+          playAudio(SoundEffects.PartyHorn);
+        } else {
+          playAudio(SoundEffects.Frog);
+        }
+        if (currState.gameSettings.targetRoundScore === selectedIcons.size) {
+          statusText = "All heroes found! Get ready for the next round...";
+          gameStatus = GameStatus.PLAYING_ROUND_END;
+        }
       }
     }
 
@@ -107,12 +129,16 @@ function GameHostPage(): JSX.Element {
       lastClickedPlayerName: selectedPlayerName,
       selected: Array.from(selectedIcons),
       invalidIcons: Array.from(invalidIcons),
+      statusText,
+      gameStatus,
     });
     dispatch({
       type: StoreConstants.UPDATE_SELECTED_ICONS,
       selectedIcons,
       invalidIcons,
       currentPlayers: players,
+      statusText,
+      gameStatus,
     });
   }
 
@@ -144,6 +170,8 @@ function GameHostPage(): JSX.Element {
         currentHeroes: stateRef.current.currentHeroes,
         selected: Array.from(stateRef.current.selectedIcons),
         invalidIcons: Array.from(stateRef.current.invalidIcons),
+        statusText: stateRef.current.statusText,
+        gameStatus: stateRef.current.gameStatus,
       });
       sendToClients({
         type: HostTypeConstants.UPDATE_PLAYERS_LIST,
@@ -223,17 +251,24 @@ function GameHostPage(): JSX.Element {
         shuffle(currentHeroesFlat).slice(0, state.gameSettings.targetRoundScore)
       );
 
+      // Update game status text
+      const statusText = Constants.GAME_STATUS_DEFAULT;
+
       sendToClients({
         type: HostTypeConstants.UPDATE_ROUND,
         round,
         targetHeroes: Array.from(targetHeroes),
         currentHeroes: currentHeroes,
+        statusText,
+        gameStatus: GameStatus.PLAYING,
       });
       dispatch({
         type: StoreConstants.UPDATE_ROUND,
         round,
         targetHeroes: new Set(targetHeroes),
         currentHeroes: currentHeroes,
+        statusText,
+        gameStatus: GameStatus.PLAYING,
       });
     },
     [
@@ -279,7 +314,7 @@ function GameHostPage(): JSX.Element {
     let nextRoundTimer: NodeJS.Timeout;
 
     if (
-      state.selectedIcons.size === state.gameSettings.targetRoundScore &&
+      state.gameStatus === GameStatus.PLAYING_ROUND_END &&
       !preparingNextRound
     ) {
       // Prepare next round
@@ -294,12 +329,7 @@ function GameHostPage(): JSX.Element {
     return () => {
       clearTimeout(nextRoundTimer);
     };
-  }, [
-    state.selectedIcons.size,
-    preparingNextRound,
-    incrementRound,
-    state.gameSettings.targetRoundScore,
-  ]);
+  }, [state.gameStatus, preparingNextRound, incrementRound]);
 
   /**
    * Automatically sends updates to the clients when the game settings change
@@ -318,10 +348,7 @@ function GameHostPage(): JSX.Element {
     return `${path}/play/${hostID}`;
   }
 
-  const endGame = useCallback(() => {
-    // Reset round to 0 (sends players back to the lobby)
-    incrementRound(0);
-
+  const startGame = useCallback(() => {
     // Reset scores to 0
     // Retrieve current state from ref
     const currState = stateRef.current;
@@ -341,7 +368,15 @@ function GameHostPage(): JSX.Element {
       type: StoreConstants.UPDATE_PLAYERS_LIST,
       currentPlayers: players,
     });
+
+    // Reset round to 0 (sends players back to the lobby)
+    incrementRound(1);
   }, [dispatch, incrementRound, sendToClients]);
+
+  const endGame = useCallback(() => {
+    // Reset round to 0 (sends players back to the lobby)
+    incrementRound(0);
+  }, [incrementRound]);
 
   // Game lobby
   if (state.round === 0) {
@@ -352,7 +387,7 @@ function GameHostPage(): JSX.Element {
         isSingleP={hostID ? false : true}
         setPlayerName={setPlayerName}
         sendToClients={sendToClients}
-        startGame={() => incrementRound(1)}
+        startGame={startGame}
         startHosting={() => startHosting()}
       />
     );
@@ -364,6 +399,7 @@ function GameHostPage(): JSX.Element {
       handleAddSelectedIcon={(heroNumber) =>
         addSelectedIcon(heroNumber, playerName)
       }
+      handleNewGame={startGame}
       handleEndGame={endGame}
     ></GamePage>
   );
