@@ -52,6 +52,7 @@ function GameStatusBar(props: GameStatusProps): JSX.Element {
       return (
         <div className="mb-3">
           <Button
+            className="slide-down-appear"
             variant={appendTheme("primary", state.appSettings.isDark)}
             onClick={props.handleNewGame}
           >
