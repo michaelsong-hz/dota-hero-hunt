@@ -43,7 +43,7 @@ docker run -p 9000:9000 peerjs/peerjs-server
 
 ## License
 
-Dota Hero Hunt is licensed under the GNU Affero General Public License. See `LICENSE` and `COPYING.md` in the root of this repository.
+Dota Hero Hunt is licensed under the GNU Affero General Public License. See `NOTICE` and `LICENSE.md` in the root of this repository.
 
 ![image](https://www.gnu.org/graphics/agplv3-with-text-162x68.png)
 

@@ -1,3 +1,5 @@
+@import "styles/variables.scss";
+
 .about-title {
   display: flex;
   align-items: center;
@@ -7,4 +9,22 @@
   h2 {
     display: inline;
   }
+}
+
+.about-license-link-light {
+  color: $text-theme-light;
+  text-decoration: underline;
+}
+.about-license-link-light:hover {
+  color: $text-theme-light;
+  text-decoration: underline;
+}
+
+.about-license-link-dark {
+  color: $text-theme-dark;
+  text-decoration: underline;
+}
+.about-license-link-dark:hover {
+  color: $text-theme-dark;
+  text-decoration: underline;
 }

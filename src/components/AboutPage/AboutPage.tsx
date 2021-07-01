@@ -6,7 +6,7 @@ import Row from "react-bootstrap/Row";
 import HeroHuntIcon from "images/HeroHuntIcon.svg";
 import { InstallStatus } from "models/InstallStatus";
 import { useStoreState } from "reducer/store";
-import { getAppVersion } from "utils/utilities";
+import { appendTheme, getAppVersion } from "utils/utilities";
 
 function AboutPage(): JSX.Element {
   const state = useStoreState();
@@ -85,7 +85,7 @@ function AboutPage(): JSX.Element {
   }
 
   return (
-    <Container className="mt-4">
+    <Container className="my-4">
       <Row>
         <Col className="about-title">
           <img
@@ -116,9 +116,72 @@ function AboutPage(): JSX.Element {
       <Row className="mt-1">
         <Col>{getInstallStatusText()}</Col>
       </Row>
-      <Row className="mt-4">
+      <Row className="mt-1">
         <Col>
           <p>Version {getAppVersion()}</p>
+        </Col>
+      </Row>
+      <Row className="mt-3">
+        <Col>
+          <h2>Licensing Information</h2>
+        </Col>
+      </Row>
+      <Row className="mt-1">
+        <Col>
+          <p className="mb-2">
+            Dota Hero Hunt is licensed under the GNU Affero General Public
+            License. You can view the{" "}
+            <a
+              className={appendTheme(
+                "about-license-link",
+                state.appSettings.isDark
+              )}
+              target="_blank"
+              href="https://raw.githubusercontent.com/michaelsong-hz/dota-hero-hunt/main/NOTICE"
+              rel="noreferrer"
+            >
+              copyright notice
+            </a>{" "}
+            and{" "}
+            <a
+              className={appendTheme(
+                "about-license-link",
+                state.appSettings.isDark
+              )}
+              target="_blank"
+              href="https://github.com/michaelsong-hz/dota-hero-hunt/blob/main/LICENSE.md"
+              rel="noreferrer"
+            >
+              license
+            </a>{" "}
+            on GitHub, along with the{" "}
+            <a
+              className={appendTheme(
+                "about-license-link",
+                state.appSettings.isDark
+              )}
+              target="_blank"
+              href="https://github.com/michaelsong-hz/dota-hero-hunt"
+              rel="noreferrer"
+            >
+              source code.
+            </a>
+          </p>
+          <p>
+            Dota Hero Hunt also uses libraries made freely available to the
+            community. Attributions can be viewed at{" "}
+            <a
+              className={appendTheme(
+                "about-license-link",
+                state.appSettings.isDark
+              )}
+              target="_blank"
+              href="https://raw.githubusercontent.com/michaelsong-hz/dota-hero-hunt/main/attributions.txt"
+              rel="noreferrer"
+            >
+              this link.
+            </a>
+          </p>
         </Col>
       </Row>
     </Container>
