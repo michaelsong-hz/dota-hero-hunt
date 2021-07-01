@@ -12,10 +12,15 @@ import {
 } from "react-bootstrap";
 import Switch from "react-switch";
 
-import { gridSizes, GridSizeTypes } from "models/GameSettingsType";
+import {
+  GameSettingErrors,
+  gridSizes,
+  GridSizeTypes,
+} from "models/GameSettingsType";
 import { useStoreDispatch, useStoreState } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
-import { appendTheme } from "utils/utilities";
+import { StorageConstants } from "utils/constants";
+import { appendTheme, checkForSettingsErrors } from "utils/utilities";
 
 interface GameSettingsProps {
   inviteLink: string;
@@ -147,43 +152,28 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
     e.preventDefault();
 
     if (props.startGame) {
-      let isValid = true;
-      const numHeroIcons = state.gameSettings.columns * state.gameSettings.rows;
+      const settingsErrors = checkForSettingsErrors(state.gameSettings);
 
-      // Validate our form fields
-      if (
-        state.gameSettings.targetTotalScore !== null &&
-        state.gameSettings.targetTotalScore <= 0
-      ) {
-        isValid = false;
-        setPointsToWinInvalid(
-          "The total points to win must be greater than 0."
+      if (settingsErrors.length === 0) {
+        // Save the player's current settings
+        localStorage.setItem(
+          StorageConstants.GAME_SETTINGS,
+          JSON.stringify(state.gameSettings)
         );
-      }
 
-      if (
-        state.gameSettings.targetRoundScore === null ||
-        state.gameSettings.targetRoundScore === undefined
-      ) {
-        isValid = false;
-        setPointsToAdvanceInvalid(
-          "You must set a target score for each round."
-        );
-      } else if (state.gameSettings.targetRoundScore > numHeroIcons) {
-        isValid = false;
-        setPointsToAdvanceInvalid(
-          `The points to advance a round must not be larger than the total 
-          number of hero icons (${numHeroIcons}).`
-        );
-      } else if (state.gameSettings.targetRoundScore <= 0) {
-        isValid = false;
-        setPointsToAdvanceInvalid(
-          "The points to advance a round must be greater than 0."
-        );
-      }
-
-      if (isValid) {
         props.startGame();
+      } else {
+        settingsErrors.forEach((error) => {
+          const [gameSettingsStatus, errorText] = error;
+          switch (gameSettingsStatus) {
+            case GameSettingErrors.INVALID_POINTS_TO_WIN:
+              setPointsToWinInvalid(errorText);
+              break;
+            case GameSettingErrors.INVALID_POINTS_TO_ADVANCE:
+              setPointsToAdvanceInvalid(errorText);
+              break;
+          }
+        });
       }
     }
   }

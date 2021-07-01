@@ -1,6 +1,12 @@
 import { captureException, setContext } from "@sentry/react";
 import Peer from "peerjs";
 
+import {
+  GameSettings,
+  GameSettingErrors,
+  GridSizeTypes,
+} from "models/GameSettingsType";
+
 export function appendTheme(themeName: string, isDark: boolean): string {
   if (isDark) {
     return `${themeName}-dark`;
@@ -71,4 +77,54 @@ export function getAppVersion(): string {
   }
   captureException(new Error("Env: REACT_APP_VERSION not set"));
   return "";
+}
+
+export function checkForSettingsErrors(
+  currSettings: GameSettings
+): Array<[GameSettingErrors, string]> {
+  const numHeroIcons = currSettings.columns * currSettings.rows;
+  const settingsErrors: Array<[GameSettingErrors, string]> = [];
+
+  if (
+    isNaN(currSettings.gridSize) ||
+    !(currSettings.gridSize in GridSizeTypes)
+  ) {
+    settingsErrors.push([
+      GameSettingErrors.INVALID_GRID_SIZE_TYPE,
+      "The selected grid size is invalid.",
+    ]);
+  }
+
+  if (
+    currSettings.targetTotalScore !== null &&
+    (isNaN(currSettings.targetTotalScore) || currSettings.targetTotalScore <= 0)
+  ) {
+    settingsErrors.push([
+      GameSettingErrors.INVALID_POINTS_TO_WIN,
+      "The total points to win must be greater than 0.",
+    ]);
+  }
+
+  if (
+    currSettings.targetRoundScore === null ||
+    currSettings.targetRoundScore === undefined ||
+    isNaN(currSettings.targetRoundScore)
+  ) {
+    settingsErrors.push([
+      GameSettingErrors.INVALID_POINTS_TO_ADVANCE,
+      "You must set a target score for each round.",
+    ]);
+  } else if (currSettings.targetRoundScore > numHeroIcons) {
+    settingsErrors.push([
+      GameSettingErrors.INVALID_POINTS_TO_ADVANCE,
+      `The points to advance a round must not be larger than the total number of hero icons (${numHeroIcons}).`,
+    ]);
+  } else if (currSettings.targetRoundScore <= 0) {
+    settingsErrors.push([
+      GameSettingErrors.INVALID_POINTS_TO_ADVANCE,
+      "The points to advance a round must be greater than 0.",
+    ]);
+  }
+
+  return settingsErrors;
 }

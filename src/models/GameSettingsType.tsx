@@ -24,3 +24,9 @@ export type GameSettings = {
   targetRoundScore: number | null;
   showTargetIcons: boolean;
 };
+
+export enum GameSettingErrors {
+  INVALID_GRID_SIZE_TYPE,
+  INVALID_POINTS_TO_WIN,
+  INVALID_POINTS_TO_ADVANCE,
+}
