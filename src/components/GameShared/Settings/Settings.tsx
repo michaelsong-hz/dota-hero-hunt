@@ -55,12 +55,33 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
     return "";
   }
 
+  // Checks if the target score has been toggled between a number and inf
+  function targetScoreHasToggled(
+    prevScore: number | null,
+    currentScore: number | null
+  ): boolean {
+    if (
+      (prevScore !== currentScore &&
+        prevScore === null &&
+        currentScore !== null) ||
+      (prevScore !== null && currentScore === null)
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   function getPointsToWinInputClass(): string {
     // Add animation if the number of points to win is toggled between infinite
     // or a number
     let baseName = "settings-num-input";
     let willAnimate = false;
-    if (prevTargetTotalScore.current !== state.gameSettings.targetTotalScore) {
+    if (
+      targetScoreHasToggled(
+        prevTargetTotalScore.current,
+        state.gameSettings.targetTotalScore
+      )
+    ) {
       willAnimate = true;
     }
     prevTargetTotalScore.current = state.gameSettings.targetTotalScore;
@@ -91,7 +112,13 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
     // or a number
     let baseName = "settings-inf-input";
     let willAnimate = false;
-    if (prevTargetTotalScore2.current !== state.gameSettings.targetTotalScore) {
+
+    if (
+      targetScoreHasToggled(
+        prevTargetTotalScore2.current,
+        state.gameSettings.targetTotalScore
+      )
+    ) {
       willAnimate = true;
     }
     prevTargetTotalScore2.current = state.gameSettings.targetTotalScore;
