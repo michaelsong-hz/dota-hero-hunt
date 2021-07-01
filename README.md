@@ -41,12 +41,6 @@ peerjs --port 9000 --key peerjs --path /myapp
 docker run -p 9000:9000 peerjs/peerjs-server
 ```
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
 ## License
 
 Dota Hero Hunt is licensed under the GNU Affero General Public License. See `LICENSE` and `COPYING.md` in the root of this repository.
