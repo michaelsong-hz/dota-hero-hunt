@@ -94,7 +94,7 @@ function UpdateMessage(): JSX.Element {
           className={`d-flex update-alert ${appendTheme(
             "update-alert",
             state.appSettings.isDark
-          )}`}
+          )} slide-down-appear`}
         >
           An update for Dota Hero Hunt is available!{" "}
           <div
