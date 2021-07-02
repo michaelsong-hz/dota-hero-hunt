@@ -134,6 +134,16 @@ function SharedModal(): JSX.Element {
       captureException(new Error("Tried to show an unknown modal"));
     }
 
+    const customFooter = (
+      <>
+        <Button
+          variant={appendTheme("primary", state.appSettings.isDark)}
+          onClick={() => window.location.reload()}
+        >
+          Reload Application
+        </Button>
+      </>
+    );
     return (
       <ErrorModal
         title="A Critical Error has Occurred"
@@ -141,6 +151,7 @@ function SharedModal(): JSX.Element {
           `Sorry! It looks like something went critically wrong, and \
            dotaherohunt.com needs to restart. Please try your action again.`,
         ]}
+        footer={customFooter}
       />
     );
   }
