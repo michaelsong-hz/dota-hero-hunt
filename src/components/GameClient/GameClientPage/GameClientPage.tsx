@@ -34,6 +34,7 @@ function GameClientPage(): JSX.Element {
   const [connectToHost, sendToHost, cleanUpConnections] = useClientPeer({
     playerName,
     remoteHostID,
+    isConnectedToHost,
     onMessageFromHost,
   });
   const [playAudio] = useSoundEffect();

@@ -1,4 +1,4 @@
-import { captureException, setContext } from "@sentry/react";
+import { captureException, captureMessage, setContext } from "@sentry/react";
 import Peer from "peerjs";
 import React, { useState, useRef, useCallback } from "react";
 
@@ -170,6 +170,7 @@ export default function useHostPeer(
       // Ignore if it was just losing connection to a fellow peer as it is a
       // non-fatal error
       if (error.type !== PeerJSErrorTypes.PEER_UNAVAILABLE) {
+        captureMessage(error.type);
         captureException(error);
         dispatch({
           type: StoreConstants.SET_PEER_ERROR,

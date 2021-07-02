@@ -73,6 +73,18 @@ function SharedModal(): JSX.Element {
             isDismissible={true}
           />
         );
+      case PeerJSErrorTypes.LOST_CONN_TO_HOST:
+        return (
+          <ErrorModal
+            title="Lost Connection to Host"
+            bodyText={[
+              "Sorry, it looks like we lost the connection to the host of this game.",
+              `Either the person who invited you has closed their game, or one
+               of your internet connections is unstable.`,
+            ]}
+            isDismissible={true}
+          />
+        );
       case OtherErrorTypes.HOST_DISCONNECTED:
         return (
           <ErrorModal

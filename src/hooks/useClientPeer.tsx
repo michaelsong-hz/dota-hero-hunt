@@ -1,3 +1,4 @@
+import { captureException, captureMessage } from "@sentry/react";
 import Peer from "peerjs";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { useCallback, useState, useRef } from "react";
@@ -9,7 +10,7 @@ import {
 } from "models/MessageClientTypes";
 import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
 import { OtherErrorTypes } from "models/Modals";
-import { PeerError } from "models/PeerErrors";
+import { PeerError, PeerJSErrorTypes } from "models/PeerErrors";
 import { useStoreDispatch } from "reducer/store";
 import { StoreConstants } from "reducer/storeReducer";
 import { getAppVersion, getPeerConfig } from "utils/utilities";
@@ -17,6 +18,7 @@ import { getAppVersion, getPeerConfig } from "utils/utilities";
 type UseClientPeerProps = {
   playerName: string;
   remoteHostID: string;
+  isConnectedToHost: boolean;
   onMessageFromHost: (data: HostTypes) => void;
 };
 
@@ -82,6 +84,24 @@ export default function useClientPeer(
       });
 
       hostConnection.on("error", (error: PeerError) => {
+        // Check if we lost connection to the host - not a defined error type
+        // by peer js so we'll set our own
+
+        // Hack to access the hidden object in peer js to let us know if we
+        // were connected before
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const hostConnections: number = (peer as any)._connections.size;
+        if (
+          hostConnections > 0 &&
+          error.type === undefined &&
+          error.message.substr(0, 28) === "Negotiation of connection to"
+        ) {
+          error.type = PeerJSErrorTypes.LOST_CONN_TO_HOST;
+        } else {
+          captureMessage(error.type);
+          captureException(error);
+        }
+
         dispatch({
           type: StoreConstants.SET_PEER_ERROR,
           error,
