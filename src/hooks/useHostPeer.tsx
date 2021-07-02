@@ -65,43 +65,49 @@ export default function useHostPeer(
     });
 
     peer.on("connection", (incomingConn) => {
-      incomingConn.on("data", (data: ClientTypes) => {
+      incomingConn.on("open", () => {
         const appVersion = getAppVersion();
         const incomingVersion = getVersionFromConn(incomingConn);
         const incomingPlayerName = getPlayerNameFromConn(incomingConn);
 
         const currentPlayers = stateRef.current.players;
-        if (data.type === ClientTypeConstants.NEW_CONNECTION) {
-          if (incomingVersion !== appVersion) {
-            invalidConnLabels.current.add(incomingConn.label);
+        if (incomingVersion !== appVersion) {
+          invalidConnLabels.current.add(incomingConn.label);
 
-            incomingConn.send({
-              type: HostTypeConstants.APP_VERSION_MISMATCH,
-              hostVersion: appVersion,
-              clientVersion: incomingVersion,
-            });
+          incomingConn.send({
+            type: HostTypeConstants.APP_VERSION_MISMATCH,
+            hostVersion: appVersion,
+            clientVersion: incomingVersion,
+          });
+        }
+        // TODO: Perform validation on incomingPlayerName
+        else if (
+          incomingPlayerName in currentPlayers ||
+          incomingPlayerName === ""
+        ) {
+          // Let client know that the player name has been taken
+          const currPlayerNames: string[] = [];
+
+          for (const currPlayerName of Object.keys(currentPlayers)) {
+            currPlayerNames.push(currPlayerName);
           }
-          // TODO: Perform validation on incomingPlayerName
-          else if (
-            incomingPlayerName in currentPlayers ||
-            incomingPlayerName === ""
-          ) {
-            // Let client know that the player name has been taken
-            const currPlayerNames: string[] = [];
+          invalidConnLabels.current.add(incomingConn.label);
 
-            for (const currPlayerName of Object.keys(currentPlayers)) {
-              currPlayerNames.push(currPlayerName);
-            }
-            invalidConnLabels.current.add(incomingConn.label);
-
-            incomingConn.send({
-              type: HostTypeConstants.PLAYER_NAME_TAKEN,
-              currentPlayers: currPlayerNames,
-            });
-          } else {
-            onMessage(data, incomingConn);
-          }
+          incomingConn.send({
+            type: HostTypeConstants.PLAYER_NAME_TAKEN,
+            currentPlayers: currPlayerNames,
+          });
         } else {
+          // TODO: The NEW_CONNECTION type should no longer be needed
+          const data: ClientTypes = {
+            type: ClientTypeConstants.NEW_CONNECTION,
+          };
+          onMessage(data, incomingConn);
+        }
+      });
+
+      incomingConn.on("data", (data: ClientTypes) => {
+        if (data.type !== ClientTypeConstants.NEW_CONNECTION) {
           onMessage(data, incomingConn);
         }
       });
