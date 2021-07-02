@@ -1,0 +1,43 @@
+.hero-icon-winning-clock {
+  animation: flyUp, rotationClockwise;
+}
+
+.hero-icon-winning-counter-clock {
+  animation: flyUp, rotationCounterClockwise;
+}
+
+.hero-icon-winning {
+  pointer-events: none;
+  position: fixed;
+  bottom: -50px;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in, linear;
+  z-index: 1001; // Place above everything else - including header
+}
+
+@keyframes flyUp {
+  from {
+    bottom: -50px;
+  }
+  to {
+    bottom: 210%;
+  }
+}
+
+@keyframes rotationClockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+@keyframes rotationCounterClockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-359deg);
+  }
+}
