@@ -104,7 +104,7 @@ function GameHostPage(): JSX.Element {
         // A player has won the game
         playAudio(SoundEffects.Applause);
         if (selectedPlayerName === "") {
-          statusText = "You win!";
+          statusText = "Victory!";
         } else {
           statusText = `${selectedPlayerName} wins!`;
         }
