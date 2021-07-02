@@ -5,7 +5,7 @@ export enum GameSettingsReducerConstants {
   UPDATE_SHOW_ICONS = "UPDATE_SHOW_ICONS",
 }
 
-export type IGameSettingsReducer = {
+export type GameSettingsReducer = {
   rows: number;
   columns: number;
   targetTotalScore: number;
@@ -31,21 +31,22 @@ export type IGameSettingsActions =
       showIcons: boolean;
     };
 
-export const gameSettingsInitialState: IGameSettingsReducer = {
-  rows: 4,
-  columns: 10,
-  targetTotalScore: 15,
-  targetRoundScore: 3,
+// These settings are not used for the inital state - see storeReducer.tsx
+export const gameSettingsInitialState: GameSettingsReducer = {
+  rows: 0,
+  columns: 0,
+  targetTotalScore: 0,
+  targetRoundScore: 0,
   showIcons: false,
 };
 
 export default function gameSettingsReducer(
-  state: IGameSettingsReducer = gameSettingsInitialState,
+  state: GameSettingsReducer = gameSettingsInitialState,
   action: IGameSettingsActions
-): IGameSettingsReducer {
+): GameSettingsReducer {
   switch (action.type) {
     case GameSettingsReducerConstants.UPDATE_ROWS:
-      return { ...state, rows: state.rows = action.rows };
+      return { ...state, rows: (state.rows = action.rows) };
     case GameSettingsReducerConstants.UPDATE_COLUMNS:
       state.columns = action.columns;
       return state;
