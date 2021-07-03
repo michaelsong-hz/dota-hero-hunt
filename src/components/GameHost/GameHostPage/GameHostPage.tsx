@@ -26,7 +26,7 @@ function GameHostPage(): JSX.Element {
   const dispatch = useStoreDispatch();
 
   const [preparingNextRound, setPreparingNextRound] = useState(false);
-  const [playerName, setPlayerName] = useState("");
+  const [playerName, setPlayerName] = useState<string>();
 
   // Keeping state in ref as we can't access the store in peer js callbacks
   const stateRef = useRef(state);
@@ -377,6 +377,11 @@ function GameHostPage(): JSX.Element {
     // Reset round to 0 (sends players back to the lobby)
     incrementRound(0);
   }, [incrementRound]);
+
+  // Waits for the playerName to be read before rendering
+  if (playerName === undefined) {
+    return <></>;
+  }
 
   // Game lobby
   if (state.round === 0) {
