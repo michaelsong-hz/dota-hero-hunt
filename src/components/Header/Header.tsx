@@ -71,11 +71,7 @@ function Header(): JSX.Element {
   }
 
   return (
-    <Navbar
-      className="navbar-expand-sm"
-      bg={appendTheme("header", state.appSettings.isDark)}
-      expand="lg"
-    >
+    <Navbar bg={appendTheme("header", state.appSettings.isDark)} expand="sm">
       <Link to="/">
         <Navbar.Brand
           className={`align-middle font-weight-bold ${appendTheme(
