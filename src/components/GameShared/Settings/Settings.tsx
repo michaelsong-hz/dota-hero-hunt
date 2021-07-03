@@ -281,7 +281,7 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
                 </Button>
               </div>
             )}
-            <div className="settings-action-start">
+            <div className="settings-action-start ml-2">
               <Button
                 className="settings-action-start-button"
                 disabled={props.disabled}

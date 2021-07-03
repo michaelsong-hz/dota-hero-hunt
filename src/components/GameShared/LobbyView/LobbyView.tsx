@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 
 import PlayerNameModal from "components/GameHost/PlayerNameModal";
 import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
