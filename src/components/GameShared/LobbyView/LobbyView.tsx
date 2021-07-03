@@ -78,7 +78,7 @@ function LobbyView(props: LobbyViewProps): JSX.Element {
   );
 
   return (
-    <Container className="mt-3">
+    <Container fluid="xl" className="mt-3">
       <PlayerNameModal
         playerName={playerName}
         showPlayerNameModal={showPlayerNameModal}
@@ -87,26 +87,24 @@ function LobbyView(props: LobbyViewProps): JSX.Element {
           if (startGame) startGame();
         }}
       />
-      <Row>
-        <Col
-          sm="12"
-          md="auto"
+      <div className="d-flex lobby-view-panels">
+        <div
           className={`${appendTheme(
             "content-holder",
             state.appSettings.isDark
-          )} mt-3`}
+          )}`}
         >
           <ConnectedPlayers />
-        </Col>
-        <Col className="mt-2">
-          <Row>
+        </div>
+        <div className="d-flex flex-column lobby-view-inner-panels">
+          <div>
             <LobbyInvite
               inviteLink={inviteLink}
               isSingleP={isSingleP}
               startHosting={startHosting}
             />
-          </Row>
-          <Row>
+          </div>
+          <div>
             <GameSettings
               inviteLink={inviteLink}
               disabled={startGame ? false : true}
@@ -115,9 +113,9 @@ function LobbyView(props: LobbyViewProps): JSX.Element {
               }}
               changeName={() => setShowPlayerNameModal(true)}
             />
-          </Row>
-        </Col>
-      </Row>
+          </div>
+        </div>
+      </div>
     </Container>
   );
 }

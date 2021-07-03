@@ -1,5 +1,26 @@
 @import "styles/variables.scss";
 
+.settings-actions {
+  gap: 0.5rem;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+}
+
+.settings-action-start {
+  width: 100%;
+  flex: 1;
+}
+
+.settings-action-start-button {
+  width: 100%;
+}
+
+@media (min-width: 476px) {
+  .settings-actions {
+    flex-direction: row;
+  }
+}
+
 .settings-num-input {
   max-width: 80px;
 }

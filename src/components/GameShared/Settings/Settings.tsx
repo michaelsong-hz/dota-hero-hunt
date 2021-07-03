@@ -259,135 +259,136 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
   }
 
   return (
-    <Col>
-      <Col
-        className={`${appendTheme(
-          "content-holder",
-          state.appSettings.isDark
-        )} pt-2 mt-3`}
-      >
-        <Form onSubmit={handleSubmit}>
-          <Row className="no-gutters">
-            <Col xs="auto" className="mr-auto">
-              <h3>Game Settings{props.disabled === true && ` (Read Only)`}</h3>
-            </Col>
+    <div
+      className={`${appendTheme(
+        "content-holder",
+        state.appSettings.isDark
+      )} px-3 py-2`}
+    >
+      <Form onSubmit={handleSubmit}>
+        <div className="d-flex">
+          <div className="mr-auto">
+            <h3>Game Settings{props.disabled === true && ` (Read Only)`}</h3>
+          </div>
+          <div className="d-flex settings-actions">
             {props.disabled === false && (
-              <Col xs="auto" className="mr-2 mt-1">
+              <div>
                 <Button
                   variant={appendTheme("secondary", state.appSettings.isDark)}
                   onClick={props.changeName}
                 >
                   Change Name
                 </Button>
-              </Col>
+              </div>
             )}
-            <Col xs="auto" className="mt-1">
+            <div className="settings-action-start">
               <Button
+                className="settings-action-start-button"
                 disabled={props.disabled}
                 variant={appendTheme("primary", state.appSettings.isDark)}
                 type="submit"
               >
                 {props.disabled ? "Waiting to Start" : "Start Game"}
               </Button>
-            </Col>
-          </Row>
-          <Row className="mt-2">
-            <Col xs="12" md="6">
-              <label>
-                <span>
-                  <p className="mb-1">Show Icon to Search For</p>
-                </span>
-                <Switch
-                  disabled={props.disabled}
-                  onChange={(showTargetIcons) =>
-                    onShowTargetIconsChange(showTargetIcons)
-                  }
-                  checked={state.gameSettings.showTargetIcons}
-                />
-              </label>
-            </Col>
-
-            <Col xs="12" md="6" className="mb-3">
-              <p className="mb-1">Grid Size</p>
-              <DropdownButton
-                id="grid-dropdown-button"
+            </div>
+          </div>
+        </div>
+        <Row className="mt-2">
+          <Col xs="12" sm="6">
+            <label>
+              <span>
+                <p className="mb-1">Show Icon to Search For</p>
+              </span>
+              <Switch
                 disabled={props.disabled}
-                title={getGridSizeText()}
-                variant={appendTheme("secondary", state.appSettings.isDark)}
-              >
-                <Dropdown.Item
-                  eventKey={GridSizeTypes.SMALL.toString()}
-                  onSelect={(e) => handleGridChange(e)}
-                >
-                  Small
-                </Dropdown.Item>
-                <Dropdown.Item
-                  eventKey={GridSizeTypes.MEDIUM.toString()}
-                  onSelect={(e) => handleGridChange(e)}
-                >
-                  Medium
-                </Dropdown.Item>
-                <Dropdown.Item
-                  eventKey={GridSizeTypes.LARGE_SQUARE.toString()}
-                  onSelect={(e) => handleGridChange(e)}
-                >
-                  Large
-                </Dropdown.Item>
-                <Dropdown.Item
-                  eventKey={GridSizeTypes.LARGE.toString()}
-                  onSelect={(e) => handleGridChange(e)}
-                >
-                  Large (Horizontal)
-                </Dropdown.Item>
-              </DropdownButton>
-            </Col>
-
-            <Col xs="12" md="6" className="mb-3">
-              <p className="mb-1">Points to Win</p>
-              <Row className="no-gutters">
-                <Col xs="auto" className="mr-2">
-                  <Form.Control
-                    type="number"
-                    className={getPointsToWinInputClass()}
-                    disabled={props.disabled}
-                    value={getPointsToWinValue()}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handlePointsToWinChange(e.target.value)
-                    }
-                    placeholder="Inf"
-                  />
-                </Col>
-                <Col xs="auto">
-                  <Button
-                    className={getPointsToWinInfiniteClass()}
-                    variant=""
-                    disabled={props.disabled}
-                    onClick={() => handlePointsToWinChange(null)}
-                  >
-                    <FontAwesomeIcon icon={faInfinity} />
-                  </Button>
-                </Col>
-              </Row>
-              {getInvalidJSX(pointsToWinInvalid)}
-            </Col>
-
-            <Col xs="12" md="6" className="pb-3">
-              <p className="mb-1">Points to Advance Round</p>
-              <Form.Control
-                type="number"
-                className="settings-num-input"
-                disabled={props.disabled}
-                value={getAdvanceRoundValue()}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handlePointsToAdvanceRoundChange(e.target.value)
+                onChange={(showTargetIcons) =>
+                  onShowTargetIconsChange(showTargetIcons)
                 }
+                checked={state.gameSettings.showTargetIcons}
               />
-              {getInvalidJSX(pointsToAdvanceInvalid)}
-            </Col>
-          </Row>
-        </Form>
-      </Col>
-    </Col>
+            </label>
+          </Col>
+
+          <Col xs="12" sm="6" className="mb-3">
+            <p className="mb-1">Grid Size</p>
+            <DropdownButton
+              id="grid-dropdown-button"
+              disabled={props.disabled}
+              title={getGridSizeText()}
+              variant={appendTheme("secondary", state.appSettings.isDark)}
+            >
+              <Dropdown.Item
+                eventKey={GridSizeTypes.SMALL.toString()}
+                onSelect={(e) => handleGridChange(e)}
+              >
+                Small
+              </Dropdown.Item>
+              <Dropdown.Item
+                eventKey={GridSizeTypes.MEDIUM.toString()}
+                onSelect={(e) => handleGridChange(e)}
+              >
+                Medium
+              </Dropdown.Item>
+              <Dropdown.Item
+                eventKey={GridSizeTypes.LARGE_SQUARE.toString()}
+                onSelect={(e) => handleGridChange(e)}
+              >
+                Large
+              </Dropdown.Item>
+              <Dropdown.Item
+                eventKey={GridSizeTypes.LARGE.toString()}
+                onSelect={(e) => handleGridChange(e)}
+              >
+                Large (Horizontal)
+              </Dropdown.Item>
+            </DropdownButton>
+          </Col>
+
+          <Col xs="12" sm="6" className="mb-3">
+            <p className="mb-1">Points to Win</p>
+            <Row className="no-gutters">
+              <Col xs="auto" className="mr-2">
+                <Form.Control
+                  type="number"
+                  className={getPointsToWinInputClass()}
+                  disabled={props.disabled}
+                  value={getPointsToWinValue()}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    handlePointsToWinChange(e.target.value)
+                  }
+                  placeholder="Inf"
+                />
+              </Col>
+              <Col xs="auto">
+                <Button
+                  className={getPointsToWinInfiniteClass()}
+                  variant=""
+                  disabled={props.disabled}
+                  onClick={() => handlePointsToWinChange(null)}
+                >
+                  <FontAwesomeIcon icon={faInfinity} />
+                </Button>
+              </Col>
+            </Row>
+            {getInvalidJSX(pointsToWinInvalid)}
+          </Col>
+
+          <Col xs="12" sm="6" className="pb-3">
+            <p className="mb-1">Points to Advance Round</p>
+            <Form.Control
+              type="number"
+              className="settings-num-input"
+              disabled={props.disabled}
+              value={getAdvanceRoundValue()}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handlePointsToAdvanceRoundChange(e.target.value)
+              }
+            />
+            {getInvalidJSX(pointsToAdvanceInvalid)}
+          </Col>
+        </Row>
+      </Form>
+    </div>
   );
 }
 

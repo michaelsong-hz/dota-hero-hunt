@@ -51,7 +51,7 @@ function GamePage(props: GamePageProps): JSX.Element {
           className={`${appendTheme(
             "content-holder",
             state.appSettings.isDark
-          )} px-3 py-2`}
+          )}`}
         >
           <ConnectedPlayers />
         </div>

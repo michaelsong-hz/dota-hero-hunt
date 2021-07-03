@@ -1,0 +1,15 @@
+.lobby-view-panels {
+  gap: 1rem;
+  flex-direction: column;
+}
+
+.lobby-view-inner-panels {
+  gap: 1rem;
+  flex: auto;
+}
+
+@media (min-width: 768px) {
+  .lobby-view-panels {
+    flex-direction: row;
+  }
+}

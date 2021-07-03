@@ -93,44 +93,39 @@ function LobbyInvite(props: LobbyInviteProps): JSX.Element {
   }, [state.modalToShow]);
 
   return (
-    <Col>
-      <Col
-        className={`${appendTheme(
-          "content-holder",
-          state.appSettings.isDark
-        )} mt-2 pt-2 pb-2`}
-      >
-        <Row>
+    <div
+      className={`${appendTheme(
+        "content-holder",
+        state.appSettings.isDark
+      )} px-3 py-2`}
+    >
+      <Row>
+        <Col>
+          <h3>{getHeaderText()}</h3>
+        </Col>
+      </Row>
+      <Row className="no-gutters pb-1">
+        <Col className="mr-2">
+          <Form.Control disabled={true} value={getInviteText()}></Form.Control>
+        </Col>
+        <Col xs="auto">
+          <Button
+            disabled={generatingLink}
+            variant={appendTheme("secondary", state.appSettings.isDark)}
+            onClick={() => handleGenerateInvite()}
+          >
+            {getButtonText()}
+          </Button>
+        </Col>
+      </Row>
+      {showLinkCopied === true && (
+        <Row className="slide-down-appear">
           <Col>
-            <h3>{getHeaderText()}</h3>
+            <p className="float-right mt-1 mb-0">Link copied to clipboard</p>
           </Col>
         </Row>
-        <Row className="no-gutters pb-1">
-          <Col className="mr-2">
-            <Form.Control
-              disabled={true}
-              value={getInviteText()}
-            ></Form.Control>
-          </Col>
-          <Col xs="auto">
-            <Button
-              disabled={generatingLink}
-              variant={appendTheme("secondary", state.appSettings.isDark)}
-              onClick={() => handleGenerateInvite()}
-            >
-              {getButtonText()}
-            </Button>
-          </Col>
-        </Row>
-        {showLinkCopied === true && (
-          <Row className="slide-down-appear">
-            <Col>
-              <p className="float-right mt-1 mb-0">Link copied to clipboard</p>
-            </Col>
-          </Row>
-        )}
-      </Col>
-    </Col>
+      )}
+    </div>
   );
 }
 

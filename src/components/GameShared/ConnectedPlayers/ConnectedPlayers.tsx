@@ -37,7 +37,7 @@ function ConnectedPlayers(): JSX.Element {
   }
 
   return (
-    <div className="connected-players mt-1">
+    <div className="connected-players my-2 mx-3">
       {getHeaderText()}
       {connectedPlayers}
     </div>

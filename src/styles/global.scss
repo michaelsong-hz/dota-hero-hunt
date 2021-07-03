@@ -75,14 +75,15 @@ code {
   transition: background-color 0.3s;
 }
 
-.container {
+.container,
+.container-xl {
   position: relative;
-  -webkit-animation: containerFardIn 0.3s;
-  -moz-animation: containerFardIn 0.3s;
-  animation: containerFardIn 0.3s;
+  -webkit-animation: containerFadeIn 0.3s;
+  -moz-animation: containerFadeIn 0.3s;
+  animation: containerFadeIn 0.3s;
 }
 
-@-webkit-keyframes containerFardIn {
+@-webkit-keyframes containerFadeIn {
   from {
     bottom: 15px;
     opacity: 0;
@@ -92,7 +93,7 @@ code {
     opacity: 1;
   }
 }
-@-moz-keyframes containerFardIn {
+@-moz-keyframes containerFadeIn {
   from {
     bottom: 15px;
     opacity: 0;
@@ -102,7 +103,7 @@ code {
     opacity: 1;
   }
 }
-@keyframes containerFardIn {
+@keyframes containerFadeIn {
   from {
     bottom: 15px;
     opacity: 0;
