@@ -285,8 +285,13 @@ function GameHostPage(): JSX.Element {
   // Initializes the game on page load
   useEffect(() => {
     // Retrieve the stored player name
-    const storedPlayerName =
-      localStorage.getItem(StorageConstants.PLAYER_NAME) || "";
+    let storedPlayerName = "";
+    if (playerName === undefined) {
+      storedPlayerName =
+        localStorage.getItem(StorageConstants.PLAYER_NAME) || "";
+    } else {
+      storedPlayerName = playerName;
+    }
 
     const currentPlayers: Record<string, PlayerState> = {};
     currentPlayers[storedPlayerName] = {
