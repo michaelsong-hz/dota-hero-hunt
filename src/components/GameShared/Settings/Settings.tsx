@@ -25,6 +25,7 @@ import { appendTheme, checkForSettingsErrors } from "utils/utilities";
 interface GameSettingsProps {
   inviteLink: string;
   disabled: boolean;
+  playerName: string;
   startGame?: () => void;
   changeName: () => void;
 }
@@ -277,7 +278,7 @@ function GameSettings(props: GameSettingsProps): JSX.Element {
                   variant={appendTheme("secondary", state.appSettings.isDark)}
                   onClick={props.changeName}
                 >
-                  Change Name
+                  {props.playerName === "" ? "Set Name" : "Change Name"}
                 </Button>
               </div>
             )}

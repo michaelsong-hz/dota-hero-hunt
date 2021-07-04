@@ -35,13 +35,17 @@ function LobbyView(props: LobbyViewProps): JSX.Element {
   } = props;
 
   const [showPlayerNameModal, setShowPlayerNameModal] = useState(false);
+  const [showPlayersPanel, setShowPlayersPanel] = useState(
+    isSingleP ? false : true
+  );
+  const [playersPanelAnimation, setPlayersPanelAnimation] = useState("");
 
-  // Prompts for the player's name if it isn't set
   useEffect(() => {
-    if (playerName === "") {
-      setShowPlayerNameModal(true);
+    if (isSingleP === false && showPlayersPanel === false) {
+      setShowPlayersPanel(true);
+      setPlayersPanelAnimation("lobby-view-player-in");
     }
-  }, [playerName]);
+  }, [isSingleP, showPlayersPanel]);
 
   // Sets the player name
   const submitPlayerName = useCallback(
@@ -77,6 +81,14 @@ function LobbyView(props: LobbyViewProps): JSX.Element {
     [dispatch, playerName, props, setPlayerName, state.players]
   );
 
+  function handleStartHosting() {
+    if (playerName === "") {
+      setShowPlayerNameModal(true);
+    } else if (startHosting) {
+      startHosting();
+    }
+  }
+
   return (
     <Container fluid="xl" className="mt-3">
       <PlayerNameModal
@@ -88,26 +100,30 @@ function LobbyView(props: LobbyViewProps): JSX.Element {
         }}
       />
       <div className="d-flex lobby-view-panels">
-        <div
-          className={`${appendTheme(
-            "content-holder",
-            state.appSettings.isDark
-          )}`}
-        >
-          <ConnectedPlayers />
-        </div>
+        {showPlayersPanel && (
+          <div
+            className={`${appendTheme(
+              "content-holder",
+              state.appSettings.isDark
+            )} ${playersPanelAnimation}`}
+          >
+            <ConnectedPlayers />
+          </div>
+        )}
         <div className="d-flex flex-column lobby-view-inner-panels">
           <div>
             <LobbyInvite
               inviteLink={inviteLink}
               isSingleP={isSingleP}
-              startHosting={startHosting}
+              playerName={playerName}
+              startHosting={() => handleStartHosting()}
             />
           </div>
           <div>
             <GameSettings
               inviteLink={inviteLink}
               disabled={startGame ? false : true}
+              playerName={playerName}
               startGame={() => {
                 if (startGame) startGame();
               }}

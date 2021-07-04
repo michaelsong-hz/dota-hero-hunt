@@ -9,6 +9,7 @@ import { appendTheme } from "utils/utilities";
 interface LobbyInviteProps {
   inviteLink: string;
   isSingleP: boolean;
+  playerName: string;
   startHosting?: () => void;
 }
 
@@ -46,7 +47,10 @@ function LobbyInvite(props: LobbyInviteProps): JSX.Element {
   function handleGenerateInvite() {
     if (props.isSingleP) {
       if (props.startHosting) {
-        setGeneratingLink(true);
+        // We need a player name before we can start hosting
+        if (props.playerName !== "") {
+          setGeneratingLink(true);
+        }
         props.startHosting();
       }
     } else {

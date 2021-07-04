@@ -66,15 +66,10 @@ function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
   }
 
   function handleCancel() {
-    // Go back if a name was not entered (required to invite friends)
-    if (props.playerName === "") {
-      props.goBack();
-    } else {
-      // Reset typed name in the modal in case it is reopened
-      setTypedPlayerName(props.playerName);
-      // Submit the old name to close the modal
-      props.submitPlayerName(props.playerName);
-    }
+    // Reset typed name in the modal in case it is reopened
+    setTypedPlayerName(props.playerName);
+    // Submit the old name to close the modal
+    props.submitPlayerName(props.playerName);
   }
 
   return (
@@ -84,6 +79,12 @@ function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
           <Modal.Title>Set Your Player Name</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {props.playerName === "" && (
+            <p style={{ color: "#212529" }}>
+              To invite your friends to play with you, you first need to set a
+              player name.
+            </p>
+          )}
           <Form.Group>
             {NameInput()}
             <Form.Control.Feedback type="invalid">
@@ -96,7 +97,7 @@ function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
             variant={appendTheme("secondary", state.appSettings.isDark)}
             onClick={handleCancel}
           >
-            {props.playerName === "" ? "Go Back" : "Cancel"}
+            Cancel
           </Button>
           <Button
             variant={appendTheme("primary", state.appSettings.isDark)}
