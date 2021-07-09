@@ -15,23 +15,28 @@ import RangeSlider from "react-bootstrap-range-slider";
 import { Link } from "react-router-dom";
 import Switch from "react-switch";
 
+import { useAppSelector, useAppDispatch } from "hooks/useStore";
 import HeroHuntIcon from "images/HeroHuntIcon.svg";
-import { useStoreState, useStoreDispatch } from "reducer/store";
-import { StoreConstants } from "reducer/storeReducer";
+import {
+  selectIsDark,
+  selectVolume,
+  setIsDark,
+  setVolume,
+} from "store/application/applicationSlice";
 import { GlobalConstants, StorageConstants } from "utils/constants";
 import { appendTheme } from "utils/utilities";
 
 function Header(): JSX.Element {
-  const state = useStoreState();
-  const dispatch = useStoreDispatch();
+  const isDark = useAppSelector(selectIsDark);
+  const volume = useAppSelector(selectVolume);
+
+  const dispatch = useAppDispatch();
+
   const [showVolume, setShowVolume] = useState(false);
 
   function toggleTooltip(show: boolean) {
     if (show === false) {
-      localStorage.setItem(
-        StorageConstants.VOLUME,
-        state.appSettings.volume.toString()
-      );
+      localStorage.setItem(StorageConstants.VOLUME, volume.toString());
     }
     setShowVolume(show);
   }
@@ -41,13 +46,10 @@ function Header(): JSX.Element {
       <RangeSlider
         tooltipLabel={(currentValue) => `${currentValue}%`}
         tooltipPlacement="top"
-        value={state.appSettings.volume}
+        value={volume}
         onChange={(changeEvent) => {
           const volume = parseInt(changeEvent.target.value);
-          dispatch({
-            type: StoreConstants.SET_VOLUME,
-            volume: volume,
-          });
+          dispatch(setVolume(volume));
           Howler.volume(volume / 100);
         }}
         step={GlobalConstants.VOLUME_STEP}
@@ -56,27 +58,24 @@ function Header(): JSX.Element {
   );
 
   function toggleTheme(isDark: boolean) {
-    dispatch({
-      type: StoreConstants.SET_THEME,
-      isDark,
-    });
+    dispatch(setIsDark(isDark));
     localStorage.setItem(StorageConstants.THEME_IS_DARK, isDark.toString());
   }
 
   function getHeaderSecondaryClass(): string {
-    if (state.appSettings.isDark) {
+    if (isDark) {
       return "header-secondary";
     }
     return "text-muted";
   }
 
   return (
-    <Navbar bg={appendTheme("header", state.appSettings.isDark)} expand="sm">
+    <Navbar bg={appendTheme("header", isDark)} expand="sm">
       <Link to="/">
         <Navbar.Brand
           className={`align-middle font-weight-bold ${appendTheme(
             "text",
-            !state.appSettings.isDark
+            !isDark
           )}`}
         >
           <img
@@ -93,9 +92,7 @@ function Header(): JSX.Element {
       <Navbar.Toggle
         label="Toggle navigation"
         className={
-          state.appSettings.isDark
-            ? "navbar-toggle navbar-toggle-dark"
-            : "navbar-toggle"
+          isDark ? "navbar-toggle navbar-toggle-dark" : "navbar-toggle"
         }
       />
       <Navbar.Collapse id="basic-navbar-nav">
@@ -114,10 +111,10 @@ function Header(): JSX.Element {
         >
           <Button
             className="mr-1 header-btn"
-            variant={appendTheme("navbar-brand", state.appSettings.isDark)}
+            variant={appendTheme("navbar-brand", isDark)}
           >
             <div className={getHeaderSecondaryClass()}>
-              {state.appSettings.volume > 0 ? (
+              {volume > 0 ? (
                 <FontAwesomeIcon icon={faVolumeUp} />
               ) : (
                 <FontAwesomeIcon icon={faVolumeMute} />
@@ -128,16 +125,12 @@ function Header(): JSX.Element {
         <Form inline className="header-switch-wrapper">
           <label>
             <Switch
-              className={
-                state.appSettings.isDark
-                  ? "header-switch-on"
-                  : "header-switch-off"
-              }
+              className={isDark ? "header-switch-on" : "header-switch-off"}
               height={24}
               width={50}
               handleDiameter={22}
               onChange={(checked: boolean) => toggleTheme(checked)}
-              checked={state.appSettings.isDark}
+              checked={isDark}
               checkedIcon={
                 <div
                   style={{

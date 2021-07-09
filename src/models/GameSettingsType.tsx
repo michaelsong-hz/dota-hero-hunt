@@ -23,6 +23,7 @@ export type GameSettings = {
   targetTotalScore: number | null;
   targetRoundScore: number | null;
   showTargetIcons: boolean;
+  timeBetweenRounds: number; // Seconds
 };
 
 export enum GameSettingErrors {

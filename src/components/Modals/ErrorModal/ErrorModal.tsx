@@ -2,8 +2,12 @@ import React from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 
-import { useStoreDispatch, useStoreState } from "reducer/store";
-import { StoreConstants } from "reducer/storeReducer";
+import { useAppSelector, useAppDispatch } from "hooks/useStore";
+import {
+  selectIsDark,
+  selectModalCustomMessage,
+  updateModalToShow,
+} from "store/application/applicationSlice";
 import { appendTheme } from "utils/utilities";
 
 type ErrorModalProps = {
@@ -15,16 +19,20 @@ type ErrorModalProps = {
 
 function ErrorModal(props: ErrorModalProps): JSX.Element {
   const history = useHistory();
-  const state = useStoreState();
-  const dispatch = useStoreDispatch();
+
+  const isDark = useAppSelector(selectIsDark);
+  const modalCustomMessage = useAppSelector(selectModalCustomMessage);
+
+  const dispatch = useAppDispatch();
 
   const { title, bodyText, isDismissible, footer } = props;
 
   function handleHide() {
-    dispatch({
-      type: StoreConstants.SET_MODAL,
-      modal: null,
-    });
+    dispatch(
+      updateModalToShow({
+        modal: null,
+      })
+    );
   }
 
   function handleReturnHome() {
@@ -35,7 +43,7 @@ function ErrorModal(props: ErrorModalProps): JSX.Element {
   function getBodyText(): JSX.Element[] {
     const pTexts: JSX.Element[] = [];
     let index = 0;
-    state.modalCustomMessage.forEach((pText) => {
+    modalCustomMessage.forEach((pText) => {
       index += 1;
       pTexts.push(<p key={`error-p${index}`}>{pText}</p>);
     });
@@ -52,7 +60,7 @@ function ErrorModal(props: ErrorModalProps): JSX.Element {
     } else if (isDismissible === undefined || isDismissible === false) {
       return (
         <Button
-          variant={appendTheme("primary", state.appSettings.isDark)}
+          variant={appendTheme("primary", isDark)}
           onClick={() => handleReturnHome()}
         >
           Return to Home Page
@@ -62,13 +70,13 @@ function ErrorModal(props: ErrorModalProps): JSX.Element {
     return (
       <>
         <Button
-          variant={appendTheme("secondary", state.appSettings.isDark)}
+          variant={appendTheme("secondary", isDark)}
           onClick={() => handleReturnHome()}
         >
           Return to Home Page
         </Button>
         <Button
-          variant={appendTheme("primary", state.appSettings.isDark)}
+          variant={appendTheme("primary", isDark)}
           onClick={() => handleHide()}
         >
           Try Again
@@ -82,7 +90,7 @@ function ErrorModal(props: ErrorModalProps): JSX.Element {
       show={true}
       onHide={() => handleHide()}
       backdrop={isDismissible ? true : "static"}
-      contentClassName={appendTheme("modal-content", state.appSettings.isDark)}
+      contentClassName={appendTheme("modal-content", isDark)}
     >
       <Modal.Header>
         <Modal.Title>{title}</Modal.Title>

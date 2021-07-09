@@ -2,18 +2,30 @@ import React, { useEffect, useState } from "react";
 import { Button, Row } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 
+import { useAppDispatch, useAppSelector } from "hooks/useStore";
 import Placeholder_icon from "images/Placeholder_icon.png";
 import { GameStatus } from "models/GameStatus";
-import { useStoreState } from "reducer/store";
+import { selectIsDark } from "store/application/applicationSlice";
+import { startGame } from "store/game/gameHostThunks";
+import {
+  selectGameSettings,
+  selectGameStatus,
+  selectStatusText,
+  selectTargetHeroes,
+} from "store/game/gameSlice";
 import { heroList } from "utils/HeroList";
 import { appendTheme, getIconPath } from "utils/utilities";
 
-interface GameStatusProps {
-  handleNewGame?: () => void;
-}
+function GameStatusBar(): JSX.Element {
+  const targetHeroes = useAppSelector(selectTargetHeroes);
+  const gameSettings = useAppSelector(selectGameSettings);
+  const gameStatus = useAppSelector(selectGameStatus);
+  const statusText = useAppSelector(selectStatusText);
 
-function GameStatusBar(props: GameStatusProps): JSX.Element {
-  const state = useStoreState();
+  const isDark = useAppSelector(selectIsDark);
+
+  const dispatch = useAppDispatch();
+
   const [loading, setLoading] = useState(true);
 
   // Loads new icons if the current ones are changed
@@ -32,7 +44,7 @@ function GameStatusBar(props: GameStatusProps): JSX.Element {
     async function loadImages() {
       setLoading(true);
       await Promise.all(
-        Array.from(state.targetHeroes).map(
+        Array.from(targetHeroes).map(
           async (imageNumber) => await loadImage(imageNumber)
         )
       );
@@ -40,22 +52,22 @@ function GameStatusBar(props: GameStatusProps): JSX.Element {
     }
 
     // Skips image loading if target icons will not be shown
-    if (state.gameSettings.showTargetIcons === false) {
+    if (gameSettings.showTargetIcons === false) {
       setLoading(false);
     } else {
       loadImages();
     }
-  }, [state.gameSettings.showTargetIcons, state.targetHeroes]);
+  }, [gameSettings.showTargetIcons, targetHeroes]);
 
   function getNewGameButton() {
-    if (state.gameStatus === GameStatus.FINISHED && props.handleNewGame) {
+    if (gameStatus === GameStatus.FINISHED) {
       return (
         <div className="mb-3">
           <Button
             size="lg"
             className="slide-down-appear"
-            variant={appendTheme("primary", state.appSettings.isDark)}
-            onClick={props.handleNewGame}
+            variant={appendTheme("primary", isDark)}
+            onClick={() => dispatch(startGame())}
           >
             New Game
           </Button>
@@ -67,10 +79,10 @@ function GameStatusBar(props: GameStatusProps): JSX.Element {
 
   function renderHeroesToFind(loadingIcons: boolean): JSX.Element[] {
     const heroesToFind: JSX.Element[] = [];
-    state.targetHeroes.forEach((targetHero) => {
+    targetHeroes.forEach((targetHero) => {
       heroesToFind.push(
         <Col key={`${heroList[targetHero].name}-icon`} xs="4" md="auto">
-          {state.gameSettings.showTargetIcons === true && (
+          {gameSettings.showTargetIcons === true && (
             <img
               className="status-hero-icon fast-fade-reveal"
               src={
@@ -92,7 +104,7 @@ function GameStatusBar(props: GameStatusProps): JSX.Element {
   return (
     <div className="d-flex flex-column">
       <div>
-        <h3>{state.statusText}</h3>
+        <h3>{statusText}</h3>
       </div>
       {getNewGameButton()}
       <div>

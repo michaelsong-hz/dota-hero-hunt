@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import AboutPage from "components/AboutPage";
@@ -9,11 +9,18 @@ import HelmetWrapper from "components/HelmetWrapper";
 import SharedModal from "components/Modals/SharedModal";
 import NotFoundPage from "components/NotFoundPage";
 import UpdateMessage from "components/UpdateMessage";
-import { StoreContextProvider } from "reducer/store";
+import { useAppDispatch } from "hooks/useStore";
+import { startGame } from "store/game/gameHostThunks";
 
 function App(): JSX.Element {
+  // TODO: This may not work? Might be above the store context?
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(startGame());
+  }, [dispatch]);
+
   return (
-    <StoreContextProvider>
+    <>
       <HelmetWrapper />
       <UpdateMessage />
       <Router>
@@ -34,7 +41,7 @@ function App(): JSX.Element {
           </Route>
         </Switch>
       </Router>
-    </StoreContextProvider>
+    </>
   );
 }
 

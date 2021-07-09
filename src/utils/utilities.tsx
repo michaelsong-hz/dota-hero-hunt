@@ -8,6 +8,7 @@ import {
 } from "models/GameSettingsType";
 
 export function appendTheme(themeName: string, isDark: boolean): string {
+  // const isDark = store.getState().application.appSettings.isDark;
   if (isDark) {
     return `${themeName}-dark`;
   }
@@ -127,4 +128,12 @@ export function checkForSettingsErrors(
   }
 
   return settingsErrors;
+}
+
+export function isClient(): boolean {
+  const path = window.location.pathname;
+  if (path.length <= 1) {
+    return false;
+  }
+  return true;
 }

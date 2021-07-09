@@ -1,15 +1,17 @@
 import React from "react";
 
-import { useStoreState } from "reducer/store";
+import { useAppSelector } from "hooks/useStore";
+import { selectPlayers, selectRound } from "store/game/gameSlice";
 
 function ConnectedPlayers(): JSX.Element {
-  const state = useStoreState();
+  const round = useAppSelector(selectRound);
+  const players = useAppSelector(selectPlayers);
 
   const connectedPlayers: JSX.Element[] = [];
 
-  for (const [readPlayerName, player] of Object.entries(state.players)) {
+  for (const [readPlayerName, player] of Object.entries(players)) {
     let playerName = readPlayerName;
-    if (playerName === "" && state.round > 0) {
+    if (playerName === "" && round > 0) {
       playerName = "Your score:";
     }
     connectedPlayers.push(
@@ -20,7 +22,7 @@ function ConnectedPlayers(): JSX.Element {
         <div className="conn-player-name align-self-center">
           <h4>{playerName}</h4>
         </div>
-        {state.round > 0 && (
+        {round > 0 && (
           <div className="align-self-center ml-3">
             <h5 className="">{player.score}</h5>
           </div>
@@ -30,7 +32,7 @@ function ConnectedPlayers(): JSX.Element {
   }
 
   function getHeaderText() {
-    if (connectedPlayers.length > 1 || state.round === 0) {
+    if (connectedPlayers.length > 1 || round === 0) {
       return <h2>Players</h2>;
     }
     return <></>;

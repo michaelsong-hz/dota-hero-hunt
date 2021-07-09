@@ -1,26 +1,23 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 
-import { OtherErrorTypes } from "models/Modals";
-import { PeerJSErrorTypes } from "models/PeerErrors";
-import { useStoreState } from "reducer/store";
+import { useAppSelector, useAppDispatch } from "hooks/useStore";
+import { selectIsDark } from "store/application/applicationSlice";
+import { isSinglePlayer, selectHostID } from "store/host/hostSlice";
+import { startHosting } from "store/host/hostThunks";
 import { appendTheme } from "utils/utilities";
 
-interface LobbyInviteProps {
-  inviteLink: string;
-  isSingleP: boolean;
-  playerName: string;
-  startHosting?: () => void;
-}
-
-function LobbyInvite(props: LobbyInviteProps): JSX.Element {
-  const state = useStoreState();
+function LobbyInvite(): JSX.Element {
+  const isSingleP = useAppSelector(isSinglePlayer);
+  const hostID = useAppSelector(selectHostID);
+  const isDark = useAppSelector(selectIsDark);
+  const dispatch = useAppDispatch();
 
   const [generatingLink, setGeneratingLink] = useState(false);
   const [showLinkCopied, setShowLinkCopied] = useState(false);
 
   function getHeaderText(): string {
-    if (props.isSingleP) {
+    if (isSingleP) {
       if (generatingLink) {
         return "Generating Invite Link...";
       } else {
@@ -31,30 +28,35 @@ function LobbyInvite(props: LobbyInviteProps): JSX.Element {
   }
 
   function getInviteText(): string {
-    if (props.isSingleP) {
+    if (isSingleP) {
       return "Click generate to get an invite link";
     }
-    return props.inviteLink;
+    return getInviteLink();
   }
 
   function getButtonText(): string {
-    if (props.isSingleP) {
+    if (isSingleP) {
       return "Generate";
     }
     return "Copy";
   }
 
+  const getInviteLink = useCallback(() => {
+    if (hostID) {
+      let path = window.location.href;
+      path =
+        path[path.length - 1] === "/" ? path.substr(0, path.length - 1) : path;
+      return `${path}/play/${hostID}`;
+    }
+    // TODO: Do this for clients too
+    return "";
+  }, [hostID]);
+
   function handleGenerateInvite() {
-    if (props.isSingleP) {
-      if (props.startHosting) {
-        // We need a player name before we can start hosting
-        if (props.playerName !== "") {
-          setGeneratingLink(true);
-        }
-        props.startHosting();
-      }
+    if (isSingleP) {
+      dispatch(startHosting());
     } else {
-      navigator.clipboard.writeText(props.inviteLink);
+      navigator.clipboard.writeText(getInviteLink());
       setShowLinkCopied(true);
     }
   }
@@ -64,7 +66,7 @@ function LobbyInvite(props: LobbyInviteProps): JSX.Element {
   useEffect(() => {
     async function writeLinkToClipboard() {
       try {
-        await navigator.clipboard.writeText(props.inviteLink);
+        await navigator.clipboard.writeText(getInviteLink());
         setShowLinkCopied(true);
         setGeneratingLink(false);
       } catch (err) {
@@ -78,31 +80,20 @@ function LobbyInvite(props: LobbyInviteProps): JSX.Element {
       }
     }
 
-    if (prevIsSinglePRef.current === true && props.isSingleP === false) {
+    if (prevIsSinglePRef.current === true && isSingleP === false) {
       writeLinkToClipboard();
     }
-    prevIsSinglePRef.current = props.isSingleP;
-  }, [props.inviteLink, props.isSingleP]);
+    prevIsSinglePRef.current = isSingleP;
+  }, [getInviteLink, isSingleP]);
 
-  // If there was an error with generating an invite link and the user tries
-  // again, reset the generate button to be enabled
-  const prevModalToShowRef = useRef<PeerJSErrorTypes | OtherErrorTypes | null>(
-    null
-  );
-  useEffect(() => {
-    if (prevModalToShowRef !== null && state.modalToShow === null) {
-      setGeneratingLink(false);
-    }
-    prevModalToShowRef.current = state.modalToShow;
-  }, [state.modalToShow]);
+  // useEffect(() => {
+  //   if (state.modalToShow === null) {
+  //     setGeneratingLink(false);
+  //   }
+  // }, [state.modalToShow]);
 
   return (
-    <div
-      className={`${appendTheme(
-        "content-holder",
-        state.appSettings.isDark
-      )} px-3 py-2`}
-    >
+    <div className={`${appendTheme("content-holder", isDark)} px-3 py-2`}>
       <Row>
         <Col>
           <h3>{getHeaderText()}</h3>
@@ -114,8 +105,7 @@ function LobbyInvite(props: LobbyInviteProps): JSX.Element {
         </Col>
         <Col xs="auto">
           <Button
-            disabled={generatingLink}
-            variant={appendTheme("secondary", state.appSettings.isDark)}
+            variant={appendTheme("secondary", isDark)}
             onClick={() => handleGenerateInvite()}
           >
             {getButtonText()}

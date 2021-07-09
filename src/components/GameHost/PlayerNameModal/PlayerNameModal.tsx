@@ -3,29 +3,32 @@ import { Modal } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 
-import { useStoreState } from "reducer/store";
-import { StorageConstants } from "utils/constants";
+import { useAppDispatch, useAppSelector } from "hooks/useStore";
+import { RegularModals } from "models/Modals";
+import {
+  selectIsDark,
+  selectModalToShow,
+  selectPlayerName,
+  updateModalToShow,
+} from "store/application/applicationSlice";
+import { submitPlayerName } from "store/host/hostThunks";
 import { appendTheme } from "utils/utilities";
 
-interface PlayerNameModalProps {
-  playerName: string;
-  showPlayerNameModal: boolean;
-  submitPlayerName: (playerName: string) => void;
-  goBack: () => void;
-}
+function PlayerNameModal(): JSX.Element {
+  const playerName = useAppSelector(selectPlayerName);
+  const modalToShow = useAppSelector(selectModalToShow);
+  const isDark = useAppSelector(selectIsDark);
+  const dispatch = useAppDispatch();
 
-function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
-  const state = useStoreState();
   const [isInvalidName, setIsInvalidName] = useState(false);
-  const [typedPlayerName, setTypedPlayerName] = useState(props.playerName);
+  const [typedPlayerName, setTypedPlayerName] = useState(playerName);
 
   function handleClose() {
     // TODO: Check that the player name hasn't been taken
     if (!isStringValid(typedPlayerName)) {
       setIsInvalidName(true);
     } else {
-      localStorage.setItem(StorageConstants.PLAYER_NAME, typedPlayerName);
-      props.submitPlayerName(typedPlayerName);
+      dispatch(submitPlayerName(typedPlayerName));
     }
   }
 
@@ -67,19 +70,21 @@ function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
 
   function handleCancel() {
     // Reset typed name in the modal in case it is reopened
-    setTypedPlayerName(props.playerName);
-    // Submit the old name to close the modal
-    props.submitPlayerName(props.playerName);
+    setTypedPlayerName(playerName);
+    dispatch(updateModalToShow({ modal: null }));
   }
 
   return (
-    <Modal show={props.showPlayerNameModal} onHide={() => handleCancel()}>
+    <Modal
+      show={modalToShow === RegularModals.PLAYER_NAME_MODAL}
+      onHide={() => handleCancel()}
+    >
       <Form onSubmit={handleSubmit}>
         <Modal.Header>
           <Modal.Title>Set Your Player Name</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {props.playerName === "" && (
+          {playerName === "" && (
             <p style={{ color: "#212529" }}>
               To invite your friends to play with you, you first need to set a
               player name.
@@ -94,15 +99,12 @@ function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
         </Modal.Body>
         <Modal.Footer>
           <Button
-            variant={appendTheme("secondary", state.appSettings.isDark)}
+            variant={appendTheme("secondary", isDark)}
             onClick={handleCancel}
           >
             Cancel
           </Button>
-          <Button
-            variant={appendTheme("primary", state.appSettings.isDark)}
-            type="submit"
-          >
+          <Button variant={appendTheme("primary", isDark)} type="submit">
             Submit
           </Button>
         </Modal.Footer>

@@ -1,27 +1,24 @@
 import React from "react";
 import { Container } from "react-bootstrap";
 
+import { useAppSelector } from "hooks/useStore";
 import { GameStatus } from "models/GameStatus";
-import { useStoreState } from "reducer/store";
+import { selectIsDark } from "store/application/applicationSlice";
+import { selectGameStatus } from "store/game/gameSlice";
 import { heroList } from "utils/HeroList";
-import { appendTheme, getIconPath } from "utils/utilities";
+import { appendTheme, getIconPath, isClient } from "utils/utilities";
 
 import ConnectedPlayers from "../ConnectedPlayers";
 import HeroGrid from "../HeroGrid";
 import HeroIconWinning from "../HeroIconWinning";
 import SettingsButton from "../SettingsButton";
 
-interface GamePageProps {
-  handleAddSelectedIcon: (heroNumber: number) => void;
-  handleNewGame?: () => void;
-  handleEndGame?: () => void;
-}
-
-function GamePage(props: GamePageProps): JSX.Element {
-  const state = useStoreState();
+function GamePage(): JSX.Element {
+  const gameStatus = useAppSelector(selectGameStatus);
+  const isDark = useAppSelector(selectIsDark);
 
   function getWinningIcons() {
-    if (state.gameStatus !== GameStatus.FINISHED) {
+    if (gameStatus !== GameStatus.FINISHED) {
       return [];
     }
     const winningIcons = [];
@@ -41,30 +38,22 @@ function GamePage(props: GamePageProps): JSX.Element {
   return (
     <Container fluid="xl" className="mt-3">
       {getWinningIcons()}
-      {props.handleEndGame && (
+      {!isClient() && (
         <div className="d-flex flex-row-reverse mb-3">
-          <SettingsButton handleClick={props.handleEndGame}></SettingsButton>
+          <SettingsButton />
         </div>
       )}
       <div className="game-page-panels d-flex">
-        <div
-          className={`${appendTheme(
-            "content-holder",
-            state.appSettings.isDark
-          )}`}
-        >
+        <div className={`${appendTheme("content-holder", isDark)}`}>
           <ConnectedPlayers />
         </div>
         <div
           className={`game-page-hero-grid ${appendTheme(
             "content-holder",
-            state.appSettings.isDark
+            isDark
           )} px-2 py-2`}
         >
-          <HeroGrid
-            handleClick={props.handleAddSelectedIcon}
-            handleNewGame={props.handleNewGame}
-          />
+          <HeroGrid />
         </div>
       </div>
     </Container>

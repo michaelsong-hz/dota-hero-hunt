@@ -1,40 +1,20 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
 
 import PlayerNameModal from "components/GameHost/PlayerNameModal";
-import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
-import { PlayerState } from "models/PlayerState";
-import { useStoreDispatch, useStoreState } from "reducer/store";
-import { StoreConstants } from "reducer/storeReducer";
+import { useAppSelector } from "hooks/useStore";
+import { selectIsDark } from "store/application/applicationSlice";
+import { isSinglePlayer } from "store/host/hostSlice";
 import { appendTheme } from "utils/utilities";
 
 import ConnectedPlayers from "../ConnectedPlayers";
 import LobbyInvite from "../LobbyInvite";
 import GameSettings from "../Settings";
 
-interface LobbyViewProps {
-  playerName: string;
-  inviteLink: string;
-  isSingleP: boolean;
-  setPlayerName: (playerName: string) => void;
-  sendToClients?: (data: HostTypes) => void;
-  startGame?: () => void;
-  startHosting?: () => void;
-}
+function LobbyView(): JSX.Element {
+  const isSingleP = useAppSelector(isSinglePlayer);
+  const isDark = useAppSelector(selectIsDark);
 
-function LobbyView(props: LobbyViewProps): JSX.Element {
-  const state = useStoreState();
-  const dispatch = useStoreDispatch();
-  const {
-    playerName,
-    inviteLink,
-    isSingleP,
-    setPlayerName,
-    startGame,
-    startHosting,
-  } = props;
-
-  const [showPlayerNameModal, setShowPlayerNameModal] = useState(false);
   const [showPlayersPanel, setShowPlayersPanel] = useState(
     isSingleP ? false : true
   );
@@ -47,64 +27,15 @@ function LobbyView(props: LobbyViewProps): JSX.Element {
     }
   }, [isSingleP, showPlayersPanel]);
 
-  // Sets the player name
-  const submitPlayerName = useCallback(
-    (submittedPlayerName: string) => {
-      setShowPlayerNameModal(false);
-
-      const currentPlayers: Record<string, PlayerState> = {};
-
-      // Omits old name in the new player list, adds new name
-      for (const [storePlayerName, storePlayer] of Object.entries(
-        state.players
-      )) {
-        if (storePlayerName !== playerName) {
-          currentPlayers[storePlayerName] = storePlayer;
-        } else {
-          currentPlayers[submittedPlayerName] = storePlayer;
-        }
-      }
-
-      // Add self to players list
-      if (props.sendToClients) {
-        props.sendToClients({
-          type: HostTypeConstants.UPDATE_PLAYERS_LIST,
-          players: currentPlayers,
-        });
-      }
-      dispatch({
-        type: StoreConstants.UPDATE_PLAYERS_LIST,
-        currentPlayers,
-      });
-      setPlayerName(submittedPlayerName);
-    },
-    [dispatch, playerName, props, setPlayerName, state.players]
-  );
-
-  function handleStartHosting() {
-    if (playerName === "") {
-      setShowPlayerNameModal(true);
-    } else if (startHosting) {
-      startHosting();
-    }
-  }
-
   return (
     <Container fluid="xl" className="mt-3">
-      <PlayerNameModal
-        playerName={playerName}
-        showPlayerNameModal={showPlayerNameModal}
-        submitPlayerName={submitPlayerName}
-        goBack={() => {
-          if (startGame) startGame();
-        }}
-      />
+      <PlayerNameModal />
       <div className="d-flex lobby-view-panels">
         {showPlayersPanel && (
           <div
             className={`${appendTheme(
               "content-holder",
-              state.appSettings.isDark
+              isDark
             )} ${playersPanelAnimation}`}
           >
             <ConnectedPlayers />
@@ -112,23 +43,10 @@ function LobbyView(props: LobbyViewProps): JSX.Element {
         )}
         <div className="d-flex flex-column lobby-view-inner-panels">
           <div>
-            <LobbyInvite
-              inviteLink={inviteLink}
-              isSingleP={isSingleP}
-              playerName={playerName}
-              startHosting={() => handleStartHosting()}
-            />
+            <LobbyInvite />
           </div>
           <div>
-            <GameSettings
-              inviteLink={inviteLink}
-              disabled={startGame ? false : true}
-              playerName={playerName}
-              startGame={() => {
-                if (startGame) startGame();
-              }}
-              changeName={() => setShowPlayerNameModal(true)}
-            />
+            <GameSettings />
           </div>
         </div>
       </div>

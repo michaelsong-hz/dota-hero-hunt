@@ -1,35 +1,33 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Col, Spinner } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 
-import { useStoreState } from "reducer/store";
-import { StorageConstants } from "utils/constants";
+import { useAppDispatch, useAppSelector } from "hooks/useStore";
+import {
+  selectIsDark,
+  selectPlayerName,
+} from "store/application/applicationSlice";
+import {
+  clientNameChange,
+  connectToHost,
+  selectIsJoiningGame,
+  selectIsNameTaken,
+} from "store/client/clientSlice";
 import { appendTheme } from "utils/utilities";
 
-interface ConnectionViewProps {
-  playerName: string;
-  isNameTaken: boolean;
-  connectToHost: () => void;
-  setPlayerName: (playerName: string) => void;
-  setIsNameTaken: (isTaken: boolean) => void;
-}
-
-function ConnectionView(props: ConnectionViewProps): JSX.Element {
-  const state = useStoreState();
-  const [isJoiningGame, setIsJoiningGame] = useState(false);
+function ConnectionView(): JSX.Element {
+  const dispatch = useAppDispatch();
+  const playerName = useAppSelector(selectPlayerName);
+  const isDark = useAppSelector(selectIsDark);
+  const isJoiningGame = useAppSelector(selectIsJoiningGame);
+  const isNameTaken = useAppSelector(selectIsNameTaken);
 
   function joinGame(e: React.FormEvent) {
     // Prevent form post
     e.preventDefault();
-
-    if (!isJoiningGame) {
-      localStorage.setItem(StorageConstants.PLAYER_NAME, props.playerName);
-      setIsJoiningGame(true);
-      props.setIsNameTaken(false);
-      props.connectToHost();
-    }
+    dispatch(connectToHost());
   }
 
   function renderJoinGameStatus(): JSX.Element {
@@ -52,23 +50,22 @@ function ConnectionView(props: ConnectionViewProps): JSX.Element {
   }
 
   function handleNameChange(newPlayerName: string) {
-    props.setPlayerName(newPlayerName);
-    props.setIsNameTaken(false);
+    dispatch(clientNameChange(newPlayerName));
   }
 
   // Re-enable button after name conflict error
-  useEffect(() => {
-    if (props.isNameTaken) {
-      setIsJoiningGame(false);
-    }
-  }, [props.isNameTaken]);
+  // useEffect(() => {
+  //   if (props.isNameTaken) {
+  //     setIsJoiningGame(false);
+  //   }
+  // }, [props.isNameTaken]);
 
   // Re-enable button after connection error
-  useEffect(() => {
-    if (state.modalToShow !== null) {
-      setIsJoiningGame(false);
-    }
-  }, [state.modalToShow]);
+  // useEffect(() => {
+  //   if (state.modalToShow !== null) {
+  //     setIsJoiningGame(false);
+  //   }
+  // }, [state.modalToShow]);
 
   return (
     <>
@@ -81,17 +78,15 @@ function ConnectionView(props: ConnectionViewProps): JSX.Element {
         <Col>
           <Form onSubmit={joinGame}>
             <Form.Group>
-              <Form.Label
-                className={appendTheme("global-text", state.appSettings.isDark)}
-              >
+              <Form.Label className={appendTheme("global-text", isDark)}>
                 Set your player name
               </Form.Label>
               <Form.Control
-                isInvalid={props.isNameTaken}
+                isInvalid={isNameTaken}
                 className="playername-field"
                 type="text"
                 placeholder="Enter your name"
-                defaultValue={props.playerName}
+                defaultValue={playerName}
                 onChange={(e) => handleNameChange(e.target.value)}
               />
               <Form.Control.Feedback type="invalid">
@@ -102,7 +97,7 @@ function ConnectionView(props: ConnectionViewProps): JSX.Element {
             </Form.Group>
             <Row className="justify-content-center">
               <Button
-                variant={appendTheme("primary", state.appSettings.isDark)}
+                variant={appendTheme("primary", isDark)}
                 disabled={isJoiningGame}
                 type="submit"
               >
