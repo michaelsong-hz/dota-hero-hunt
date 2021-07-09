@@ -1,0 +1,33 @@
+name: Configure Sentry for a staging build
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  configure_sentry:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14.x"
+
+      - name: Set one patch version above the one in package.json as an env variable
+        run: |
+          echo 'REACT_APP_VERSION'=$(node -p 'require("./package.json").version' | awk -F. -v OFS=. '{$NF++;print}') >> $GITHUB_ENV
+
+      # We do not need sourcemaps for staging, as we don't strip them out for
+      # non-production builds in CloudFlare Pages
+      - name: Inform sentry of staging release
+        uses: getsentry/action-release@v1.1.5
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: michaels-projects
+          SENTRY_PROJECT: dota-hero-hunt
+        with:
+          environment: "staging"
+          finalize: false
+          version: ${{ env.REACT_APP_VERSION }}
