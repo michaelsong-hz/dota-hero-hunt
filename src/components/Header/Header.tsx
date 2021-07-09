@@ -23,16 +23,25 @@ import {
   setIsDark,
   setVolume,
 } from "store/application/applicationSlice";
+import { selectRemoteHostID } from "store/client/clientSlice";
 import { GlobalConstants, StorageConstants } from "utils/constants";
-import { appendTheme } from "utils/utilities";
+import { appendTheme, isClient } from "utils/utilities";
 
 function Header(): JSX.Element {
   const isDark = useAppSelector(selectIsDark);
   const volume = useAppSelector(selectVolume);
+  const remoteHostID = useAppSelector(selectRemoteHostID);
 
   const dispatch = useAppDispatch();
 
   const [showVolume, setShowVolume] = useState(false);
+
+  function getHeaderToRoot() {
+    if (isClient()) {
+      return `/play/${remoteHostID}`;
+    }
+    return "/";
+  }
 
   function toggleTooltip(show: boolean) {
     if (show === false) {
@@ -71,7 +80,7 @@ function Header(): JSX.Element {
 
   return (
     <Navbar bg={appendTheme("header", isDark)} expand="sm">
-      <Link to="/">
+      <Link to={getHeaderToRoot()}>
         <Navbar.Brand
           className={`align-middle font-weight-bold ${appendTheme(
             "text",

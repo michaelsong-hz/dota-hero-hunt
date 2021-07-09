@@ -51,7 +51,10 @@ function HeroGrid(): JSX.Element {
       );
       setLoading(false);
     }
-    loadImages();
+    // Only start loading images when our array is initialized
+    if (currentHeroes.length > 1) {
+      loadImages();
+    }
   }, [currentHeroes]);
 
   function createHeroImagesRow(

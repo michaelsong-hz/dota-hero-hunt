@@ -14,8 +14,8 @@ import {
 import {
   clientForcefulDisconnect,
   clientWSSend,
-  setIsConnected,
   setIsNameTaken,
+  setRemoteHostID,
 } from "store/client/clientSlice";
 import {
   setRound,
@@ -32,8 +32,6 @@ import { PEER_CLIENT_CONNECT, PEER_CLIENT_SEND } from "./middlewareConstants";
 let peer: Peer | null = null;
 let isCleaningUp = false;
 
-const remoteHostID = window.location.pathname.split("/").slice(-1)[0];
-
 function cleanUp() {
   isCleaningUp = true;
   if (peer) {
@@ -47,13 +45,15 @@ function cleanUp() {
   }
 }
 
+function getRemoteHostID() {
+  return window.location.pathname.split("/").slice(-1)[0];
+}
+
 function onMessageFromHost(data: HostTypes, dispatch: AppDispatch) {
   console.log(data);
 
   switch (data.type) {
     case HostTypeConstants.CONNECTION_ACCEPTED: {
-      dispatch(setIsConnected(true));
-
       dispatch(
         setSettings({
           gameSettings: data.settings,
@@ -77,6 +77,7 @@ function onMessageFromHost(data: HostTypes, dispatch: AppDispatch) {
           gameStatus: data.gameStatus,
         })
       );
+      dispatch(setRemoteHostID(getRemoteHostID()));
       break;
     }
     case HostTypeConstants.UPDATE_PLAYERS_LIST: {
@@ -178,7 +179,7 @@ function createClientMiddleware(): Middleware {
             peer.on("open", () => {
               if (peer) {
                 const hostConnection: HostDataConnection = peer.connect(
-                  remoteHostID,
+                  getRemoteHostID(),
                   {
                     metadata: {
                       playerName: selectPlayerName(getState()),

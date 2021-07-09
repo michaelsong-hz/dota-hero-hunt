@@ -14,14 +14,14 @@ import {
 import { AppThunk, RootState } from "store/rootStore";
 import { StorageConstants } from "utils/constants";
 
-export interface HostState {
-  isConnected: boolean;
+export interface ClientState {
+  remoteHostID: string | null;
   isJoiningGame: boolean;
   isNameTaken: boolean;
 }
 
-const initialState: HostState = {
-  isConnected: false,
+const initialState: ClientState = {
+  remoteHostID: null,
   isJoiningGame: false,
   isNameTaken: false,
 };
@@ -30,21 +30,21 @@ export const clientSlice = createSlice({
   name: "client",
   initialState,
   reducers: {
-    setIsConnected: (state, action: PayloadAction<boolean>) => {
-      state.isConnected = action.payload;
+    setRemoteHostID: (state, action: PayloadAction<string | null>) => {
+      state.remoteHostID = action.payload;
     },
     setIsJoiningGame: (state, action: PayloadAction<boolean>) => {
       state.isJoiningGame = action.payload;
     },
     setIsNameTaken: (state, action: PayloadAction<boolean>) => {
       if (action.payload === true) {
-        state.isConnected = false;
+        state.remoteHostID = null;
         state.isJoiningGame = false;
       }
       state.isNameTaken = action.payload;
     },
     resetClientState: (state) => {
-      state.isConnected = false;
+      state.remoteHostID = null;
       state.isJoiningGame = false;
       state.isNameTaken = false;
     },
@@ -52,7 +52,7 @@ export const clientSlice = createSlice({
 });
 
 export const {
-  setIsConnected,
+  setRemoteHostID,
   setIsJoiningGame,
   setIsNameTaken,
   resetClientState,
@@ -61,8 +61,8 @@ export const {
 export const startClientWS = createAction(PEER_CLIENT_CONNECT);
 export const clientWSSend = createAction<ClientTypes>(PEER_CLIENT_SEND);
 
-export const selectIsConnected = (state: RootState): boolean =>
-  state.client.isConnected;
+export const selectRemoteHostID = (state: RootState): string | null =>
+  state.client.remoteHostID;
 export const selectIsJoiningGame = (state: RootState): boolean =>
   state.client.isJoiningGame;
 export const selectIsNameTaken = (state: RootState): boolean =>

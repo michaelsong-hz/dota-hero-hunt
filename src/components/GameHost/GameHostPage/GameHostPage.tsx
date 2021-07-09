@@ -3,12 +3,13 @@ import React from "react";
 import GamePage from "components/GameShared/GamePage";
 import LobbyView from "components/GameShared/LobbyView";
 import { useAppSelector } from "hooks/useStore";
+import { GameStatus } from "models/GameStatus";
 import { selectPlayerName } from "store/application/applicationSlice";
-import { selectRound } from "store/game/gameSlice";
+import { selectGameStatus } from "store/game/gameSlice";
 
 function GameHostPage(): JSX.Element {
   const playerName = useAppSelector(selectPlayerName);
-  const round = useAppSelector(selectRound);
+  const gameStatus = useAppSelector(selectGameStatus);
 
   // Waits for the playerName to be read before rendering
   if (playerName === undefined) {
@@ -16,7 +17,7 @@ function GameHostPage(): JSX.Element {
   }
 
   // Game lobby
-  if (round === 0) {
+  if (gameStatus === GameStatus.SETTINGS) {
     return <LobbyView />;
   }
 

@@ -6,17 +6,17 @@ import GamePage from "components/GameShared/GamePage";
 import LobbyView from "components/GameShared/LobbyView";
 import { useAppSelector } from "hooks/useStore";
 import { GameStatus } from "models/GameStatus";
-import { selectIsConnected } from "store/client/clientSlice";
+import { selectRemoteHostID } from "store/client/clientSlice";
 import { selectGameStatus } from "store/game/gameSlice";
 
 function GameClientPage(): JSX.Element {
-  const isConnected = useAppSelector(selectIsConnected);
+  const remoteHostID = useAppSelector(selectRemoteHostID);
   const gameStatus = useAppSelector(selectGameStatus);
 
   // Check if the user really wants to leave when connected to a game
   useEffect(() => {
     window.onbeforeunload = (event) => {
-      if (isConnected) {
+      if (remoteHostID !== null) {
         const e = event || window.event;
         e.preventDefault();
         if (e) {
@@ -25,12 +25,12 @@ function GameClientPage(): JSX.Element {
         return "";
       }
     };
-  }, [isConnected]);
+  }, [remoteHostID]);
 
   // Show connection page, have player set their name and
   // check that there are no conflicting names and that
   // we are connected to the game before proceeding
-  if (!isConnected) {
+  if (remoteHostID === null) {
     return (
       <Container className="mt-4">
         <ConnectionView />

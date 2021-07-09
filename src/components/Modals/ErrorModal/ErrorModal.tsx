@@ -8,6 +8,7 @@ import {
   selectModalCustomMessage,
   updateModalToShow,
 } from "store/application/applicationSlice";
+import { resetPlayers } from "store/game/gameSlice";
 import { appendTheme } from "utils/utilities";
 
 type ErrorModalProps = {
@@ -37,6 +38,7 @@ function ErrorModal(props: ErrorModalProps): JSX.Element {
 
   function handleReturnHome() {
     handleHide();
+    dispatch(resetPlayers());
     history.push("/");
   }
 

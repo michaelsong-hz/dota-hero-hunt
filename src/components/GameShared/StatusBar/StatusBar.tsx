@@ -14,7 +14,7 @@ import {
   selectTargetHeroes,
 } from "store/game/gameSlice";
 import { heroList } from "utils/HeroList";
-import { appendTheme, getIconPath } from "utils/utilities";
+import { appendTheme, getIconPath, isClient } from "utils/utilities";
 
 function GameStatusBar(): JSX.Element {
   const targetHeroes = useAppSelector(selectTargetHeroes);
@@ -60,7 +60,7 @@ function GameStatusBar(): JSX.Element {
   }, [gameSettings.showTargetIcons, targetHeroes]);
 
   function getNewGameButton() {
-    if (gameStatus === GameStatus.FINISHED) {
+    if (gameStatus === GameStatus.FINISHED && !isClient()) {
       return (
         <div className="mb-3">
           <Button

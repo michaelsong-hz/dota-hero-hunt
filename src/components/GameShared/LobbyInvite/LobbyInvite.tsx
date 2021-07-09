@@ -48,8 +48,7 @@ function LobbyInvite(): JSX.Element {
         path[path.length - 1] === "/" ? path.substr(0, path.length - 1) : path;
       return `${path}/play/${hostID}`;
     }
-    // TODO: Do this for clients too
-    return "";
+    return window.location.href;
   }, [hostID]);
 
   function handleGenerateInvite() {

@@ -7,7 +7,8 @@ import {
 } from "models/GameSettingsType";
 import { GameStatus } from "models/GameStatus";
 import { PlayerState } from "models/PlayerState";
-import { RootState } from "store/rootStore";
+import { selectPlayerName } from "store/application/applicationSlice";
+import { AppThunk, RootState } from "store/rootStore";
 
 export interface GameState {
   round: number;
@@ -19,12 +20,8 @@ export interface GameState {
   targetHeroes: number[];
   currentHeroes: number[][];
   gameSettings: GameSettings;
-  // appSettings: ApplicationSettings;
-  // modalToShow: Modals | null;
-  // modalCustomMessage: string[];
   statusText: string;
   gameStatus: GameStatus;
-  // connectionStatus: ConnectionStatus;
 }
 
 const initialState: GameState = {
@@ -109,6 +106,16 @@ export const gameSlice = createSlice({
     ) => {
       state.gameSettings = action.payload.gameSettings;
     },
+    setGameStatus: (state, action: PayloadAction<GameStatus>) => {
+      state.gameStatus = action.payload;
+    },
+    resetPlayersToName: (state, action: PayloadAction<string>) => {
+      state.players = {};
+      state.players[action.payload] = {
+        score: 0,
+        isDisabled: false,
+      };
+    },
   },
 });
 
@@ -118,6 +125,8 @@ export const {
   updatePlayersList,
   setCurrentHeroes,
   setSettings,
+  setGameStatus,
+  resetPlayersToName,
 } = gameSlice.actions;
 
 export const selectRound = (state: RootState): number => state.game.round;
@@ -139,5 +148,9 @@ export const selectStatusText = (state: RootState): string =>
   state.game.statusText;
 export const selectGameStatus = (state: RootState): GameStatus =>
   state.game.gameStatus;
+
+export const resetPlayers = (): AppThunk => (dispatch, getState) => {
+  dispatch(resetPlayersToName(selectPlayerName(getState())));
+};
 
 export default gameSlice.reducer;

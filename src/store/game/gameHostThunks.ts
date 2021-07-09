@@ -13,6 +13,11 @@ import {
   updateSelectedIcons,
   setRound,
   selectTimeBetweenRounds,
+  setGameStatus,
+  selectRound,
+  selectStatusText,
+  selectCurrentHeroes,
+  selectTargetHeroes,
 } from "store/game/gameSlice";
 import { AppThunk, AppDispatch } from "store/rootStore";
 import { heroList } from "utils/HeroList";
@@ -71,8 +76,21 @@ export const startGame = (): AppThunk => (dispatch, getState) => {
   dispatch(incrementRound(1));
 };
 
-export const endGame = (): AppThunk => (dispatch) => {
-  dispatch(incrementRound(0));
+export const endGame = (): AppThunk => (dispatch, getState) => {
+  const gameStatus = GameStatus.SETTINGS;
+
+  // TODO: Probably want a custom host type to end the game
+  dispatch(
+    hostWSBroadcast({
+      type: HostTypeConstants.UPDATE_ROUND,
+      round: selectRound(getState()),
+      targetHeroes: selectTargetHeroes(getState()),
+      currentHeroes: selectCurrentHeroes(getState()),
+      statusText: selectStatusText(getState()),
+      gameStatus,
+    })
+  );
+  dispatch(setGameStatus(gameStatus));
 };
 
 let nextRoundTimer: NodeJS.Timer;
