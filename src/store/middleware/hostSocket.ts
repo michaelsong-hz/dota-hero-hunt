@@ -56,33 +56,6 @@ function onMessage(
   if (data.type === ClientTypeConstants.PLAYER_ACTION) {
     // TODO: Error handling, checking received data
     dispatch(addSelectedIcon(data.selected, fromPlayerName));
-  } else if (data.type === ClientTypeConstants.NEW_CONNECTION) {
-    // const currState = store.getState().game;
-    // const currentPlayers = { ...currState.players };
-    // currentPlayers[fromPlayerName] = {
-    //   score: 0,
-    //   isDisabled: false,
-    // };
-    // clientConnection.send({
-    //   type: HostTypeConstants.CONNECTION_ACCEPTED,
-    //   settings: currState.gameSettings,
-    //   players: currState.players,
-    //   round: currState.round,
-    //   targetHeroes: Array.from(currState.targetHeroes),
-    //   currentHeroes: currState.currentHeroes,
-    //   selected: Array.from(currState.selectedIcons),
-    //   invalidIcons: Array.from(currState.invalidIcons),
-    //   statusText: currState.statusText,
-    //   gameStatus: currState.gameStatus,
-    // });
-    // sendToClients({
-    //   type: HostTypeConstants.UPDATE_PLAYERS_LIST,
-    //   players: currentPlayers,
-    // });
-    // dispatch({
-    //   type: StoreConstants.UPDATE_PLAYERS_LIST,
-    //   currentPlayers,
-    // });
   } else {
     try {
       const invalidData = JSON.stringify(data);
@@ -154,12 +127,6 @@ function createHostMiddleware(): Middleware {
                     currentPlayers: currPlayerNames,
                   });
                 } else {
-                  // TODO: The NEW_CONNECTION type should no longer be needed
-                  // const data: ClientTypes = {
-                  //   type: ClientTypeConstants.NEW_CONNECTION,
-                  // };
-                  // onMessage(data, incomingConn);
-
                   const gameState = getState().game;
                   const fromPlayerName = getPlayerNameFromConn(incomingConn);
 
@@ -198,10 +165,7 @@ function createHostMiddleware(): Middleware {
               });
 
               incomingConn.on("data", (data: ClientTypes) => {
-                // TODO: The NEW_CONNECTION type should no longer be needed
-                if (data.type !== ClientTypeConstants.NEW_CONNECTION) {
-                  onMessage(data, incomingConn, dispatch);
-                }
+                onMessage(data, incomingConn, dispatch);
               });
 
               incomingConn.on("close", () => {

@@ -188,12 +188,6 @@ function createClientMiddleware(): Middleware {
                   }
                 );
 
-                // hostConnection.on("open", () => {
-                //   hostConnection.send({
-                //     type: ClientTypeConstants.NEW_CONNECTION,
-                //   });
-                // });
-
                 hostConnection.on("data", (data: HostTypes) => {
                   if (data.type === HostTypeConstants.PLAYER_NAME_TAKEN) {
                     hostConnection.metadata = {

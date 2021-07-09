@@ -6,14 +6,10 @@ export enum ClientTypeConstants {
   PLAYER_ACTION,
 }
 
-export type ClientTypes =
-  | {
-      type: ClientTypeConstants.NEW_CONNECTION;
-    }
-  | {
-      type: ClientTypeConstants.PLAYER_ACTION;
-      selected: number;
-    };
+export type ClientTypes = {
+  type: ClientTypeConstants.PLAYER_ACTION;
+  selected: number;
+};
 
 export interface HostDataConnection extends Peer.DataConnection {
   send(data: ClientTypes): void;
