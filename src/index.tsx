@@ -17,6 +17,7 @@ if (process.env.NODE_ENV === "production") {
     dsn: "https://a2a3f71a08d2493a9577082e08d93939@o468033.ingest.sentry.io/5495363",
     integrations: [new Integrations.BrowserTracing()],
     tracesSampleRate: 1.0,
+    normalizeDepth: 8, // For sentry redux
     release: process.env.REACT_APP_VERSION,
   });
   // eslint-disable-next-line no-console

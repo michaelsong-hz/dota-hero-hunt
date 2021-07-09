@@ -1,4 +1,5 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
+import { createReduxEnhancer } from "@sentry/react";
 
 import applicationReducer from "store/application/applicationSlice";
 import clientReducer from "store/client/clientSlice";
@@ -8,6 +9,21 @@ import hostReducer from "store/host/hostSlice";
 import { audioMiddleware } from "./middleware/audio";
 import { clientMiddleware } from "./middleware/clientSocket";
 import { hostMiddleware } from "./middleware/hostSocket";
+
+const sentryReduxEnhancer = createReduxEnhancer({
+  configureScopeWithState: (scope, state: RootState) => {
+    if (state.host.hostID === null) {
+      scope.setTag("isHosting", false);
+    } else {
+      scope.setTag("isHosting", true);
+    }
+    if (state.client.remoteHostID === null) {
+      scope.setTag("isClient", false);
+    } else {
+      scope.setTag("isClient", true);
+    }
+  },
+});
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +37,7 @@ export const store = configureStore({
       .concat(clientMiddleware)
       .concat(hostMiddleware)
       .concat(audioMiddleware),
+  enhancers: [sentryReduxEnhancer],
 });
 
 export type AppDispatch = typeof store.dispatch;
