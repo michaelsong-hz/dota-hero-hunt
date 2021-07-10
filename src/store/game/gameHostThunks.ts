@@ -6,6 +6,7 @@ import { OtherErrorTypes } from "models/Modals";
 import {
   playAudio,
   selectPlayerName,
+  setIsInviteLinkCopied,
   updateModalToShow,
 } from "store/application/applicationSlice";
 import {
@@ -41,6 +42,9 @@ function reportTargetRoundScoreNotSet(dispatch: AppDispatch) {
 }
 
 export const startGame = (): AppThunk => (dispatch, getState) => {
+  // Reset settings page
+  dispatch(setIsInviteLinkCopied(false));
+
   const playerName = selectPlayerName(getState());
   const players = { ...getState().game.players };
 
@@ -76,7 +80,11 @@ export const startGame = (): AppThunk => (dispatch, getState) => {
   dispatch(incrementRound(1));
 };
 
+let nextRoundTimer: NodeJS.Timer;
 export const endGame = (): AppThunk => (dispatch, getState) => {
+  // Cancel next round timer if it's still running
+  clearTimeout(nextRoundTimer);
+
   const gameStatus = GameStatus.SETTINGS;
 
   // TODO: Probably want a custom host type to end the game
@@ -93,7 +101,6 @@ export const endGame = (): AppThunk => (dispatch, getState) => {
   dispatch(setGameStatus(gameStatus));
 };
 
-let nextRoundTimer: NodeJS.Timer;
 export const addSelectedIcon =
   (selectedIcon: number, selectedPlayerName: string): AppThunk =>
   (dispatch, getState) => {

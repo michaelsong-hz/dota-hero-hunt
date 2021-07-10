@@ -15,7 +15,7 @@ import { updatePlayersList } from "store/game/gameSlice";
 import {
   hostForcefulDisconnect,
   hostWSBroadcast,
-  setHostID,
+  setHostIDAndCopyLink,
 } from "store/host/hostSlice";
 import { AppDispatch, RootState } from "store/rootStore";
 import {
@@ -94,7 +94,7 @@ function createHostMiddleware(): Middleware {
             peer = new Peer(getPeerConfig());
 
             peer.on("open", () => {
-              if (peer !== null) dispatch(setHostID(peer.id));
+              if (peer !== null) dispatch(setHostIDAndCopyLink(peer.id));
             });
 
             peer.on("connection", (incomingConn) => {

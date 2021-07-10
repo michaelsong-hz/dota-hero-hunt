@@ -8,7 +8,6 @@ import {
 } from "models/GameSettingsType";
 
 export function appendTheme(themeName: string, isDark: boolean): string {
-  // const isDark = store.getState().application.appSettings.isDark;
   if (isDark) {
     return `${themeName}-dark`;
   }
@@ -136,4 +135,18 @@ export function isClient(): boolean {
     return false;
   }
   return true;
+}
+
+export function getHostInviteLink(hostID: string | null): string {
+  if (hostID !== undefined && hostID !== null) {
+    let path = window.location.href;
+    path =
+      path[path.length - 1] === "/" ? path.substr(0, path.length - 1) : path;
+    return `${path}/play/${hostID}`;
+  }
+  return "Click generate to get an invite link";
+}
+
+export function getClientInviteLink(): string {
+  return window.location.href;
 }

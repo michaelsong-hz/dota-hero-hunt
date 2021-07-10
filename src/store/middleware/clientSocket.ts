@@ -10,6 +10,7 @@ import { PeerError, PeerJSErrorTypes } from "models/PeerErrors";
 import {
   playAudio,
   selectPlayerName,
+  setIsInviteLinkCopied,
 } from "store/application/applicationSlice";
 import {
   clientForcefulDisconnect,
@@ -117,6 +118,9 @@ function onMessageFromHost(data: HostTypes, dispatch: AppDispatch) {
       break;
     }
     case HostTypeConstants.UPDATE_ROUND: {
+      if (data.gameStatus === GameStatus.SETTINGS) {
+        dispatch(setIsInviteLinkCopied(false));
+      }
       dispatch(
         setRound({
           round: data.round,

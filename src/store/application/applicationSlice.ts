@@ -14,6 +14,7 @@ export interface ApplicationState {
   modalToShow: Modals | null;
   modalCustomMessage: string[];
   installStatus: InstallStatus;
+  isInviteLinkCopied: boolean;
 }
 
 export const initialApplicationSettings: ApplicationSettings = {
@@ -28,6 +29,7 @@ const initialState: ApplicationState = {
   modalToShow: null,
   modalCustomMessage: [],
   installStatus: InstallStatus.CHECKING,
+  isInviteLinkCopied: false,
 };
 
 export const applicationSlice = createSlice({
@@ -69,6 +71,9 @@ export const applicationSlice = createSlice({
     setInstallStatus: (state, action: PayloadAction<InstallStatus>) => {
       state.installStatus = action.payload;
     },
+    setIsInviteLinkCopied: (state, action: PayloadAction<boolean>) => {
+      state.isInviteLinkCopied = action.payload;
+    },
   },
 });
 
@@ -80,6 +85,7 @@ export const {
   setPlayerName,
   updateModalToShow,
   setInstallStatus,
+  setIsInviteLinkCopied,
 } = applicationSlice.actions;
 
 export const playAudio = createAction<SoundEffects>(PLAY_AUDIO_ACTION);
@@ -98,6 +104,8 @@ export const selectModalCustomMessage = (state: RootState): string[] =>
   state.application.modalCustomMessage;
 export const selectInstallStatus = (state: RootState): InstallStatus =>
   state.application.installStatus;
+export const selectIsInviteLinkCopied = (state: RootState): boolean =>
+  state.application.isInviteLinkCopied;
 
 export const changeName = (): AppThunk => (dispatch) => {
   dispatch(updateModalToShow({ modal: RegularModals.PLAYER_NAME_MODAL }));

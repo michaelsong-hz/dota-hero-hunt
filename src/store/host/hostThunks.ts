@@ -12,13 +12,14 @@ import { updatePlayersList } from "store/game/gameSlice";
 import { AppThunk } from "store/rootStore";
 import { StorageConstants } from "utils/constants";
 
-import { hostWSBroadcast, startHostWS } from "./hostSlice";
+import { hostWSBroadcast, setIsGeneratingLink, startHostWS } from "./hostSlice";
 
 export const startHosting = (): AppThunk => (dispatch, getState) => {
   if (selectPlayerName(getState()) === "") {
     dispatch(updateModalToShow({ modal: RegularModals.PLAYER_NAME_MODAL }));
   } else {
     dispatch(startHostWS());
+    dispatch(setIsGeneratingLink(true));
   }
 };
 

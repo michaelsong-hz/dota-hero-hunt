@@ -26,7 +26,7 @@ import {
 } from "store/application/applicationSlice";
 import { selectRemoteHostID } from "store/client/clientSlice";
 import { GlobalConstants, StorageConstants } from "utils/constants";
-import { appendTheme, isClient } from "utils/utilities";
+import { appendTheme } from "utils/utilities";
 
 function Header(): JSX.Element {
   const isDark = useAppSelector(selectIsDark);
@@ -38,7 +38,7 @@ function Header(): JSX.Element {
   const [showVolume, setShowVolume] = useState(false);
 
   function getHeaderToRoot() {
-    if (isClient()) {
+    if (remoteHostID !== null) {
       return `/play/${remoteHostID}`;
     }
     return "/";
