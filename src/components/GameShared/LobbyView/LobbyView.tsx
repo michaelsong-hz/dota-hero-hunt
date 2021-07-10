@@ -5,7 +5,7 @@ import PlayerNameModal from "components/GameHost/PlayerNameModal";
 import { useAppSelector } from "hooks/useStore";
 import { selectIsDark } from "store/application/applicationSlice";
 import { isSinglePlayer } from "store/host/hostSlice";
-import { appendTheme } from "utils/utilities";
+import { appendTheme, isClient } from "utils/utilities";
 
 import ConnectedPlayers from "../ConnectedPlayers";
 import LobbyInvite from "../LobbyInvite";
@@ -24,6 +24,8 @@ function LobbyView(): JSX.Element {
     if (isSingleP === false && showPlayersPanel === false) {
       setShowPlayersPanel(true);
       setPlayersPanelAnimation("lobby-view-player-in");
+    } else if (!isClient() && isSingleP === true) {
+      setShowPlayersPanel(false);
     }
   }, [isSingleP, showPlayersPanel]);
 

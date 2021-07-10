@@ -5,6 +5,7 @@ import { RegularModals } from "models/Modals";
 import { PlayerState } from "models/PlayerState";
 import {
   selectPlayerName,
+  setIsInviteLinkCopied,
   setPlayerName,
   updateModalToShow,
 } from "store/application/applicationSlice";
@@ -12,7 +13,13 @@ import { updatePlayersList } from "store/game/gameSlice";
 import { AppThunk } from "store/rootStore";
 import { StorageConstants } from "utils/constants";
 
-import { hostWSBroadcast, setIsGeneratingLink, startHostWS } from "./hostSlice";
+import {
+  hostWSBroadcast,
+  resetHostState,
+  setIsGeneratingLink,
+  startHostWS,
+  stopHostWS,
+} from "./hostSlice";
 
 export const startHosting = (): AppThunk => (dispatch, getState) => {
   if (selectPlayerName(getState()) === "") {
@@ -21,6 +28,12 @@ export const startHosting = (): AppThunk => (dispatch, getState) => {
     dispatch(startHostWS());
     dispatch(setIsGeneratingLink(true));
   }
+};
+
+export const stopHosting = (): AppThunk => (dispatch) => {
+  dispatch(stopHostWS());
+  dispatch(resetHostState());
+  dispatch(setIsInviteLinkCopied(false));
 };
 
 export const submitPlayerName =

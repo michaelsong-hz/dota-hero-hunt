@@ -12,7 +12,7 @@ import {
   selectHostID,
   selectIsGeneratingLink,
 } from "store/host/hostSlice";
-import { startHosting } from "store/host/hostThunks";
+import { startHosting, stopHosting } from "store/host/hostThunks";
 import {
   appendTheme,
   getClientInviteLink,
@@ -26,7 +26,24 @@ function LobbyInvite(): JSX.Element {
   const isGeneratingLink = useAppSelector(selectIsGeneratingLink);
   const isInviteLinkCopied = useAppSelector(selectIsInviteLinkCopied);
   const isDark = useAppSelector(selectIsDark);
+
   const dispatch = useAppDispatch();
+
+  function getStopHostingButton() {
+    if (!isSingleP && !isClient())
+      return (
+        <div className="mb-2 ml-2">
+          <Button
+            disabled={isGeneratingLink}
+            variant={"danger"}
+            onClick={() => dispatch(stopHosting())}
+          >
+            Stop Hosting
+          </Button>
+        </div>
+      );
+    return <></>;
+  }
 
   function getHeaderText(): string {
     if (isSingleP) {
@@ -69,8 +86,11 @@ function LobbyInvite(): JSX.Element {
   return (
     <div className={`${appendTheme("content-holder", isDark)} px-3 py-2`}>
       <Row>
-        <Col>
-          <h3>{getHeaderText()}</h3>
+        <Col className="d-flex">
+          <div className="mr-auto">
+            <h3>{getHeaderText()}</h3>
+          </div>
+          {getStopHostingButton()}
         </Col>
       </Row>
       <Row className="no-gutters pb-1">

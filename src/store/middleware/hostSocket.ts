@@ -25,7 +25,11 @@ import {
   getPlayerNameFromConn,
 } from "utils/utilities";
 
-import { PEER_HOST_BROADCAST, PEER_HOST_START } from "./middlewareConstants";
+import {
+  PEER_HOST_BROADCAST,
+  PEER_HOST_START,
+  PEER_HOST_STOP,
+} from "./middlewareConstants";
 
 let peer: Peer | null = null;
 const invalidConnLabels: Set<string> = new Set();
@@ -234,6 +238,10 @@ function createHostMiddleware(): Middleware {
                 cleanUp();
               }
             });
+            break;
+
+          case PEER_HOST_STOP:
+            cleanUp();
             break;
 
           case PEER_HOST_BROADCAST:

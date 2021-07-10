@@ -9,6 +9,7 @@ import {
 import {
   PEER_HOST_BROADCAST,
   PEER_HOST_START,
+  PEER_HOST_STOP,
 } from "store/middleware/middlewareConstants";
 import { AppThunk, RootState } from "store/rootStore";
 import { getHostInviteLink, isClient } from "utils/utilities";
@@ -45,6 +46,7 @@ export const { setHostID, resetHostState, setIsGeneratingLink } =
   hostSlice.actions;
 
 export const startHostWS = createAction(PEER_HOST_START);
+export const stopHostWS = createAction(PEER_HOST_STOP);
 export const hostWSBroadcast = createAction<HostTypes>(PEER_HOST_BROADCAST);
 
 export const selectHostID = (state: RootState): string | null =>
