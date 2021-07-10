@@ -1,6 +1,7 @@
 import { faInfinity } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { captureException } from "@sentry/react";
+import localForage from "localforage";
 import React, { useRef, useState } from "react";
 import {
   Button,
@@ -152,10 +153,7 @@ function GameSettings(): JSX.Element {
 
     if (settingsErrors.length === 0) {
       // Save the player's current settings
-      localStorage.setItem(
-        StorageConstants.GAME_SETTINGS,
-        JSON.stringify(gameSettings)
-      );
+      localForage.setItem(StorageConstants.GAME_SETTINGS, gameSettings);
 
       dispatch(startGame());
     } else {

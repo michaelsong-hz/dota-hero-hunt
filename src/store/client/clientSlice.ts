@@ -1,4 +1,5 @@
 import { createAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import localForage from "localforage";
 
 import { ClientTypes } from "models/MessageClientTypes";
 import { Modals } from "models/Modals";
@@ -74,7 +75,7 @@ export const connectToHost = (): AppThunk => (dispatch, getState) => {
     dispatch(setIsJoiningGame(true));
     dispatch(setIsNameTaken(false));
 
-    localStorage.setItem(
+    localForage.setItem(
       StorageConstants.PLAYER_NAME,
       selectPlayerName(getState())
     );

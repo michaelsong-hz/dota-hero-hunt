@@ -24,6 +24,16 @@ export interface GameState {
   gameStatus: GameStatus;
 }
 
+export const initialGameSettings: GameSettings = {
+  gridSize: GridSizeTypes.SMALL,
+  rows: gridSizes[GridSizeTypes.SMALL].rows,
+  columns: gridSizes[GridSizeTypes.SMALL].cols,
+  targetTotalScore: 5,
+  targetRoundScore: 3,
+  showTargetIcons: true,
+  timeBetweenRounds: 3, // Seconds
+};
+
 const initialState: GameState = {
   round: 0,
   players: {},
@@ -31,15 +41,7 @@ const initialState: GameState = {
   invalidIcons: [],
   targetHeroes: [],
   currentHeroes: [[]],
-  gameSettings: {
-    gridSize: GridSizeTypes.SMALL,
-    rows: gridSizes[GridSizeTypes.SMALL].rows,
-    columns: gridSizes[GridSizeTypes.SMALL].cols,
-    targetTotalScore: 5,
-    targetRoundScore: 3,
-    showTargetIcons: true,
-    timeBetweenRounds: 3, // Seconds
-  },
+  gameSettings: initialGameSettings,
   statusText: "",
   gameStatus: GameStatus.PLAYING,
 };

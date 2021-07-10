@@ -1,3 +1,5 @@
+import localForage from "localforage";
+
 import { HostTypeConstants } from "models/MessageHostTypes";
 import { RegularModals } from "models/Modals";
 import { PlayerState } from "models/PlayerState";
@@ -27,7 +29,7 @@ export const submitPlayerName =
     const players = { ...getState().game.players };
 
     // TODO: Determine if this is always needed
-    localStorage.setItem(StorageConstants.PLAYER_NAME, submittedPlayerName);
+    localForage.setItem(StorageConstants.PLAYER_NAME, submittedPlayerName);
 
     // Close modal asking for player name input
     dispatch(updateModalToShow({ modal: null }));

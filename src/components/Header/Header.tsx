@@ -2,6 +2,7 @@ import { faSun, faMoon } from "@fortawesome/free-regular-svg-icons";
 import { faVolumeUp, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Howler } from "howler";
+import localForage from "localforage";
 import React, { useState } from "react";
 import {
   Navbar,
@@ -45,7 +46,7 @@ function Header(): JSX.Element {
 
   function toggleTooltip(show: boolean) {
     if (show === false) {
-      localStorage.setItem(StorageConstants.VOLUME, volume.toString());
+      localForage.setItem(StorageConstants.VOLUME, volume);
     }
     setShowVolume(show);
   }
@@ -68,7 +69,7 @@ function Header(): JSX.Element {
 
   function toggleTheme(isDark: boolean) {
     dispatch(setIsDark(isDark));
-    localStorage.setItem(StorageConstants.THEME_IS_DARK, isDark.toString());
+    localForage.setItem(StorageConstants.THEME_IS_DARK, isDark);
   }
 
   function getHeaderSecondaryClass(): string {

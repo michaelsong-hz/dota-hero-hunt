@@ -9,17 +9,21 @@ import { SoundEffects } from "utils/SoundEffectList";
 
 export interface ApplicationState {
   appSettings: ApplicationSettings;
+  settingsLoaded: boolean;
   playerName: string;
   modalToShow: Modals | null;
   modalCustomMessage: string[];
   installStatus: InstallStatus;
 }
 
+export const initialApplicationSettings: ApplicationSettings = {
+  volume: 30,
+  isDark: true,
+};
+
 const initialState: ApplicationState = {
-  appSettings: {
-    volume: 30,
-    isDark: true,
-  },
+  appSettings: initialApplicationSettings,
+  settingsLoaded: false,
   playerName: "",
   modalToShow: null,
   modalCustomMessage: [],
@@ -35,6 +39,15 @@ export const applicationSlice = createSlice({
     },
     setIsDark: (state, action: PayloadAction<boolean>) => {
       state.appSettings.isDark = action.payload;
+    },
+    setApplicationSettings: (
+      state,
+      action: PayloadAction<ApplicationSettings>
+    ) => {
+      state.appSettings = action.payload;
+    },
+    setSettingsLoaded: (state, action: PayloadAction<boolean>) => {
+      state.settingsLoaded = action.payload;
     },
     setPlayerName: (state, action: PayloadAction<string>) => {
       state.playerName = action.payload;
@@ -62,6 +75,8 @@ export const applicationSlice = createSlice({
 export const {
   setVolume,
   setIsDark,
+  setApplicationSettings,
+  setSettingsLoaded,
   setPlayerName,
   updateModalToShow,
   setInstallStatus,
@@ -73,6 +88,8 @@ export const selectVolume = (state: RootState): number =>
   state.application.appSettings.volume;
 export const selectIsDark = (state: RootState): boolean =>
   state.application.appSettings.isDark;
+export const selectSettingsLoaded = (state: RootState): boolean =>
+  state.application.settingsLoaded;
 export const selectPlayerName = (state: RootState): string =>
   state.application.playerName;
 export const selectModalToShow = (state: RootState): Modals | null =>
