@@ -1,7 +1,6 @@
 import { captureException } from "@sentry/react";
 import localForage from "localforage";
 
-import { ApplicationSettings } from "models/ApplicationSettings";
 import {
   GameSettings,
   GridSizeTypes,
@@ -11,8 +10,10 @@ import { StorageConstants } from "utils/constants";
 
 import {
   initialApplicationSettings,
-  setApplicationSettings,
+  setIsDark,
+  setPlayerName,
   setSettingsLoaded,
+  setVolume,
 } from "./application/applicationSlice";
 import { startGame } from "./game/gameHostThunks";
 import { initialGameSettings, setSettings } from "./game/gameSlice";
@@ -93,26 +94,25 @@ async function loadStoredGameSettings() {
 }
 
 function setStoredApplicationSettings(storedAppSettings: [unknown, unknown]) {
-  const initializedApplicationSettings: ApplicationSettings = {
-    ...initialApplicationSettings,
-  };
-
-  if (typeof storedAppSettings[0] === "boolean") {
-    initializedApplicationSettings.isDark = storedAppSettings[0];
+  let initializedVolume = initialApplicationSettings.volume;
+  if (typeof storedAppSettings[0] === "number") {
+    initializedVolume = storedAppSettings[0];
   }
 
-  if (typeof storedAppSettings[1] === "number") {
-    initializedApplicationSettings.volume = storedAppSettings[1];
+  let initializedPlayerName = "";
+  if (typeof storedAppSettings[1] === "string") {
+    initializedPlayerName = storedAppSettings[1];
   }
 
-  store.dispatch(setApplicationSettings(initializedApplicationSettings));
+  store.dispatch(setVolume(initializedVolume));
+  store.dispatch(setPlayerName(initializedPlayerName));
 }
 
 async function loadStoredApplicationSettings() {
   try {
     const storedAppSettings = await Promise.all([
-      localForage.getItem(StorageConstants.THEME_IS_DARK),
       localForage.getItem(StorageConstants.VOLUME),
+      localForage.getItem(StorageConstants.PLAYER_NAME),
     ]);
     setStoredApplicationSettings(storedAppSettings);
   } catch (err) {
@@ -120,7 +120,29 @@ async function loadStoredApplicationSettings() {
   }
 }
 
+function setStoredTheme(storedIsDark: unknown) {
+  let initializedIsDark = initialApplicationSettings.isDark;
+
+  if (typeof storedIsDark === "boolean") {
+    initializedIsDark = storedIsDark;
+  }
+
+  store.dispatch(setIsDark(initializedIsDark));
+}
+
+async function loadStoredTheme() {
+  try {
+    const storedTheme = await localForage.getItem(
+      StorageConstants.THEME_IS_DARK
+    );
+    setStoredTheme(storedTheme);
+  } catch (err) {
+    captureException(err);
+  }
+}
+
 export function loadStoredSettings(): void {
+  loadStoredTheme(); // Prioritize loading the stored theme first
   loadStoredApplicationSettings();
   loadStoredGameSettings();
 }
