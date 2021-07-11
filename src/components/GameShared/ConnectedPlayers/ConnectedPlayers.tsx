@@ -31,16 +31,9 @@ function ConnectedPlayers(): JSX.Element {
     );
   }
 
-  function getHeaderText() {
-    if (connectedPlayers.length > 1 || round === 0) {
-      return <h2>Players</h2>;
-    }
-    return <></>;
-  }
-
   return (
     <div className="connected-players my-2 mx-3">
-      {getHeaderText()}
+      <h2>Players</h2>
       {connectedPlayers}
     </div>
   );

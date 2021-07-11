@@ -1,5 +1,6 @@
 import localForage from "localforage";
 
+import { GameSettings } from "models/GameSettingsType";
 import { HostTypeConstants } from "models/MessageHostTypes";
 import { RegularModals } from "models/Modals";
 import { PlayerState } from "models/PlayerState";
@@ -17,6 +18,7 @@ import {
   hostWSBroadcast,
   resetHostState,
   setIsGeneratingLink,
+  setModifiedGameSettings,
   startHostWS,
   stopHostWS,
 } from "./hostSlice";
@@ -27,6 +29,7 @@ export const startHosting = (): AppThunk => (dispatch, getState) => {
   } else {
     dispatch(startHostWS());
     dispatch(setIsGeneratingLink(true));
+    dispatch(AddHostToPlayers());
   }
 };
 
@@ -34,6 +37,22 @@ export const stopHosting = (): AppThunk => (dispatch) => {
   dispatch(stopHostWS());
   dispatch(resetHostState());
   dispatch(setIsInviteLinkCopied(false));
+};
+
+export const AddHostToPlayers = (): AppThunk => (dispatch, getState) => {
+  const playerName = selectPlayerName(getState());
+  const players = { ...getState().game.players };
+
+  players[playerName] = {
+    score: 0,
+    isDisabled: false,
+  };
+
+  dispatch(
+    updatePlayersList({
+      players,
+    })
+  );
 };
 
 export const submitPlayerName =
@@ -72,4 +91,16 @@ export const submitPlayerName =
       })
     );
     dispatch(setPlayerName(submittedPlayerName));
+  };
+
+export const modifyGameSettings =
+  (gameSettings: GameSettings): AppThunk =>
+  (dispatch) => {
+    dispatch(setModifiedGameSettings(gameSettings));
+    dispatch(
+      hostWSBroadcast({
+        type: HostTypeConstants.UPDATE_SETTINGS,
+        settings: gameSettings,
+      })
+    );
   };

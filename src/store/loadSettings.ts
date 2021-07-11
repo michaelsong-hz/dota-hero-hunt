@@ -15,8 +15,8 @@ import {
   setSettingsLoaded,
   setVolume,
 } from "./application/applicationSlice";
-import { startGame } from "./game/gameHostThunks";
 import { initialGameSettings, setSettings } from "./game/gameSlice";
+import { setModifiedGameSettings } from "./host/hostSlice";
 import { store } from "./rootStore";
 
 function setStoredGameSettings(storedGameSettings: unknown) {
@@ -78,7 +78,7 @@ function setStoredGameSettings(storedGameSettings: unknown) {
   }
 
   store.dispatch(setSettings({ gameSettings: initializedGameSettings }));
-  store.dispatch(startGame());
+  store.dispatch(setModifiedGameSettings(initializedGameSettings));
   store.dispatch(setSettingsLoaded(true)); // Allows the game to render
 }
 

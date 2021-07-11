@@ -2,7 +2,7 @@ import { faInfinity } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { captureException } from "@sentry/react";
 import localForage from "localforage";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Button,
   Col,
@@ -11,6 +11,7 @@ import {
   Dropdown,
   DropdownButton,
 } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 import Switch from "react-switch";
 
 import { useAppDispatch, useAppSelector } from "hooks/useStore";
@@ -24,15 +25,27 @@ import {
   selectIsDark,
   selectPlayerName,
 } from "store/application/applicationSlice";
-import { startGame } from "store/game/gameHostThunks";
-import { selectGameSettings, setSettings } from "store/game/gameSlice";
+import {
+  clearHeroGrid,
+  selectGameSettings,
+  setSettings,
+} from "store/game/gameSlice";
+import {
+  selectHostModifiedGameSettings,
+  setModifiedGameSettings,
+} from "store/host/hostSlice";
+import { modifyGameSettings } from "store/host/hostThunks";
 import { StorageConstants } from "utils/constants";
 import { appendTheme, checkForSettingsErrors, isClient } from "utils/utilities";
 
 function GameSettings(): JSX.Element {
+  const history = useHistory();
+
   const playerNameHost = useAppSelector(selectPlayerName);
-  const gameSettings = useAppSelector(selectGameSettings);
+  const storeGameSettings = useAppSelector(selectGameSettings);
+  const modifiedGameSettings = useAppSelector(selectHostModifiedGameSettings);
   const isDark = useAppSelector(selectIsDark);
+
   const dispatch = useAppDispatch();
 
   const [pointsToWinInvalid, setPointsToWinInvalid] = useState<string>();
@@ -41,12 +54,33 @@ function GameSettings(): JSX.Element {
 
   const disabled = isClient();
 
+  // Helper function to select the right setting slice for this page
+  function getSettings() {
+    if (isClient()) {
+      return storeGameSettings;
+    } else {
+      return modifiedGameSettings;
+    }
+  }
+
   // Tracks whether to animate switching between points to win states
-  const prevTargetTotalScore = useRef(gameSettings.targetTotalScore);
-  const prevTargetTotalScore2 = useRef(gameSettings.targetTotalScore);
+  const prevTargetTotalScore = useRef(getSettings().targetTotalScore);
+  const prevTargetTotalScore2 = useRef(getSettings().targetTotalScore);
+
+  // If host, reset modified game settings to actual
+  useEffect(() => {
+    if (!isClient()) {
+      dispatch(setModifiedGameSettings(storeGameSettings));
+    }
+  }, [dispatch, storeGameSettings]);
+
+  // Clear hero grid
+  useEffect(() => {
+    dispatch(clearHeroGrid());
+  }, [dispatch]);
 
   function getGridSizeText(): string {
-    switch (gameSettings.gridSize) {
+    switch (getSettings().gridSize) {
       case GridSizeTypes.SMALL: {
         return "Small";
       }
@@ -88,14 +122,14 @@ function GameSettings(): JSX.Element {
     if (
       targetScoreHasToggled(
         prevTargetTotalScore.current,
-        gameSettings.targetTotalScore
+        getSettings().targetTotalScore
       )
     ) {
       willAnimate = true;
     }
-    prevTargetTotalScore.current = gameSettings.targetTotalScore;
+    prevTargetTotalScore.current = getSettings().targetTotalScore;
 
-    if (gameSettings.targetTotalScore === null) {
+    if (getSettings().targetTotalScore === null) {
       if (willAnimate) {
         baseName += " settings-win-animate-right";
       }
@@ -122,14 +156,14 @@ function GameSettings(): JSX.Element {
     if (
       targetScoreHasToggled(
         prevTargetTotalScore2.current,
-        gameSettings.targetTotalScore
+        getSettings().targetTotalScore
       )
     ) {
       willAnimate = true;
     }
-    prevTargetTotalScore2.current = gameSettings.targetTotalScore;
+    prevTargetTotalScore2.current = getSettings().targetTotalScore;
 
-    if (gameSettings.targetTotalScore !== null) {
+    if (getSettings().targetTotalScore !== null) {
       if (willAnimate) {
         baseName += " settings-win-animate-left";
       }
@@ -149,13 +183,14 @@ function GameSettings(): JSX.Element {
     // Prevent form post
     e.preventDefault();
 
-    const settingsErrors = checkForSettingsErrors(gameSettings);
+    const settingsErrors = checkForSettingsErrors(getSettings());
 
     if (settingsErrors.length === 0) {
       // Save the player's current settings
-      localForage.setItem(StorageConstants.GAME_SETTINGS, gameSettings);
+      dispatch(setSettings({ gameSettings: getSettings() }));
+      localForage.setItem(StorageConstants.GAME_SETTINGS, getSettings());
 
-      dispatch(startGame());
+      history.push("/");
     } else {
       settingsErrors.forEach((error) => {
         const [gameSettingsStatus, errorText] = error;
@@ -185,13 +220,9 @@ function GameSettings(): JSX.Element {
   }
 
   function onShowTargetIconsChange(show: boolean) {
-    const currSettings = { ...gameSettings };
+    const currSettings = { ...getSettings() };
     currSettings.showTargetIcons = show;
-    dispatch(
-      setSettings({
-        gameSettings: currSettings,
-      })
-    );
+    dispatch(modifyGameSettings(currSettings));
   }
 
   function handleGridChange(selected: string | null) {
@@ -200,21 +231,18 @@ function GameSettings(): JSX.Element {
       if (selectedNumber in GridSizeTypes) {
         const gridSizeType: GridSizeTypes = selectedNumber;
 
-        const currSettings = { ...gameSettings };
+        const currSettings = { ...getSettings() };
         currSettings.gridSize = selectedNumber;
         currSettings.rows = gridSizes[gridSizeType].rows;
         currSettings.columns = gridSizes[gridSizeType].cols;
 
-        dispatch(
-          setSettings({
-            gameSettings: currSettings,
-          })
-        );
+        dispatch(modifyGameSettings(currSettings));
       }
     }
   }
 
   function getPointsToWinValue(): string {
+    const gameSettings = getSettings();
     if (gameSettings.targetTotalScore === null) {
       return "";
     }
@@ -223,7 +251,7 @@ function GameSettings(): JSX.Element {
 
   function handlePointsToWinChange(pointsToWin: string | null) {
     setPointsToWinInvalid(undefined);
-    const currSettings = { ...gameSettings };
+    const currSettings = { ...getSettings() };
 
     if (pointsToWin) {
       currSettings.targetTotalScore = parseInt(pointsToWin);
@@ -231,14 +259,11 @@ function GameSettings(): JSX.Element {
       currSettings.targetTotalScore = null;
     }
 
-    dispatch(
-      setSettings({
-        gameSettings: currSettings,
-      })
-    );
+    dispatch(modifyGameSettings(currSettings));
   }
 
   function getAdvanceRoundValue(): string {
+    const gameSettings = getSettings();
     if (gameSettings.targetRoundScore === null) {
       return "";
     }
@@ -249,7 +274,7 @@ function GameSettings(): JSX.Element {
     pointsToAdvanceRound: string | null
   ) {
     setPointsToAdvanceInvalid(undefined);
-    const currSettings = { ...gameSettings };
+    const currSettings = { ...getSettings() };
 
     if (pointsToAdvanceRound) {
       currSettings.targetRoundScore = parseInt(pointsToAdvanceRound);
@@ -257,11 +282,7 @@ function GameSettings(): JSX.Element {
       currSettings.targetRoundScore = null;
     }
 
-    dispatch(
-      setSettings({
-        gameSettings: currSettings,
-      })
-    );
+    dispatch(modifyGameSettings(currSettings));
   }
 
   return (
@@ -305,7 +326,7 @@ function GameSettings(): JSX.Element {
                 onChange={(showTargetIcons) =>
                   onShowTargetIconsChange(showTargetIcons)
                 }
-                checked={gameSettings.showTargetIcons}
+                checked={getSettings().showTargetIcons}
               />
             </label>
           </Col>

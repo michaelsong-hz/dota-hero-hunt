@@ -15,6 +15,7 @@ import { updatePlayersList } from "store/game/gameSlice";
 import {
   hostForcefulDisconnect,
   hostWSBroadcast,
+  selectHostModifiedGameSettings,
   setHostIDAndCopyLink,
 } from "store/host/hostSlice";
 import { AppDispatch, RootState } from "store/rootStore";
@@ -132,6 +133,16 @@ function createHostMiddleware(): Middleware {
                   });
                 } else {
                   const gameState = getState().game;
+                  let gameSettings = gameState.gameSettings;
+                  const modifiedGameSettings = selectHostModifiedGameSettings(
+                    getState()
+                  );
+                  // If on the settings page, send the settings being modified
+                  // instead
+                  if (window.location.href.split("/")[3] === "settings") {
+                    gameSettings = modifiedGameSettings;
+                  }
+
                   const fromPlayerName = getPlayerNameFromConn(incomingConn);
 
                   currentPlayers[fromPlayerName] = {
@@ -141,7 +152,7 @@ function createHostMiddleware(): Middleware {
 
                   incomingConn.send({
                     type: HostTypeConstants.CONNECTION_ACCEPTED,
-                    settings: gameState.gameSettings,
+                    settings: gameSettings,
                     players: gameState.players,
                     round: gameState.round,
                     targetHeroes: Array.from(gameState.targetHeroes),
@@ -160,11 +171,6 @@ function createHostMiddleware(): Middleware {
                       players: currentPlayers,
                     })
                   );
-
-                  // TODO: CONNECTION_ACCEPTED is probably no longer needed
-                  // incomingConn.send({
-                  //   type: HostTypeConstants.CONNECTION_ACCEPTED,
-                  // });
                 }
               });
 

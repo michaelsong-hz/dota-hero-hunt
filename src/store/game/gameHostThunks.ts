@@ -20,6 +20,7 @@ import {
   selectCurrentHeroes,
   selectTargetHeroes,
 } from "store/game/gameSlice";
+import { AddHostToPlayers } from "store/host/hostThunks";
 import { AppThunk, AppDispatch } from "store/rootStore";
 import { heroList } from "utils/HeroList";
 import { SoundEffects } from "utils/SoundEffectList";
@@ -41,40 +42,11 @@ function reportTargetRoundScoreNotSet(dispatch: AppDispatch) {
   dispatch(updateModalToShow({ modal: OtherErrorTypes.GENERIC_ERROR }));
 }
 
-export const startGame = (): AppThunk => (dispatch, getState) => {
+export const startGame = (): AppThunk => (dispatch) => {
   // Reset settings page
   dispatch(setIsInviteLinkCopied(false));
 
-  const playerName = selectPlayerName(getState());
-  const players = { ...getState().game.players };
-
-  // TODO: This may not be needed
-  // Add self to players list (if not yet in players list)
-  players[playerName] = {
-    score: 0,
-    isDisabled: false,
-  };
-
-  // TODO: Might move this to endGame() instead
-  // Reset all player scores to 0
-  for (const key in players) {
-    const currentPlayer = { ...players[key] };
-    currentPlayer.score = 0;
-    players[key] = currentPlayer;
-  }
-
-  // TODO: This may not be needed
-  dispatch(
-    hostWSBroadcast({
-      type: HostTypeConstants.UPDATE_PLAYERS_LIST,
-      players,
-    })
-  );
-  dispatch(
-    updatePlayersList({
-      players,
-    })
-  );
+  dispatch(AddHostToPlayers());
 
   // Generates the first game state and starts the game
   dispatch(incrementRound(1));
@@ -99,6 +71,26 @@ export const endGame = (): AppThunk => (dispatch, getState) => {
     })
   );
   dispatch(setGameStatus(gameStatus));
+
+  // Reset all player scores to 0
+  const players = { ...getState().game.players };
+  for (const key in players) {
+    const currentPlayer = { ...players[key] };
+    currentPlayer.score = 0;
+    players[key] = currentPlayer;
+  }
+
+  dispatch(
+    hostWSBroadcast({
+      type: HostTypeConstants.UPDATE_PLAYERS_LIST,
+      players,
+    })
+  );
+  dispatch(
+    updatePlayersList({
+      players,
+    })
+  );
 };
 
 export const addSelectedIcon =
@@ -286,8 +278,4 @@ export const incrementRound =
     );
   };
 
-// TODO: Add timer for next round
-
-// TODO: Add update game settings reducer
-
-// TODO: Split thunks into folders, this file is growing way too big
+// TODO: reorganize thunks

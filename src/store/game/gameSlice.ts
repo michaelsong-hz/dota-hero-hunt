@@ -84,6 +84,12 @@ export const gameSlice = createSlice({
       state.statusText = action.payload.statusText;
       state.gameStatus = action.payload.gameStatus;
     },
+    clearHeroGrid: (state) => {
+      state.selectedIcons = [];
+      state.invalidIcons = [];
+      state.targetHeroes = [];
+      state.currentHeroes = [[]];
+    },
     updatePlayersList: (
       state,
       action: PayloadAction<{
@@ -124,6 +130,7 @@ export const gameSlice = createSlice({
 export const {
   setRound,
   updateSelectedIcons,
+  clearHeroGrid,
   updatePlayersList,
   setCurrentHeroes,
   setSettings,

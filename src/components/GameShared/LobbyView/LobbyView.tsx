@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
 
 import PlayerNameModal from "components/GameHost/PlayerNameModal";
-import { useAppSelector } from "hooks/useStore";
+import { useAppDispatch, useAppSelector } from "hooks/useStore";
 import { selectIsDark } from "store/application/applicationSlice";
+import { endGame } from "store/game/gameHostThunks";
 import { isSinglePlayer } from "store/host/hostSlice";
 import { appendTheme, isClient } from "utils/utilities";
 
@@ -15,10 +16,16 @@ function LobbyView(): JSX.Element {
   const isSingleP = useAppSelector(isSinglePlayer);
   const isDark = useAppSelector(selectIsDark);
 
+  const dispatch = useAppDispatch();
+
   const [showPlayersPanel, setShowPlayersPanel] = useState(
     isSingleP ? false : true
   );
   const [playersPanelAnimation, setPlayersPanelAnimation] = useState("");
+
+  useEffect(() => {
+    dispatch(endGame());
+  }, [dispatch]);
 
   useEffect(() => {
     if (isSingleP === false && showPlayersPanel === false) {

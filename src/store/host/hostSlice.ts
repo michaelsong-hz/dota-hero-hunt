@@ -1,11 +1,13 @@
 import { createAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+import { GameSettings } from "models/GameSettingsType";
 import { HostTypes } from "models/MessageHostTypes";
 import { Modals } from "models/Modals";
 import {
   setIsInviteLinkCopied,
   updateModalToShow,
 } from "store/application/applicationSlice";
+import { initialGameSettings } from "store/game/gameSlice";
 import {
   PEER_HOST_BROADCAST,
   PEER_HOST_START,
@@ -17,11 +19,13 @@ import { getHostInviteLink, isClient } from "utils/utilities";
 export interface HostState {
   hostID: string | null;
   isGeneratingLink: boolean;
+  modifiedGameSettings: GameSettings; // Used when modifying settings
 }
 
 const initialState: HostState = {
   hostID: null,
   isGeneratingLink: false,
+  modifiedGameSettings: initialGameSettings,
 };
 
 export const hostSlice = createSlice({
@@ -39,11 +43,18 @@ export const hostSlice = createSlice({
     setIsGeneratingLink: (state, action: PayloadAction<boolean>) => {
       state.isGeneratingLink = action.payload;
     },
+    setModifiedGameSettings: (state, action: PayloadAction<GameSettings>) => {
+      state.modifiedGameSettings = action.payload;
+    },
   },
 });
 
-export const { setHostID, resetHostState, setIsGeneratingLink } =
-  hostSlice.actions;
+export const {
+  setHostID,
+  resetHostState,
+  setIsGeneratingLink,
+  setModifiedGameSettings,
+} = hostSlice.actions;
 
 export const startHostWS = createAction(PEER_HOST_START);
 export const stopHostWS = createAction(PEER_HOST_STOP);
@@ -54,6 +65,10 @@ export const selectHostID = (state: RootState): string | null =>
 
 export const selectIsGeneratingLink = (state: RootState): boolean =>
   state.host.isGeneratingLink;
+
+export const selectHostModifiedGameSettings = (
+  state: RootState
+): GameSettings => state.host.modifiedGameSettings;
 
 export const isSinglePlayer = (state: RootState): boolean => {
   if (state.host.hostID === null && !isClient()) {

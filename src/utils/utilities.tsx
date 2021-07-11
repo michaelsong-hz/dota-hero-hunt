@@ -130,19 +130,18 @@ export function checkForSettingsErrors(
 }
 
 export function isClient(): boolean {
-  const path = window.location.pathname;
-  if (path.length <= 1) {
-    return false;
+  // Clients always have a pathname: /play/:gameID
+  // Hosts have / or /settings
+  if ((window.location.pathname.match(/\//g) || []).length === 2) {
+    return true;
   }
-  return true;
+  return false;
 }
 
 export function getHostInviteLink(hostID: string | null): string {
   if (hostID !== undefined && hostID !== null) {
-    let path = window.location.href;
-    path =
-      path[path.length - 1] === "/" ? path.substr(0, path.length - 1) : path;
-    return `${path}/play/${hostID}`;
+    const pathParts = window.location.href.split("/");
+    return `${pathParts[0]}//${pathParts[2]}/play/${hostID}`;
   }
   return "Click generate to get an invite link";
 }
