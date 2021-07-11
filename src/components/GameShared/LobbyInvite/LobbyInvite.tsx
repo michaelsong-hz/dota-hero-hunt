@@ -35,7 +35,7 @@ function LobbyInvite(): JSX.Element {
         <div className="mb-2 ml-2">
           <Button
             disabled={isGeneratingLink}
-            variant={"danger"}
+            variant={appendTheme("danger", isDark)}
             onClick={() => dispatch(stopHosting())}
           >
             Stop Hosting

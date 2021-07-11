@@ -15,7 +15,10 @@ function SettingsButton(): JSX.Element {
   if (isClient()) {
     return (
       <Link to="/">
-        <Button variant={"danger"} onClick={() => dispatch(clientDisconnect())}>
+        <Button
+          variant={appendTheme("danger", isDark)}
+          onClick={() => dispatch(clientDisconnect())}
+        >
           Disconnect
         </Button>
       </Link>
