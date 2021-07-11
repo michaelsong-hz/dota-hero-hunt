@@ -2,12 +2,25 @@ import React from "react";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-import { useAppSelector } from "hooks/useStore";
+import { useAppDispatch, useAppSelector } from "hooks/useStore";
 import { selectIsDark } from "store/application/applicationSlice";
-import { appendTheme } from "utils/utilities";
+import { clientDisconnect } from "store/client/clientSlice";
+import { appendTheme, isClient } from "utils/utilities";
 
 function SettingsButton(): JSX.Element {
   const isDark = useAppSelector(selectIsDark);
+
+  const dispatch = useAppDispatch();
+
+  if (isClient()) {
+    return (
+      <Link to="/">
+        <Button variant={"danger"} onClick={() => dispatch(clientDisconnect())}>
+          Disconnect
+        </Button>
+      </Link>
+    );
+  }
 
   return (
     <Link to="/settings">

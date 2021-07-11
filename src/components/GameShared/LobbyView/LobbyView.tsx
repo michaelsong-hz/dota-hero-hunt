@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
+import { Button, Container } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 import PlayerNameModal from "components/GameHost/PlayerNameModal";
 import { useAppDispatch, useAppSelector } from "hooks/useStore";
 import { selectIsDark } from "store/application/applicationSlice";
+import { clientDisconnect } from "store/client/clientSlice";
 import { endGame } from "store/game/gameHostThunks";
 import { isSinglePlayer } from "store/host/hostSlice";
 import { appendTheme, isClient } from "utils/utilities";
@@ -39,25 +41,38 @@ function LobbyView(): JSX.Element {
   return (
     <Container fluid="xl" className="mt-3">
       <PlayerNameModal />
-      <div className="d-flex lobby-view-panels">
-        {showPlayersPanel && (
-          <div
-            className={`${appendTheme(
-              "content-holder",
-              isDark
-            )} ${playersPanelAnimation}`}
-          >
-            <ConnectedPlayers />
-          </div>
+
+      <div className="d-flex flex-column">
+        {isClient() && (
+          <Link to="/" className="lobby-view-disconnect">
+            <Button
+              variant={"danger"}
+              onClick={() => dispatch(clientDisconnect())}
+            >
+              Disconnect
+            </Button>
+          </Link>
         )}
-        <div className="d-flex flex-column lobby-view-inner-panels">
-          <div>
-            <LobbyInvite />
+        <div className="d-flex lobby-view-panels">
+          {showPlayersPanel && (
+            <div
+              className={`${appendTheme(
+                "content-holder",
+                isDark
+              )} ${playersPanelAnimation}`}
+            >
+              <ConnectedPlayers />
+            </div>
+          )}
+          <div className="d-flex flex-column lobby-view-inner-panels">
+            <div>
+              <LobbyInvite />
+            </div>
+            <div>
+              <GameSettings />
+            </div>
           </div>
-          <div>
-            <GameSettings />
-          </div>
-        </div>
+        </div>{" "}
       </div>
     </Container>
   );

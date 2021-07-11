@@ -82,7 +82,7 @@ function setStoredGameSettings(storedGameSettings: unknown) {
   store.dispatch(setSettingsLoaded(true)); // Allows the game to render
 }
 
-async function loadStoredGameSettings() {
+export async function loadStoredGameSettings(): Promise<void> {
   try {
     const storedGameSettings = await localForage.getItem(
       StorageConstants.GAME_SETTINGS

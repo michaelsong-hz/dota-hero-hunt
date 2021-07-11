@@ -28,7 +28,11 @@ import { AppDispatch, RootState, store } from "store/rootStore";
 import { SoundEffects } from "utils/SoundEffectList";
 import { getPeerConfig, getAppVersion } from "utils/utilities";
 
-import { PEER_CLIENT_CONNECT, PEER_CLIENT_SEND } from "./middlewareConstants";
+import {
+  PEER_CLIENT_CONNECT,
+  PEER_CLIENT_DISCONNECT,
+  PEER_CLIENT_SEND,
+} from "./middlewareConstants";
 
 let peer: Peer | null = null;
 let isCleaningUp = false;
@@ -265,6 +269,10 @@ function createClientMiddleware(): Middleware {
               dispatch(clientForcefulDisconnect(error.type));
               cleanUp();
             });
+            break;
+
+          case PEER_CLIENT_DISCONNECT:
+            cleanUp();
             break;
 
           case PEER_CLIENT_SEND:

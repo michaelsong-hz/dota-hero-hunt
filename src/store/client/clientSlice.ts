@@ -6,13 +6,17 @@ import { Modals } from "models/Modals";
 import {
   selectPlayerName,
   setPlayerName,
+  setSettingsLoaded,
   updateModalToShow,
 } from "store/application/applicationSlice";
+import { resetPlayers } from "store/game/gameSlice";
+import { loadStoredGameSettings } from "store/loadSettings";
 import {
   PEER_CLIENT_CONNECT,
+  PEER_CLIENT_DISCONNECT,
   PEER_CLIENT_SEND,
 } from "store/middleware/middlewareConstants";
-import { AppThunk, RootState } from "store/rootStore";
+import { AppDispatch, AppThunk, RootState } from "store/rootStore";
 import { StorageConstants } from "utils/constants";
 
 export interface ClientState {
@@ -60,6 +64,7 @@ export const {
 } = clientSlice.actions;
 
 export const startClientWS = createAction(PEER_CLIENT_CONNECT);
+export const stopClientWS = createAction(PEER_CLIENT_DISCONNECT);
 export const clientWSSend = createAction<ClientTypes>(PEER_CLIENT_SEND);
 
 export const selectRemoteHostID = (state: RootState): string | null =>
@@ -89,13 +94,25 @@ export const clientNameChange =
     dispatch(setIsNameTaken(false));
   };
 
+function clientReset(dispatch: AppDispatch) {
+  dispatch(setSettingsLoaded(false));
+  loadStoredGameSettings();
+  dispatch(resetClientState());
+  dispatch(resetPlayers());
+}
+
 // Called when the client is forcefully disconnected
 // Clean up state and display error modal
 export const clientForcefulDisconnect =
   (modal: Modals, message?: string[]): AppThunk =>
   (dispatch) => {
     dispatch(updateModalToShow({ modal, message }));
-    dispatch(resetClientState());
+    clientReset(dispatch);
   };
+
+export const clientDisconnect = (): AppThunk => (dispatch) => {
+  dispatch(stopClientWS());
+  clientReset(dispatch);
+};
 
 export default clientSlice.reducer;

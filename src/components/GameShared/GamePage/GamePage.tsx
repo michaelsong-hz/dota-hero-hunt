@@ -38,11 +38,9 @@ function GamePage(): JSX.Element {
   return (
     <Container fluid="xl" className="mt-3">
       {getWinningIcons()}
-      {!isClient() && (
-        <div className="d-flex flex-row-reverse mb-3">
-          <SettingsButton />
-        </div>
-      )}
+      <div className="d-flex flex-row-reverse mb-3">
+        <SettingsButton />
+      </div>
       <div className="game-page-panels d-flex">
         <div className={`${appendTheme("content-holder", isDark)}`}>
           <ConnectedPlayers />
