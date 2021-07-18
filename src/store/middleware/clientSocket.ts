@@ -128,7 +128,7 @@ function onMessageFromHost(data: HostTypes, dispatch: AppDispatch) {
       );
       break;
     }
-    case HostTypeConstants.UPDATE_FROM_CLICK: {
+    case HostTypeConstants.SELECT_ICON: {
       if (data.gameStatus === GameStatus.FINISHED) {
         dispatch(playAudio(SoundEffects.Applause));
       } else if (

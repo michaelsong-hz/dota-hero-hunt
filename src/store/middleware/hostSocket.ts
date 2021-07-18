@@ -274,7 +274,7 @@ function createHostMiddleware(): Middleware {
           case HOST_SELECT_ICON:
             if (addSelectedIconAction.match(action))
               broadcastMessage({
-                type: HostTypeConstants.UPDATE_FROM_CLICK,
+                type: HostTypeConstants.SELECT_ICON,
                 isCorrectHero: action.payload.isCorrectHero,
                 lastClickedPlayerName: action.payload.lastClickedPlayerName,
                 players: action.payload.newState.players,

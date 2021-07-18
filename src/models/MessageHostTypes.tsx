@@ -11,19 +11,12 @@ export enum HostTypeConstants {
   UPDATE_PLAYERS_LIST,
   PLAYER_NAME_TAKEN,
   APP_VERSION_MISMATCH,
-  UPDATE_FROM_CLICK,
+  SELECT_ICON,
   UPDATE_SETTINGS,
 }
 
 export type HostTypes =
-  | {
-      type: HostTypeConstants.UPDATE_ROUND;
-      round: number;
-      targetHeroes: number[];
-      currentHeroes: number[][];
-      statusText: string;
-      gameStatus: GameStatus;
-    }
+  // Connection negotiation messages
   | {
       type: HostTypeConstants.CONNECTION_ACCEPTED;
       settings: GameSettings;
@@ -37,10 +30,6 @@ export type HostTypes =
       gameStatus: GameStatus;
     }
   | {
-      type: HostTypeConstants.UPDATE_PLAYERS_LIST;
-      players: Record<string, PlayerState>;
-    }
-  | {
       type: HostTypeConstants.PLAYER_NAME_TAKEN;
       currentPlayers: string[];
     }
@@ -49,8 +38,18 @@ export type HostTypes =
       hostVersion: string;
       clientVersion: string;
     }
+
+  // Gameplay messages
   | {
-      type: HostTypeConstants.UPDATE_FROM_CLICK;
+      type: HostTypeConstants.UPDATE_ROUND;
+      round: number;
+      targetHeroes: number[];
+      currentHeroes: number[][];
+      statusText: string;
+      gameStatus: GameStatus;
+    }
+  | {
+      type: HostTypeConstants.SELECT_ICON;
       isCorrectHero: boolean;
       lastClickedPlayerName: string;
       players: Record<string, PlayerState>;
@@ -62,6 +61,10 @@ export type HostTypes =
   | {
       type: HostTypeConstants.UPDATE_SETTINGS;
       settings: GameSettings;
+    }
+  | {
+      type: HostTypeConstants.UPDATE_PLAYERS_LIST;
+      players: Record<string, PlayerState>;
     };
 
 export interface ClientDataConnection extends Peer.DataConnection {
