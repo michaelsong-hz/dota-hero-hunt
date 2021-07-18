@@ -3,7 +3,7 @@ import { Howl } from "howler";
 import { AnyAction, Dispatch } from "redux";
 
 import { selectVolume } from "store/application/applicationSlice";
-import { addSelectedIcon } from "store/host/hostActions";
+import { addSelectedIconAction } from "store/host/hostActions";
 import { HOST_SELECT_ICON } from "store/host/hostConstants";
 import { AppDispatch, RootState } from "store/rootStore";
 import { soundEffectList } from "utils/SoundEffectList";
@@ -22,7 +22,7 @@ function createAudioMiddleware(): Middleware<Dispatch> {
     (action: AnyAction) => {
       if (action.type && action.type === HOST_SELECT_ICON) {
         if (
-          addSelectedIcon.match(action) &&
+          addSelectedIconAction.match(action) &&
           action.payload &&
           action.payload.soundEffect !== undefined
         ) {

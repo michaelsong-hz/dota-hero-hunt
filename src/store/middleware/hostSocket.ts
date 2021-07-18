@@ -13,16 +13,17 @@ import { OtherErrorTypes } from "models/Modals";
 import { PeerJSErrorTypes } from "models/PeerErrors";
 import { updatePlayersList } from "store/game/gameSlice";
 import {
-  addSelectedIcon,
-  hostForcefulDisconnect,
-  incrementRound,
+  addSelectedIconAction,
+  incrementRoundAction,
   modifyGameSettingsAction,
   submitPlayerNameAction,
-  visitSettingsPage,
+  visitSettingsPageAction,
 } from "store/host/hostActions";
 import {
   HOST_INCREMENT_ROUND,
   HOST_MODIFY_SETTINGS,
+  HOST_PEER_START,
+  HOST_PEER_STOP,
   HOST_SELECT_ICON,
   HOST_SUBMIT_PLAYER_NAME,
   HOST_VISIT_SETTINGS,
@@ -31,6 +32,7 @@ import {
   selectHostModifiedGameSettings,
   setHostIDAndCopyLink,
 } from "store/host/hostSlice";
+import { addSelectedIcon, hostForcefulDisconnect } from "store/host/hostThunks";
 import { AppDispatch, RootState } from "store/rootStore";
 import {
   getPeerConfig,
@@ -38,8 +40,6 @@ import {
   getVersionFromConn,
   getPlayerNameFromConn,
 } from "utils/utilities";
-
-import { PEER_HOST_START, PEER_HOST_STOP } from "./middlewareConstants";
 
 let peer: Peer | null = null;
 const invalidConnLabels: Set<string> = new Set();
@@ -104,7 +104,7 @@ function createHostMiddleware(): Middleware {
     (action: PayloadAction<AppDispatch>) => {
       if (action.type) {
         switch (action.type) {
-          case PEER_HOST_START:
+          case HOST_PEER_START:
             peer = new Peer(getPeerConfig());
 
             peer.on("open", () => {
@@ -224,9 +224,9 @@ function createHostMiddleware(): Middleware {
             peer.on("disconnected", () => {
               if (isCleaningUp === false) {
                 dispatch(
-                  hostForcefulDisconnect({
-                    modal: OtherErrorTypes.PEER_JS_SERVER_DISCONNECTED,
-                  })
+                  hostForcefulDisconnect(
+                    OtherErrorTypes.PEER_JS_SERVER_DISCONNECTED
+                  )
                 );
               }
               cleanUp();
@@ -235,9 +235,9 @@ function createHostMiddleware(): Middleware {
             peer.on("close", () => {
               if (isCleaningUp === false) {
                 dispatch(
-                  hostForcefulDisconnect({
-                    modal: OtherErrorTypes.PEER_JS_SERVER_DISCONNECTED,
-                  })
+                  hostForcefulDisconnect(
+                    OtherErrorTypes.PEER_JS_SERVER_DISCONNECTED
+                  )
                 );
               }
               cleanUp();
@@ -249,18 +249,18 @@ function createHostMiddleware(): Middleware {
               if (error.type !== PeerJSErrorTypes.PEER_UNAVAILABLE) {
                 captureMessage(error.type);
                 captureException(error);
-                dispatch(hostForcefulDisconnect({ modal: error.type }));
+                dispatch(hostForcefulDisconnect(error.type));
                 cleanUp();
               }
             });
             break;
 
-          case PEER_HOST_STOP:
+          case HOST_PEER_STOP:
             cleanUp();
             break;
 
           case HOST_INCREMENT_ROUND:
-            if (incrementRound.match(action))
+            if (incrementRoundAction.match(action))
               broadcastMessage({
                 type: HostTypeConstants.UPDATE_ROUND,
                 round: action.payload.round,
@@ -272,7 +272,7 @@ function createHostMiddleware(): Middleware {
             break;
 
           case HOST_SELECT_ICON:
-            if (addSelectedIcon.match(action))
+            if (addSelectedIconAction.match(action))
               broadcastMessage({
                 type: HostTypeConstants.UPDATE_FROM_CLICK,
                 isCorrectHero: action.payload.isCorrectHero,
@@ -287,7 +287,7 @@ function createHostMiddleware(): Middleware {
 
           // TODO: Probably want a custom host type to end the game
           case HOST_VISIT_SETTINGS:
-            if (visitSettingsPage.match(action)) {
+            if (visitSettingsPageAction.match(action)) {
               broadcastMessage({
                 type: HostTypeConstants.UPDATE_ROUND,
                 round: 0,

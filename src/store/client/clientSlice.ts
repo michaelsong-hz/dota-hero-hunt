@@ -2,14 +2,14 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import localForage from "localforage";
 
 import { Modals } from "models/Modals";
-import { setPlayerName } from "store/application/applicationActions";
 import {
   selectPlayerName,
   setSettingsLoaded,
   updateModalToShow,
 } from "store/application/applicationSlice";
-import { initializeSettingsAsync } from "store/game/gameActions";
+import { setPlayerName } from "store/application/applicationThunks";
 import { resetPlayers } from "store/game/gameSlice";
+import { initializeSettingsAsync } from "store/game/gameThunks";
 import { AppDispatch, AppThunk, RootState } from "store/rootStore";
 import { StorageConstants } from "utils/constants";
 

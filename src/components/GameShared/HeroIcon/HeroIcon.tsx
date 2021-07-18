@@ -9,7 +9,7 @@ import {
 } from "store/application/applicationSlice";
 import { clientWSSend } from "store/client/clientActions";
 import { selectGameStatus } from "store/game/gameSlice";
-import { addSelectedIcon } from "store/host/hostActions";
+import { addSelectedIcon } from "store/host/hostThunks";
 import { appendTheme, isClient } from "utils/utilities";
 
 interface HeroIconProps {

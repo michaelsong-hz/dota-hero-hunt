@@ -12,7 +12,7 @@ import {
   selectStatusText,
   selectTargetHeroes,
 } from "store/game/gameSlice";
-import { incrementRound } from "store/host/hostActions";
+import { incrementRound } from "store/host/hostThunks";
 import { heroList } from "utils/HeroList";
 import { appendTheme, getIconPath, isClient } from "utils/utilities";
 

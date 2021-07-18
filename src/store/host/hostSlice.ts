@@ -6,28 +6,26 @@ import {
   GridSizeTypes,
 } from "models/GameSettingsType";
 import { setIsInviteLinkCopied } from "store/application/applicationSlice";
-import { setSettings } from "store/game/gameActions";
+import { setSettingsAction } from "store/game/gameActions";
 import { GAME_SET_SETTINGS } from "store/game/gameConstants";
-import {
-  PEER_HOST_START,
-  PEER_HOST_STOP,
-} from "store/middleware/middlewareConstants";
 import { AppThunk, RootState } from "store/rootStore";
 import { getHostInviteLink, isClient } from "utils/utilities";
 
 import {
-  addSelectedIcon,
-  hostForcefulDisconnect,
+  addSelectedIconAction,
+  hostForcefulDisconnectAction,
+  hostPeerStartAction,
+  hostPeerStopAction,
   modifyGameSettingsAction,
-  startHostWS,
-  stopHostWS,
-  visitSettingsPage,
+  visitSettingsPageAction,
 } from "./hostActions";
 import {
-  HOST_FORCED_DISCONNECT,
+  HOST_PEER_FORCED_DC,
   HOST_MODIFY_SETTINGS,
   HOST_SELECT_ICON,
   HOST_VISIT_SETTINGS,
+  HOST_PEER_START,
+  HOST_PEER_STOP,
 } from "./hostConstants";
 
 export interface HostState {
@@ -77,20 +75,17 @@ export const hostSlice = createSlice({
     builder
       .addCase(HOST_VISIT_SETTINGS, (state, action) => {
         // Reset the modified settings when visiting the settings page
-        if (
-          visitSettingsPage.match(action) &&
-          action.payload.isClient === false
-        ) {
+        if (visitSettingsPageAction.match(action)) {
           state.modifiedGameSettings = action.payload.settings;
           if (state.nextRoundTimer) clearTimeout(state.nextRoundTimer);
         }
       })
-      .addCase(HOST_FORCED_DISCONNECT, (state, action) => {
-        if (hostForcefulDisconnect.match(action))
+      .addCase(HOST_PEER_FORCED_DC, (state, action) => {
+        if (hostForcefulDisconnectAction.match(action))
           state.isGeneratingLink = false;
       })
       .addCase(HOST_SELECT_ICON, (state, action) => {
-        if (addSelectedIcon.match(action) && action.payload)
+        if (addSelectedIconAction.match(action) && action.payload)
           state.nextRoundTimer = action.payload.nextRoundTimer;
       })
       .addCase(HOST_MODIFY_SETTINGS, (state, action) => {
@@ -98,19 +93,19 @@ export const hostSlice = createSlice({
           state.modifiedGameSettings = action.payload;
       })
 
-      .addCase(PEER_HOST_START, (state, action) => {
-        if (startHostWS.match(action)) state.isGeneratingLink = true;
+      .addCase(HOST_PEER_START, (state, action) => {
+        if (hostPeerStartAction.match(action)) state.isGeneratingLink = true;
       })
-      .addCase(PEER_HOST_STOP, (state, action) => {
-        if (stopHostWS.match(action)) {
+      .addCase(HOST_PEER_STOP, (state, action) => {
+        if (hostPeerStopAction.match(action)) {
           hostSlice.caseReducers.resetHostState(state);
         }
       })
 
       .addCase(GAME_SET_SETTINGS, (state, action) => {
         // When new game settings are set, update modified settings to be equal
-        if (setSettings.match(action))
-          state.modifiedGameSettings = action.payload.gameSettings;
+        if (setSettingsAction.match(action))
+          state.modifiedGameSettings = action.payload;
       });
   },
 });

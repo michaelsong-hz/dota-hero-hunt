@@ -18,12 +18,12 @@ import {
   setIsNameTaken,
   setRemoteHostID,
 } from "store/client/clientSlice";
-import { setSettings } from "store/game/gameActions";
 import {
   setRound,
   updatePlayersList,
   updateSelectedIcons,
 } from "store/game/gameSlice";
+import { setSettings } from "store/game/gameThunks";
 import { AppDispatch, RootState } from "store/rootStore";
 import { SoundEffects } from "utils/SoundEffectList";
 import { getPeerConfig, getAppVersion } from "utils/utilities";
@@ -59,11 +59,7 @@ function onMessageFromHost(data: HostTypes, dispatch: AppDispatch) {
 
   switch (data.type) {
     case HostTypeConstants.CONNECTION_ACCEPTED: {
-      dispatch(
-        setSettings({
-          gameSettings: data.settings,
-        })
-      );
+      dispatch(setSettings(data.settings));
       dispatch(
         setRound({
           round: data.round,
@@ -114,11 +110,7 @@ function onMessageFromHost(data: HostTypes, dispatch: AppDispatch) {
       break;
     }
     case HostTypeConstants.UPDATE_SETTINGS: {
-      dispatch(
-        setSettings({
-          gameSettings: data.settings,
-        })
-      );
+      dispatch(setSettings(data.settings));
       break;
     }
     case HostTypeConstants.UPDATE_ROUND: {

@@ -8,7 +8,7 @@ import {
   setIsDark,
   setLoadedSettings,
 } from "./application/applicationSlice";
-import { initializeSettingsAsync } from "./game/gameActions";
+import { initializeSettingsAsync } from "./game/gameThunks";
 import { store } from "./rootStore";
 
 function setStoredApplicationSettings(storedAppSettings: [unknown, unknown]) {

@@ -7,4 +7,6 @@ import { APPLICATION_SET_PLAYER_NAME } from "./applicationConstants";
 
 export const playAudio = createAction<SoundEffects>(PLAY_AUDIO_ACTION);
 
-export const setPlayerName = createAction<string>(APPLICATION_SET_PLAYER_NAME);
+export const setPlayerNameAction = createAction<string>(
+  APPLICATION_SET_PLAYER_NAME
+);

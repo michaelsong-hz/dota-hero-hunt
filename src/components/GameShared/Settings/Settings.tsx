@@ -25,8 +25,8 @@ import {
   selectIsDark,
   selectPlayerName,
 } from "store/application/applicationSlice";
-import { setSettings } from "store/game/gameActions";
 import { selectGameSettings } from "store/game/gameSlice";
+import { setSettings } from "store/game/gameThunks";
 import { selectHostModifiedGameSettings } from "store/host/hostSlice";
 import { modifyGameSettings } from "store/host/hostThunks";
 import { StorageConstants } from "utils/constants";
@@ -169,7 +169,7 @@ function GameSettings(): JSX.Element {
 
     if (settingsErrors.length === 0) {
       // Save the player's current settings
-      dispatch(setSettings({ gameSettings: getSettings() }));
+      dispatch(setSettings(getSettings()));
       localForage.setItem(StorageConstants.GAME_SETTINGS, getSettings());
 
       history.push("/");

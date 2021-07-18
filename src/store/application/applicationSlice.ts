@@ -3,19 +3,19 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ApplicationSettings } from "models/ApplicationSettings";
 import { InstallStatus } from "models/InstallStatus";
 import { Modals, RegularModals } from "models/Modals";
-import { initializeSettingsAsync } from "store/game/gameActions";
+import { initializeSettingsAsync } from "store/game/gameThunks";
 import {
-  hostForcefulDisconnect,
+  hostForcefulDisconnectAction,
   submitPlayerNameAction,
 } from "store/host/hostActions";
 import {
-  HOST_FORCED_DISCONNECT,
+  HOST_PEER_FORCED_DC,
+  HOST_PEER_STOP,
   HOST_SUBMIT_PLAYER_NAME,
 } from "store/host/hostConstants";
-import { PEER_HOST_STOP } from "store/middleware/middlewareConstants";
 import { AppThunk, RootState } from "store/rootStore";
 
-import { setPlayerName } from "./applicationActions";
+import { setPlayerNameAction } from "./applicationActions";
 import { APPLICATION_SET_PLAYER_NAME } from "./applicationConstants";
 
 export interface ApplicationState {
@@ -98,8 +98,8 @@ export const applicationSlice = createSlice({
       .addCase(initializeSettingsAsync.fulfilled, (state) => {
         state.settingsLoaded = true;
       })
-      .addCase(HOST_FORCED_DISCONNECT, (state, action) => {
-        if (hostForcefulDisconnect.match(action)) {
+      .addCase(HOST_PEER_FORCED_DC, (state, action) => {
+        if (hostForcefulDisconnectAction.match(action)) {
           state.modalToShow = action.payload.modal;
           if (action.payload.message)
             state.modalCustomMessage = action.payload.message;
@@ -110,11 +110,12 @@ export const applicationSlice = createSlice({
           state.playerName = action.payload.playerName;
         }
       })
-      .addCase(PEER_HOST_STOP, (state) => {
+      .addCase(HOST_PEER_STOP, (state) => {
         state.isInviteLinkCopied = false;
       })
       .addCase(APPLICATION_SET_PLAYER_NAME, (state, action) => {
-        if (setPlayerName.match(action)) state.playerName = action.payload;
+        if (setPlayerNameAction.match(action))
+          state.playerName = action.payload;
       });
   },
 });

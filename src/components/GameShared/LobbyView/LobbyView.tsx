@@ -7,8 +7,8 @@ import { useAppDispatch, useAppSelector } from "hooks/useStore";
 import { selectIsDark } from "store/application/applicationSlice";
 import { clientDisconnect } from "store/client/clientSlice";
 import { selectGameSettings } from "store/game/gameSlice";
-import { visitSettingsPage } from "store/host/hostActions";
 import { isSinglePlayer } from "store/host/hostSlice";
+import { visitSettingsPage } from "store/host/hostThunks";
 import { appendTheme, isClient } from "utils/utilities";
 
 import ConnectedPlayers from "../ConnectedPlayers";
@@ -28,7 +28,7 @@ function LobbyView(): JSX.Element {
   const [playersPanelAnimation, setPlayersPanelAnimation] = useState("");
 
   useEffect(() => {
-    dispatch(visitSettingsPage(isClient(), gameSettings));
+    dispatch(visitSettingsPage(gameSettings));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

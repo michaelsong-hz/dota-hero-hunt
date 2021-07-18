@@ -6,7 +6,7 @@ import {
   selectPlayerName,
   selectSettingsLoaded,
 } from "store/application/applicationSlice";
-import { incrementRound } from "store/host/hostActions";
+import { incrementRound } from "store/host/hostThunks";
 
 function GameHostPage(): JSX.Element {
   const isSettingsLoaded = useAppSelector(selectSettingsLoaded);
