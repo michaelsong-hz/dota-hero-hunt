@@ -54,9 +54,6 @@ export type HostTypes =
       isCorrectHero: boolean;
       lastClickedPlayerName: string;
       players: Record<string, PlayerState>;
-      // Will prefer to send sets as those are our native data structure,
-      // but Peer JS does not seem to like sets.
-      // Maybe revisit in the future to see if they make an update to support sets.
       selected: number[];
       invalidIcons: number[];
       statusText: string;

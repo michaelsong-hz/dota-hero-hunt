@@ -1,23 +1,19 @@
-import { createAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import localForage from "localforage";
 
-import { ClientTypes } from "models/MessageClientTypes";
 import { Modals } from "models/Modals";
+import { setPlayerName } from "store/application/applicationActions";
 import {
   selectPlayerName,
-  setPlayerName,
   setSettingsLoaded,
   updateModalToShow,
 } from "store/application/applicationSlice";
+import { initializeSettingsAsync } from "store/game/gameActions";
 import { resetPlayers } from "store/game/gameSlice";
-import { loadStoredGameSettings } from "store/loadSettings";
-import {
-  PEER_CLIENT_CONNECT,
-  PEER_CLIENT_DISCONNECT,
-  PEER_CLIENT_SEND,
-} from "store/middleware/middlewareConstants";
 import { AppDispatch, AppThunk, RootState } from "store/rootStore";
 import { StorageConstants } from "utils/constants";
+
+import { startClientWS, stopClientWS } from "./clientActions";
 
 export interface ClientState {
   remoteHostID: string | null;
@@ -63,10 +59,6 @@ export const {
   resetClientState,
 } = clientSlice.actions;
 
-export const startClientWS = createAction(PEER_CLIENT_CONNECT);
-export const stopClientWS = createAction(PEER_CLIENT_DISCONNECT);
-export const clientWSSend = createAction<ClientTypes>(PEER_CLIENT_SEND);
-
 export const selectRemoteHostID = (state: RootState): string | null =>
   state.client.remoteHostID;
 export const selectIsJoiningGame = (state: RootState): boolean =>
@@ -96,7 +88,7 @@ export const clientNameChange =
 
 function clientReset(dispatch: AppDispatch) {
   dispatch(setSettingsLoaded(false));
-  loadStoredGameSettings();
+  dispatch(initializeSettingsAsync());
   dispatch(resetClientState());
   dispatch(resetPlayers());
 }

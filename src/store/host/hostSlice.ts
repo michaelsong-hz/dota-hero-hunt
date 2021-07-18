@@ -1,31 +1,57 @@
-import { createAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { GameSettings } from "models/GameSettingsType";
-import { HostTypes } from "models/MessageHostTypes";
-import { Modals } from "models/Modals";
 import {
-  setIsInviteLinkCopied,
-  updateModalToShow,
-} from "store/application/applicationSlice";
-import { initialGameSettings } from "store/game/gameSlice";
+  GameSettings,
+  gridSizes,
+  GridSizeTypes,
+} from "models/GameSettingsType";
+import { setIsInviteLinkCopied } from "store/application/applicationSlice";
+import { setSettings } from "store/game/gameActions";
+import { GAME_SET_SETTINGS } from "store/game/gameConstants";
 import {
-  PEER_HOST_BROADCAST,
   PEER_HOST_START,
   PEER_HOST_STOP,
 } from "store/middleware/middlewareConstants";
 import { AppThunk, RootState } from "store/rootStore";
 import { getHostInviteLink, isClient } from "utils/utilities";
 
+import {
+  addSelectedIcon,
+  hostForcefulDisconnect,
+  modifyGameSettingsAction,
+  startHostWS,
+  stopHostWS,
+  visitSettingsPage,
+} from "./hostActions";
+import {
+  HOST_FORCED_DISCONNECT,
+  HOST_MODIFY_SETTINGS,
+  HOST_SELECT_ICON,
+  HOST_VISIT_SETTINGS,
+} from "./hostConstants";
+
 export interface HostState {
   hostID: string | null;
   isGeneratingLink: boolean;
   modifiedGameSettings: GameSettings; // Used when modifying settings
+  nextRoundTimer: NodeJS.Timer | null; // Used to start the next round
 }
+
+const initialGameSettingz: GameSettings = {
+  gridSize: GridSizeTypes.SMALL,
+  rows: gridSizes[GridSizeTypes.SMALL].rows,
+  columns: gridSizes[GridSizeTypes.SMALL].cols,
+  targetTotalScore: 5,
+  targetRoundScore: 3,
+  showTargetIcons: true,
+  timeBetweenRounds: 3, // Seconds
+};
 
 const initialState: HostState = {
   hostID: null,
   isGeneratingLink: false,
-  modifiedGameSettings: initialGameSettings,
+  modifiedGameSettings: initialGameSettingz,
+  nextRoundTimer: null,
 };
 
 export const hostSlice = createSlice({
@@ -47,6 +73,46 @@ export const hostSlice = createSlice({
       state.modifiedGameSettings = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(HOST_VISIT_SETTINGS, (state, action) => {
+        // Reset the modified settings when visiting the settings page
+        if (
+          visitSettingsPage.match(action) &&
+          action.payload.isClient === false
+        ) {
+          state.modifiedGameSettings = action.payload.settings;
+          if (state.nextRoundTimer) clearTimeout(state.nextRoundTimer);
+        }
+      })
+      .addCase(HOST_FORCED_DISCONNECT, (state, action) => {
+        if (hostForcefulDisconnect.match(action))
+          state.isGeneratingLink = false;
+      })
+      .addCase(HOST_SELECT_ICON, (state, action) => {
+        if (addSelectedIcon.match(action) && action.payload)
+          state.nextRoundTimer = action.payload.nextRoundTimer;
+      })
+      .addCase(HOST_MODIFY_SETTINGS, (state, action) => {
+        if (modifyGameSettingsAction.match(action))
+          state.modifiedGameSettings = action.payload;
+      })
+
+      .addCase(PEER_HOST_START, (state, action) => {
+        if (startHostWS.match(action)) state.isGeneratingLink = true;
+      })
+      .addCase(PEER_HOST_STOP, (state, action) => {
+        if (stopHostWS.match(action)) {
+          hostSlice.caseReducers.resetHostState(state);
+        }
+      })
+
+      .addCase(GAME_SET_SETTINGS, (state, action) => {
+        // When new game settings are set, update modified settings to be equal
+        if (setSettings.match(action))
+          state.modifiedGameSettings = action.payload.gameSettings;
+      });
+  },
 });
 
 export const {
@@ -55,10 +121,6 @@ export const {
   setIsGeneratingLink,
   setModifiedGameSettings,
 } = hostSlice.actions;
-
-export const startHostWS = createAction(PEER_HOST_START);
-export const stopHostWS = createAction(PEER_HOST_STOP);
-export const hostWSBroadcast = createAction<HostTypes>(PEER_HOST_BROADCAST);
 
 export const selectHostID = (state: RootState): string | null =>
   state.host.hostID;
@@ -69,6 +131,9 @@ export const selectIsGeneratingLink = (state: RootState): boolean =>
 export const selectHostModifiedGameSettings = (
   state: RootState
 ): GameSettings => state.host.modifiedGameSettings;
+
+export const selectNextRoundTimer = (state: RootState): NodeJS.Timer | null =>
+  state.host.nextRoundTimer;
 
 export const isSinglePlayer = (state: RootState): boolean => {
   if (state.host.hostID === null && !isClient()) {
@@ -94,13 +159,13 @@ export const setHostIDAndCopyLink =
     }
   };
 
-// Called when the host is forcefully disconnected
-// Clean up state and display error modal
-export const hostForcefulDisconnect =
-  (modal: Modals, message?: string[]): AppThunk =>
-  (dispatch) => {
-    dispatch(updateModalToShow({ modal, message }));
-    dispatch(resetHostState());
-  };
+// // Called when the host is forcefully disconnected
+// // Clean up state and display error modal
+// export const hostForcefulDisconnect =
+//   (modal: Modals, message?: string[]): AppThunk =>
+//   (dispatch) => {
+//     dispatch(updateModalToShow({ modal, message }));
+//     dispatch(resetHostState());
+//   };
 
 export default hostSlice.reducer;

@@ -6,7 +6,7 @@ import { GameStatus } from "models/GameStatus";
 import { selectIsDark } from "store/application/applicationSlice";
 import { selectGameStatus } from "store/game/gameSlice";
 import { heroList } from "utils/HeroList";
-import { appendTheme, getIconPath, isClient } from "utils/utilities";
+import { appendTheme, getIconPath } from "utils/utilities";
 
 import ConnectedPlayers from "../ConnectedPlayers";
 import HeroGrid from "../HeroGrid";

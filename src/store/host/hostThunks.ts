@@ -1,71 +1,45 @@
 import localForage from "localforage";
 
 import { GameSettings } from "models/GameSettingsType";
-import { HostTypeConstants } from "models/MessageHostTypes";
 import { RegularModals } from "models/Modals";
 import { PlayerState } from "models/PlayerState";
 import {
   selectPlayerName,
-  setIsInviteLinkCopied,
-  setPlayerName,
   updateModalToShow,
 } from "store/application/applicationSlice";
-import { updatePlayersList } from "store/game/gameSlice";
 import { AppThunk } from "store/rootStore";
 import { StorageConstants } from "utils/constants";
 
 import {
-  hostWSBroadcast,
-  resetHostState,
-  setIsGeneratingLink,
-  setModifiedGameSettings,
   startHostWS,
   stopHostWS,
-} from "./hostSlice";
+  submitPlayerNameAction,
+  modifyGameSettingsAction,
+} from "./hostActions";
 
 export const startHosting = (): AppThunk => (dispatch, getState) => {
-  if (selectPlayerName(getState()) === "") {
+  const playerName = selectPlayerName(getState());
+  if (playerName === "") {
     dispatch(updateModalToShow({ modal: RegularModals.PLAYER_NAME_MODAL }));
   } else {
-    dispatch(startHostWS());
-    dispatch(setIsGeneratingLink(true));
-    dispatch(AddHostToPlayers());
+    dispatch(startHostWS(playerName));
   }
 };
 
 export const stopHosting = (): AppThunk => (dispatch) => {
   dispatch(stopHostWS());
-  dispatch(resetHostState());
-  dispatch(setIsInviteLinkCopied(false));
-};
-
-export const AddHostToPlayers = (): AppThunk => (dispatch, getState) => {
-  const playerName = selectPlayerName(getState());
-  const players = { ...getState().game.players };
-
-  players[playerName] = {
-    score: 0,
-    isDisabled: false,
-  };
-
-  dispatch(
-    updatePlayersList({
-      players,
-    })
-  );
 };
 
 export const submitPlayerName =
   (submittedPlayerName: string): AppThunk =>
   (dispatch, getState) => {
-    const playerName = selectPlayerName(getState());
-    const players = { ...getState().game.players };
-
-    // TODO: Determine if this is always needed
+    // Save new player name locally
     localForage.setItem(StorageConstants.PLAYER_NAME, submittedPlayerName);
-
     // Close modal asking for player name input
     dispatch(updateModalToShow({ modal: null }));
+
+    const playerName = selectPlayerName(getState());
+    const players = { ...getState().game.players };
 
     const currentPlayers: Record<string, PlayerState> = {};
 
@@ -78,29 +52,16 @@ export const submitPlayerName =
       }
     }
 
-    // Add self to players list
     dispatch(
-      hostWSBroadcast({
-        type: HostTypeConstants.UPDATE_PLAYERS_LIST,
+      submitPlayerNameAction({
+        playerName: submittedPlayerName,
         players: currentPlayers,
       })
     );
-    dispatch(
-      updatePlayersList({
-        players: currentPlayers,
-      })
-    );
-    dispatch(setPlayerName(submittedPlayerName));
   };
 
 export const modifyGameSettings =
   (gameSettings: GameSettings): AppThunk =>
   (dispatch) => {
-    dispatch(setModifiedGameSettings(gameSettings));
-    dispatch(
-      hostWSBroadcast({
-        type: HostTypeConstants.UPDATE_SETTINGS,
-        settings: gameSettings,
-      })
-    );
+    dispatch(modifyGameSettingsAction(gameSettings));
   };

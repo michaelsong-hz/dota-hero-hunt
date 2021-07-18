@@ -8,7 +8,24 @@ import {
 import { GameStatus } from "models/GameStatus";
 import { PlayerState } from "models/PlayerState";
 import { selectPlayerName } from "store/application/applicationSlice";
+import {
+  addSelectedIcon,
+  incrementRound,
+  startHostWS,
+  submitPlayerNameAction,
+  visitSettingsPage,
+} from "store/host/hostActions";
+import {
+  HOST_INCREMENT_ROUND,
+  HOST_SELECT_ICON,
+  HOST_SUBMIT_PLAYER_NAME,
+  HOST_VISIT_SETTINGS,
+} from "store/host/hostConstants";
+import { PEER_HOST_START } from "store/middleware/middlewareConstants";
 import { AppThunk, RootState } from "store/rootStore";
+
+import { initializeSettingsAsync, setSettings } from "./gameActions";
+import { GAME_INIT_SETTINGS, GAME_SET_SETTINGS } from "./gameConstants";
 
 export interface GameState {
   round: number;
@@ -106,7 +123,7 @@ export const gameSlice = createSlice({
     ) => {
       state.currentHeroes = action.payload.currentHeroes;
     },
-    setSettings: (
+    _setSettings: (
       state,
       action: PayloadAction<{
         gameSettings: GameSettings;
@@ -125,6 +142,68 @@ export const gameSlice = createSlice({
       };
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(GAME_SET_SETTINGS, (state, action) => {
+        if (setSettings.match(action))
+          state.gameSettings = action.payload.gameSettings;
+      })
+      .addCase(GAME_INIT_SETTINGS, (state, action) => {
+        if (initializeSettingsAsync.fulfilled.match(action))
+          state.gameSettings = action.payload;
+      })
+      .addCase(HOST_INCREMENT_ROUND, (state, action) => {
+        if (incrementRound.match(action)) {
+          // Ensure host is in players list when starting a new game
+          if (action.payload.round === 1)
+            state.players[action.payload.playerName] = {
+              score: 0,
+              isDisabled: false,
+            };
+
+          state.round = action.payload.round;
+          state.targetHeroes = action.payload.targetHeroes;
+          state.currentHeroes = action.payload.currentHeroes;
+          state.selectedIcons = [];
+          state.invalidIcons = [];
+          state.statusText = action.payload.statusText;
+          state.gameStatus = action.payload.gameStatus;
+        }
+      })
+      .addCase(HOST_SELECT_ICON, (state, action) => {
+        if (addSelectedIcon.match(action) && action.payload) {
+          state.players = action.payload.newState.players;
+          state.selectedIcons = action.payload.newState.selectedIcons;
+          state.invalidIcons = action.payload.newState.invalidIcons;
+          state.statusText = action.payload.newState.statusText;
+          state.gameStatus = action.payload.newState.gameStatus;
+        }
+      })
+      .addCase(HOST_VISIT_SETTINGS, (state, action) => {
+        if (visitSettingsPage.match(action)) {
+          state.gameStatus = GameStatus.SETTINGS;
+          // Clear the hero grid when visiting the settings page
+          state.selectedIcons = [];
+          state.invalidIcons = [];
+          state.targetHeroes = [];
+          state.currentHeroes = [[]];
+          // If players exist in payload (is host), set them
+          if (action.payload.players) state.players = action.payload.players;
+        }
+      })
+      .addCase(HOST_SUBMIT_PLAYER_NAME, (state, action) => {
+        if (submitPlayerNameAction.match(action)) {
+          state.players = action.payload.players;
+        }
+      })
+      .addCase(PEER_HOST_START, (state, action) => {
+        if (startHostWS.match(action))
+          state.players[action.payload] = {
+            score: 0,
+            isDisabled: false,
+          };
+      });
+  },
 });
 
 export const {
@@ -133,7 +212,7 @@ export const {
   clearHeroGrid,
   updatePlayersList,
   setCurrentHeroes,
-  setSettings,
+  _setSettings,
   setGameStatus,
   resetPlayersToName,
 } = gameSlice.actions;

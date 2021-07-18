@@ -2,6 +2,7 @@ import { Middleware, MiddlewareAPI, PayloadAction } from "@reduxjs/toolkit";
 import { setContext, captureException, captureMessage } from "@sentry/react";
 import Peer from "peerjs";
 
+import { GameStatus } from "models/GameStatus";
 import { ClientTypeConstants, ClientTypes } from "models/MessageClientTypes";
 import {
   ClientDataConnection,
@@ -10,11 +11,23 @@ import {
 } from "models/MessageHostTypes";
 import { OtherErrorTypes } from "models/Modals";
 import { PeerJSErrorTypes } from "models/PeerErrors";
-import { addSelectedIcon } from "store/game/gameHostThunks";
 import { updatePlayersList } from "store/game/gameSlice";
 import {
+  addSelectedIcon,
   hostForcefulDisconnect,
-  hostWSBroadcast,
+  incrementRound,
+  modifyGameSettingsAction,
+  submitPlayerNameAction,
+  visitSettingsPage,
+} from "store/host/hostActions";
+import {
+  HOST_INCREMENT_ROUND,
+  HOST_MODIFY_SETTINGS,
+  HOST_SELECT_ICON,
+  HOST_SUBMIT_PLAYER_NAME,
+  HOST_VISIT_SETTINGS,
+} from "store/host/hostConstants";
+import {
   selectHostModifiedGameSettings,
   setHostIDAndCopyLink,
 } from "store/host/hostSlice";
@@ -26,11 +39,7 @@ import {
   getPlayerNameFromConn,
 } from "utils/utilities";
 
-import {
-  PEER_HOST_BROADCAST,
-  PEER_HOST_START,
-  PEER_HOST_STOP,
-} from "./middlewareConstants";
+import { PEER_HOST_START, PEER_HOST_STOP } from "./middlewareConstants";
 
 let peer: Peer | null = null;
 const invalidConnLabels: Set<string> = new Set();
@@ -215,9 +224,9 @@ function createHostMiddleware(): Middleware {
             peer.on("disconnected", () => {
               if (isCleaningUp === false) {
                 dispatch(
-                  hostForcefulDisconnect(
-                    OtherErrorTypes.PEER_JS_SERVER_DISCONNECTED
-                  )
+                  hostForcefulDisconnect({
+                    modal: OtherErrorTypes.PEER_JS_SERVER_DISCONNECTED,
+                  })
                 );
               }
               cleanUp();
@@ -226,9 +235,9 @@ function createHostMiddleware(): Middleware {
             peer.on("close", () => {
               if (isCleaningUp === false) {
                 dispatch(
-                  hostForcefulDisconnect(
-                    OtherErrorTypes.PEER_JS_SERVER_DISCONNECTED
-                  )
+                  hostForcefulDisconnect({
+                    modal: OtherErrorTypes.PEER_JS_SERVER_DISCONNECTED,
+                  })
                 );
               }
               cleanUp();
@@ -240,7 +249,7 @@ function createHostMiddleware(): Middleware {
               if (error.type !== PeerJSErrorTypes.PEER_UNAVAILABLE) {
                 captureMessage(error.type);
                 captureException(error);
-                dispatch(hostForcefulDisconnect(error.type));
+                dispatch(hostForcefulDisconnect({ modal: error.type }));
                 cleanUp();
               }
             });
@@ -250,11 +259,66 @@ function createHostMiddleware(): Middleware {
             cleanUp();
             break;
 
-          case PEER_HOST_BROADCAST:
-            if (hostWSBroadcast.match(action)) {
-              broadcastMessage(action.payload);
-            } else {
-              console.log("report sentry error");
+          case HOST_INCREMENT_ROUND:
+            if (incrementRound.match(action))
+              broadcastMessage({
+                type: HostTypeConstants.UPDATE_ROUND,
+                round: action.payload.round,
+                targetHeroes: action.payload.targetHeroes,
+                currentHeroes: action.payload.currentHeroes,
+                statusText: action.payload.statusText,
+                gameStatus: action.payload.gameStatus,
+              });
+            break;
+
+          case HOST_SELECT_ICON:
+            if (addSelectedIcon.match(action))
+              broadcastMessage({
+                type: HostTypeConstants.UPDATE_FROM_CLICK,
+                isCorrectHero: action.payload.isCorrectHero,
+                lastClickedPlayerName: action.payload.lastClickedPlayerName,
+                players: action.payload.newState.players,
+                selected: action.payload.newState.selectedIcons,
+                invalidIcons: action.payload.newState.invalidIcons,
+                statusText: action.payload.newState.statusText,
+                gameStatus: action.payload.newState.gameStatus,
+              });
+            break;
+
+          // TODO: Probably want a custom host type to end the game
+          case HOST_VISIT_SETTINGS:
+            if (visitSettingsPage.match(action)) {
+              broadcastMessage({
+                type: HostTypeConstants.UPDATE_ROUND,
+                round: 0,
+                targetHeroes: [],
+                currentHeroes: [],
+                statusText: "",
+                gameStatus: GameStatus.SETTINGS,
+              });
+              if (action.payload.players)
+                broadcastMessage({
+                  type: HostTypeConstants.UPDATE_PLAYERS_LIST,
+                  players: action.payload.players,
+                });
+            }
+            break;
+
+          case HOST_MODIFY_SETTINGS:
+            if (modifyGameSettingsAction.match(action)) {
+              broadcastMessage({
+                type: HostTypeConstants.UPDATE_SETTINGS,
+                settings: action.payload,
+              });
+            }
+            break;
+
+          case HOST_SUBMIT_PLAYER_NAME:
+            if (submitPlayerNameAction.match(action)) {
+              broadcastMessage({
+                type: HostTypeConstants.UPDATE_PLAYERS_LIST,
+                players: action.payload.players,
+              });
             }
             break;
         }

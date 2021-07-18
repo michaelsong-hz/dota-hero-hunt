@@ -6,7 +6,8 @@ import PlayerNameModal from "components/GameHost/PlayerNameModal";
 import { useAppDispatch, useAppSelector } from "hooks/useStore";
 import { selectIsDark } from "store/application/applicationSlice";
 import { clientDisconnect } from "store/client/clientSlice";
-import { endGame } from "store/game/gameHostThunks";
+import { selectGameSettings } from "store/game/gameSlice";
+import { visitSettingsPage } from "store/host/hostActions";
 import { isSinglePlayer } from "store/host/hostSlice";
 import { appendTheme, isClient } from "utils/utilities";
 
@@ -17,6 +18,7 @@ import GameSettings from "../Settings";
 function LobbyView(): JSX.Element {
   const isSingleP = useAppSelector(isSinglePlayer);
   const isDark = useAppSelector(selectIsDark);
+  const gameSettings = useAppSelector(selectGameSettings);
 
   const dispatch = useAppDispatch();
 
@@ -26,8 +28,9 @@ function LobbyView(): JSX.Element {
   const [playersPanelAnimation, setPlayersPanelAnimation] = useState("");
 
   useEffect(() => {
-    dispatch(endGame());
-  }, [dispatch]);
+    dispatch(visitSettingsPage(isClient(), gameSettings));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (isSingleP === false && showPlayersPanel === false) {

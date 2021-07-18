@@ -7,24 +7,24 @@ import { HostDataConnection } from "models/MessageClientTypes";
 import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
 import { OtherErrorTypes } from "models/Modals";
 import { PeerError, PeerJSErrorTypes } from "models/PeerErrors";
+import { playAudio } from "store/application/applicationActions";
 import {
-  playAudio,
   selectPlayerName,
   setIsInviteLinkCopied,
 } from "store/application/applicationSlice";
+import { clientWSSend } from "store/client/clientActions";
 import {
   clientForcefulDisconnect,
-  clientWSSend,
   setIsNameTaken,
   setRemoteHostID,
 } from "store/client/clientSlice";
+import { setSettings } from "store/game/gameActions";
 import {
   setRound,
-  setSettings,
   updatePlayersList,
   updateSelectedIcons,
 } from "store/game/gameSlice";
-import { AppDispatch, RootState, store } from "store/rootStore";
+import { AppDispatch, RootState } from "store/rootStore";
 import { SoundEffects } from "utils/SoundEffectList";
 import { getPeerConfig, getAppVersion } from "utils/utilities";
 
@@ -140,7 +140,8 @@ function onMessageFromHost(data: HostTypes, dispatch: AppDispatch) {
       if (data.gameStatus === GameStatus.FINISHED) {
         dispatch(playAudio(SoundEffects.Applause));
       } else if (
-        data.lastClickedPlayerName === selectPlayerName(store.getState())
+        // data.lastClickedPlayerName === selectPlayerName(store.getState())
+        data.lastClickedPlayerName === ""
       ) {
         if (data.isCorrectHero) {
           dispatch(playAudio(SoundEffects.PartyHorn));

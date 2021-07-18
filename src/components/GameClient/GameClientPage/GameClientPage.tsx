@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Container } from "react-bootstrap";
 
 import ConnectionView from "components/GameClient/ConnectionView";
@@ -12,20 +12,6 @@ import { selectGameStatus } from "store/game/gameSlice";
 function GameClientPage(): JSX.Element {
   const remoteHostID = useAppSelector(selectRemoteHostID);
   const gameStatus = useAppSelector(selectGameStatus);
-
-  // Check if the user really wants to leave when connected to a game
-  useEffect(() => {
-    window.onbeforeunload = (event) => {
-      if (remoteHostID !== null) {
-        const e = event || window.event;
-        e.preventDefault();
-        if (e) {
-          e.returnValue = "";
-        }
-        return "";
-      }
-    };
-  }, [remoteHostID]);
 
   // Show connection page, have player set their name and
   // check that there are no conflicting names and that

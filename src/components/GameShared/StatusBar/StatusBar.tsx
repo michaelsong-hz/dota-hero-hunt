@@ -6,13 +6,13 @@ import { useAppDispatch, useAppSelector } from "hooks/useStore";
 import Placeholder_icon from "images/Placeholder_icon.png";
 import { GameStatus } from "models/GameStatus";
 import { selectIsDark } from "store/application/applicationSlice";
-import { startGame } from "store/game/gameHostThunks";
 import {
   selectGameSettings,
   selectGameStatus,
   selectStatusText,
   selectTargetHeroes,
 } from "store/game/gameSlice";
+import { incrementRound } from "store/host/hostActions";
 import { heroList } from "utils/HeroList";
 import { appendTheme, getIconPath, isClient } from "utils/utilities";
 
@@ -67,7 +67,7 @@ function GameStatusBar(): JSX.Element {
             size="lg"
             className="slide-down-appear"
             variant={appendTheme("primary", isDark)}
-            onClick={() => dispatch(startGame())}
+            onClick={() => dispatch(incrementRound(1))}
           >
             New Game
           </Button>

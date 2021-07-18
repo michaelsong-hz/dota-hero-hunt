@@ -7,9 +7,9 @@ import {
   selectIsDark,
   selectPlayerName,
 } from "store/application/applicationSlice";
-import { clientWSSend } from "store/client/clientSlice";
-import { addSelectedIcon } from "store/game/gameHostThunks";
+import { clientWSSend } from "store/client/clientActions";
 import { selectGameStatus } from "store/game/gameSlice";
+import { addSelectedIcon } from "store/host/hostActions";
 import { appendTheme, isClient } from "utils/utilities";
 
 interface HeroIconProps {

@@ -1,11 +1,22 @@
-import { createAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ApplicationSettings } from "models/ApplicationSettings";
 import { InstallStatus } from "models/InstallStatus";
 import { Modals, RegularModals } from "models/Modals";
-import { PLAY_AUDIO_ACTION } from "store/middleware/middlewareConstants";
+import { initializeSettingsAsync } from "store/game/gameActions";
+import {
+  hostForcefulDisconnect,
+  submitPlayerNameAction,
+} from "store/host/hostActions";
+import {
+  HOST_FORCED_DISCONNECT,
+  HOST_SUBMIT_PLAYER_NAME,
+} from "store/host/hostConstants";
+import { PEER_HOST_STOP } from "store/middleware/middlewareConstants";
 import { AppThunk, RootState } from "store/rootStore";
-import { SoundEffects } from "utils/SoundEffectList";
+
+import { setPlayerName } from "./applicationActions";
+import { APPLICATION_SET_PLAYER_NAME } from "./applicationConstants";
 
 export interface ApplicationState {
   appSettings: ApplicationSettings;
@@ -51,8 +62,15 @@ export const applicationSlice = createSlice({
     setSettingsLoaded: (state, action: PayloadAction<boolean>) => {
       state.settingsLoaded = action.payload;
     },
-    setPlayerName: (state, action: PayloadAction<string>) => {
+    _setPlayerName: (state, action: PayloadAction<string>) => {
       state.playerName = action.payload;
+    },
+    setLoadedSettings: (
+      state,
+      action: PayloadAction<{ volume: number; playerName: string }>
+    ) => {
+      state.appSettings.volume = action.payload.volume;
+      state.playerName = action.payload.playerName;
     },
     updateModalToShow: (
       state,
@@ -75,6 +93,30 @@ export const applicationSlice = createSlice({
       state.isInviteLinkCopied = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(initializeSettingsAsync.fulfilled, (state) => {
+        state.settingsLoaded = true;
+      })
+      .addCase(HOST_FORCED_DISCONNECT, (state, action) => {
+        if (hostForcefulDisconnect.match(action)) {
+          state.modalToShow = action.payload.modal;
+          if (action.payload.message)
+            state.modalCustomMessage = action.payload.message;
+        }
+      })
+      .addCase(HOST_SUBMIT_PLAYER_NAME, (state, action) => {
+        if (submitPlayerNameAction.match(action)) {
+          state.playerName = action.payload.playerName;
+        }
+      })
+      .addCase(PEER_HOST_STOP, (state) => {
+        state.isInviteLinkCopied = false;
+      })
+      .addCase(APPLICATION_SET_PLAYER_NAME, (state, action) => {
+        if (setPlayerName.match(action)) state.playerName = action.payload;
+      });
+  },
 });
 
 export const {
@@ -82,13 +124,11 @@ export const {
   setIsDark,
   setApplicationSettings,
   setSettingsLoaded,
-  setPlayerName,
+  setLoadedSettings,
   updateModalToShow,
   setInstallStatus,
   setIsInviteLinkCopied,
 } = applicationSlice.actions;
-
-export const playAudio = createAction<SoundEffects>(PLAY_AUDIO_ACTION);
 
 export const selectVolume = (state: RootState): number =>
   state.application.appSettings.volume;

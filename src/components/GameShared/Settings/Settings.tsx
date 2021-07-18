@@ -2,7 +2,7 @@ import { faInfinity } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { captureException } from "@sentry/react";
 import localForage from "localforage";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Button,
   Col,
@@ -25,15 +25,9 @@ import {
   selectIsDark,
   selectPlayerName,
 } from "store/application/applicationSlice";
-import {
-  clearHeroGrid,
-  selectGameSettings,
-  setSettings,
-} from "store/game/gameSlice";
-import {
-  selectHostModifiedGameSettings,
-  setModifiedGameSettings,
-} from "store/host/hostSlice";
+import { setSettings } from "store/game/gameActions";
+import { selectGameSettings } from "store/game/gameSlice";
+import { selectHostModifiedGameSettings } from "store/host/hostSlice";
 import { modifyGameSettings } from "store/host/hostThunks";
 import { StorageConstants } from "utils/constants";
 import { appendTheme, checkForSettingsErrors, isClient } from "utils/utilities";
@@ -66,18 +60,6 @@ function GameSettings(): JSX.Element {
   // Tracks whether to animate switching between points to win states
   const prevTargetTotalScore = useRef(getSettings().targetTotalScore);
   const prevTargetTotalScore2 = useRef(getSettings().targetTotalScore);
-
-  // If host, reset modified game settings to actual
-  useEffect(() => {
-    if (!isClient()) {
-      dispatch(setModifiedGameSettings(storeGameSettings));
-    }
-  }, [dispatch, storeGameSettings]);
-
-  // Clear hero grid
-  useEffect(() => {
-    dispatch(clearHeroGrid());
-  }, [dispatch]);
 
   function getGridSizeText(): string {
     switch (getSettings().gridSize) {

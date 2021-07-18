@@ -2,9 +2,11 @@ import { Middleware, MiddlewareAPI } from "@reduxjs/toolkit";
 import { Howl } from "howler";
 import { AnyAction, Dispatch } from "redux";
 
-import { PLAY_AUDIO_ACTION } from "store/middleware/middlewareConstants";
+import { selectVolume } from "store/application/applicationSlice";
+import { addSelectedIcon } from "store/host/hostActions";
+import { HOST_SELECT_ICON } from "store/host/hostConstants";
 import { AppDispatch, RootState } from "store/rootStore";
-import { soundEffectList, SoundEffects } from "utils/SoundEffectList";
+import { soundEffectList } from "utils/SoundEffectList";
 import { prependCDN } from "utils/utilities";
 
 const soundEffects = {
@@ -18,15 +20,21 @@ function createAudioMiddleware(): Middleware<Dispatch> {
   return ({ getState }: MiddlewareAPI<Dispatch<AnyAction>, RootState>) =>
     (next: Dispatch<AnyAction> | AppDispatch) =>
     (action: AnyAction) => {
-      if (action.type && action.type === PLAY_AUDIO_ACTION) {
-        // Only plays media if the game isn't muted
-        // Prevents music from stopping on mobile devices
-        const volume = getState().application.appSettings.volume;
-        if (volume > 0) {
-          // Stops audio if it's currently playing, and plays it
-          const soundEffectFile = soundEffects[action.payload as SoundEffects];
-          soundEffectFile.stop();
-          soundEffectFile.play();
+      if (action.type && action.type === HOST_SELECT_ICON) {
+        if (
+          addSelectedIcon.match(action) &&
+          action.payload &&
+          action.payload.soundEffect !== undefined
+        ) {
+          // Only plays media if the game isn't muted
+          // Prevents music from stopping on mobile devices
+          const volume = selectVolume(getState());
+          if (volume > 0) {
+            // Stops audio if it's currently playing, and plays it
+            const soundEffectFile = soundEffects[action.payload.soundEffect];
+            soundEffectFile.stop();
+            soundEffectFile.play();
+          }
         }
       }
 
