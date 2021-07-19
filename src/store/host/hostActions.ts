@@ -24,6 +24,7 @@ export const incrementRoundAction = createAction<{
   statusText: string;
   gameStatus: GameStatus;
   playerName: string;
+  players: Record<string, PlayerState>;
 }>(HOST_INCREMENT_ROUND);
 
 export const addSelectedIconAction = createAction<
@@ -45,10 +46,8 @@ export const addSelectedIconAction = createAction<
   | undefined
 >(HOST_SELECT_ICON);
 
-export const visitSettingsPageAction = createAction<{
-  players?: Record<string, PlayerState>;
-  settings: GameSettings;
-}>(HOST_VISIT_SETTINGS);
+export const visitSettingsPageAction =
+  createAction<GameSettings>(HOST_VISIT_SETTINGS);
 
 export const modifyGameSettingsAction =
   createAction<GameSettings>(HOST_MODIFY_SETTINGS);

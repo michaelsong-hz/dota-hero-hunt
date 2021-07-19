@@ -14,7 +14,6 @@ import { AppDispatch, AppThunk } from "store/rootStore";
 import { heroList } from "utils/HeroList";
 import { SoundEffects } from "utils/SoundEffectList";
 import { Constants, StorageConstants } from "utils/constants";
-import { isClient } from "utils/utilities";
 
 import {
   submitPlayerNameAction,
@@ -111,6 +110,23 @@ export const incrementRound =
     // Update game status text
     const statusText = Constants.GAME_STATUS_DEFAULT;
 
+    // If starting a new game, modify some player attributes
+    const players = { ...getState().game.players };
+    if (round === 1) {
+      // Ensure host is in players list
+      players[selectPlayerName(getState())] = {
+        score: 0,
+        isDisabled: false,
+      };
+
+      // Reset all player scores to 0
+      for (const key in players) {
+        const currentPlayer = { ...players[key] };
+        currentPlayer.score = 0;
+        players[key] = currentPlayer;
+      }
+    }
+
     dispatch(
       incrementRoundAction({
         round,
@@ -119,6 +135,7 @@ export const incrementRound =
         statusText,
         gameStatus: GameStatus.PLAYING,
         playerName: selectPlayerName(getState()),
+        players,
       })
     );
   };
@@ -225,18 +242,8 @@ export const addSelectedIcon =
 
 export const visitSettingsPage =
   (settings: GameSettings): AppThunk =>
-  (dispatch, getState) => {
-    let players: undefined | Record<string, PlayerState>;
-    if (isClient() === false) {
-      // Reset all player scores to 0
-      players = { ...getState().game.players };
-      for (const key in players) {
-        const currentPlayer = { ...players[key] };
-        currentPlayer.score = 0;
-        players[key] = currentPlayer;
-      }
-    }
-    dispatch(visitSettingsPageAction({ players, settings }));
+  (dispatch) => {
+    dispatch(visitSettingsPageAction(settings));
   };
 
 export const modifyGameSettings =

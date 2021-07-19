@@ -64,6 +64,7 @@ export const handleHostMessage =
             currentHeroes: data.currentHeroes,
             statusText: data.statusText,
             gameStatus: data.gameStatus,
+            players: data.players,
           })
         );
         break;

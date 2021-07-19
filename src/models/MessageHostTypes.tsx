@@ -48,6 +48,7 @@ export type HostTypes =
       currentHeroes: number[][];
       statusText: string;
       gameStatus: GameStatus;
+      players: Record<string, PlayerState>;
     }
   | {
       type: HostTypeConstants.SELECT_ICON;

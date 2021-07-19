@@ -78,6 +78,7 @@ export const gameSlice = createSlice({
         currentHeroes: number[][];
         statusText: string;
         gameStatus: GameStatus;
+        players: Record<string, PlayerState>;
       }>
     ) => {
       state.round = action.payload.round;
@@ -87,6 +88,7 @@ export const gameSlice = createSlice({
       state.invalidIcons = [];
       state.statusText = action.payload.statusText;
       state.gameStatus = action.payload.gameStatus;
+      state.players = action.payload.players;
     },
     updateSelectedIcons: (
       state,
@@ -158,13 +160,6 @@ export const gameSlice = createSlice({
 
       .addCase(HOST_INCREMENT_ROUND, (state, action) => {
         if (incrementRoundAction.match(action)) {
-          // Ensure host is in players list when starting a new game
-          if (action.payload.round === 1)
-            state.players[action.payload.playerName] = {
-              score: 0,
-              isDisabled: false,
-            };
-
           state.round = action.payload.round;
           state.targetHeroes = action.payload.targetHeroes;
           state.currentHeroes = action.payload.currentHeroes;
@@ -172,6 +167,9 @@ export const gameSlice = createSlice({
           state.invalidIcons = [];
           state.statusText = action.payload.statusText;
           state.gameStatus = action.payload.gameStatus;
+
+          // If players exist in payload (is host), set them
+          if (action.payload.players) state.players = action.payload.players;
         }
       })
       .addCase(HOST_SELECT_ICON, (state, action) => {
@@ -191,8 +189,6 @@ export const gameSlice = createSlice({
           state.invalidIcons = [];
           state.targetHeroes = [];
           state.currentHeroes = [[]];
-          // If players exist in payload (is host), set them
-          if (action.payload.players) state.players = action.payload.players;
         }
       })
       .addCase(HOST_SUBMIT_PLAYER_NAME, (state, action) => {

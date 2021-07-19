@@ -82,7 +82,7 @@ export const hostSlice = createSlice({
       .addCase(HOST_VISIT_SETTINGS, (state, action) => {
         // Reset the modified settings when visiting the settings page
         if (visitSettingsPageAction.match(action)) {
-          state.modifiedGameSettings = action.payload.settings;
+          state.modifiedGameSettings = action.payload;
           if (state.nextRoundTimer) clearTimeout(state.nextRoundTimer);
         }
       })

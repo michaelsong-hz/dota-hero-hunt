@@ -11,7 +11,7 @@ import {
 } from "models/MessageHostTypes";
 import { OtherErrorTypes } from "models/Modals";
 import { PeerJSErrorTypes } from "models/PeerErrors";
-import { updatePlayersList } from "store/game/gameSlice";
+import { selectPlayers, updatePlayersList } from "store/game/gameSlice";
 import {
   addSelectedIconAction,
   incrementRoundAction,
@@ -268,6 +268,7 @@ function createHostMiddleware(): Middleware {
                 currentHeroes: action.payload.currentHeroes,
                 statusText: action.payload.statusText,
                 gameStatus: action.payload.gameStatus,
+                players: action.payload.players,
               });
             break;
 
@@ -295,12 +296,8 @@ function createHostMiddleware(): Middleware {
                 currentHeroes: [],
                 statusText: "",
                 gameStatus: GameStatus.SETTINGS,
+                players: selectPlayers(getState()),
               });
-              if (action.payload.players)
-                broadcastMessage({
-                  type: HostTypeConstants.UPDATE_PLAYERS_LIST,
-                  players: action.payload.players,
-                });
             }
             break;
 
