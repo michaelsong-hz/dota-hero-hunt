@@ -29,6 +29,7 @@ import {
   HOST_VISIT_SETTINGS,
 } from "store/host/hostConstants";
 import {
+  selectHostID,
   selectHostModifiedGameSettings,
   setHostIDAndCopyLink,
 } from "store/host/hostSlice";
@@ -60,11 +61,9 @@ function cleanUp() {
 
 function onMessage(
   data: ClientTypes,
-  clientConnection: Peer.DataConnection,
+  clientConnection: ClientDataConnection,
   dispatch: AppDispatch
 ) {
-  console.log(data);
-
   const fromPlayerName = getPlayerNameFromConn(clientConnection);
 
   if (data.type === ClientTypeConstants.PLAYER_ACTION) {
@@ -111,7 +110,7 @@ function createHostMiddleware(): Middleware {
               if (peer !== null) dispatch(setHostIDAndCopyLink(peer.id));
             });
 
-            peer.on("connection", (incomingConn) => {
+            peer.on("connection", (incomingConn: ClientDataConnection) => {
               incomingConn.on("open", () => {
                 const appVersion = getAppVersion();
                 const incomingVersion = getVersionFromConn(incomingConn);
@@ -170,6 +169,7 @@ function createHostMiddleware(): Middleware {
                     invalidIcons: Array.from(gameState.invalidIcons),
                     statusText: gameState.statusText,
                     gameStatus: gameState.gameStatus,
+                    hostID: selectHostID(getState()) || "",
                   });
                   broadcastMessage({
                     type: HostTypeConstants.UPDATE_PLAYERS_LIST,

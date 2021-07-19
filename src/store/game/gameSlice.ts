@@ -8,6 +8,8 @@ import {
 import { GameStatus } from "models/GameStatus";
 import { PlayerState } from "models/PlayerState";
 import { selectPlayerName } from "store/application/applicationSlice";
+import { clientPeerConnectedAction } from "store/client/clientActions";
+import { CLIENT_PEER_CONNECTED } from "store/client/clientConstants";
 import {
   addSelectedIconAction,
   hostPeerStartAction,
@@ -153,6 +155,7 @@ export const gameSlice = createSlice({
         if (initializeSettingsAsync.fulfilled.match(action))
           state.gameSettings = action.payload;
       })
+
       .addCase(HOST_INCREMENT_ROUND, (state, action) => {
         if (incrementRoundAction.match(action)) {
           // Ensure host is in players list when starting a new game
@@ -203,6 +206,20 @@ export const gameSlice = createSlice({
             score: 0,
             isDisabled: false,
           };
+      })
+
+      .addCase(CLIENT_PEER_CONNECTED, (state, action) => {
+        if (clientPeerConnectedAction.match(action)) {
+          state.round = action.payload.round;
+          state.players = action.payload.players;
+          state.selectedIcons = action.payload.selected;
+          state.invalidIcons = action.payload.invalidIcons;
+          state.targetHeroes = action.payload.targetHeroes;
+          state.currentHeroes = action.payload.currentHeroes;
+          state.gameSettings = action.payload.settings;
+          state.statusText = action.payload.statusText;
+          state.gameStatus = action.payload.gameStatus;
+        }
       });
   },
 });

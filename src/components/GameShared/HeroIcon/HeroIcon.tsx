@@ -7,7 +7,7 @@ import {
   selectIsDark,
   selectPlayerName,
 } from "store/application/applicationSlice";
-import { clientWSSend } from "store/client/clientActions";
+import { clientPeerSendAction } from "store/client/clientActions";
 import { selectGameStatus } from "store/game/gameSlice";
 import { addSelectedIcon } from "store/host/hostThunks";
 import { appendTheme, isClient } from "utils/utilities";
@@ -77,7 +77,7 @@ function HeroIcon(props: HeroIconProps): JSX.Element {
   function handleClick(): void {
     if (isClient()) {
       dispatch(
-        clientWSSend({
+        clientPeerSendAction({
           type: ClientTypeConstants.PLAYER_ACTION,
           selected: heroNumber,
         })

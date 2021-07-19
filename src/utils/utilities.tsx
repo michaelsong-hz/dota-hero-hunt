@@ -6,6 +6,7 @@ import {
   GameSettingErrors,
   GridSizeTypes,
 } from "models/GameSettingsType";
+import { ClientDataConnection } from "models/MessageHostTypes";
 
 export function appendTheme(themeName: string, isDark: boolean): string {
   if (isDark) {
@@ -32,7 +33,7 @@ export function getPeerConfig(): Peer.PeerJSOption {
 }
 
 export function getPlayerNameFromConn(
-  incomingConn: Peer.DataConnection
+  incomingConn: ClientDataConnection
 ): string {
   try {
     return incomingConn.metadata.playerName;
@@ -52,7 +53,7 @@ export function getPlayerNameFromConn(
   }
 }
 
-export function getVersionFromConn(incomingConn: Peer.DataConnection): string {
+export function getVersionFromConn(incomingConn: ClientDataConnection): string {
   try {
     return incomingConn.metadata.version;
   } catch (err) {

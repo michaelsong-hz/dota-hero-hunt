@@ -28,6 +28,7 @@ export type HostTypes =
       invalidIcons: number[];
       statusText: string;
       gameStatus: GameStatus;
+      hostID: string;
     }
   | {
       type: HostTypeConstants.PLAYER_NAME_TAKEN;

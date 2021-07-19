@@ -1,38 +1,22 @@
 import { Middleware, MiddlewareAPI, PayloadAction } from "@reduxjs/toolkit";
-import { setContext, captureException, captureMessage } from "@sentry/react";
+import { captureException, captureMessage } from "@sentry/react";
 import Peer from "peerjs";
 
-import { GameStatus } from "models/GameStatus";
 import { HostDataConnection } from "models/MessageClientTypes";
 import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
 import { OtherErrorTypes } from "models/Modals";
 import { PeerError, PeerJSErrorTypes } from "models/PeerErrors";
-import { playAudio } from "store/application/applicationActions";
+import { selectPlayerName } from "store/application/applicationSlice";
+import { clientPeerSendAction } from "store/client/clientActions";
 import {
-  selectPlayerName,
-  setIsInviteLinkCopied,
-} from "store/application/applicationSlice";
-import { clientWSSend } from "store/client/clientActions";
-import {
-  clientForcefulDisconnect,
-  setIsNameTaken,
-  setRemoteHostID,
-} from "store/client/clientSlice";
-import {
-  setRound,
-  updatePlayersList,
-  updateSelectedIcons,
-} from "store/game/gameSlice";
-import { setSettings } from "store/game/gameThunks";
+  CLIENT_PEER_SEND,
+  CLIENT_PEER_START,
+  CLIENT_PEER_STOP,
+} from "store/client/clientConstants";
+import { clientForcefulDisconnect } from "store/client/clientSlice";
+import { handleHostMessage } from "store/client/clientThunks";
 import { AppDispatch, RootState } from "store/rootStore";
-import { SoundEffects } from "utils/SoundEffectList";
 import { getPeerConfig, getAppVersion } from "utils/utilities";
-
-import {
-  PEER_CLIENT_CONNECT,
-  PEER_CLIENT_DISCONNECT,
-  PEER_CLIENT_SEND,
-} from "./middlewareConstants";
 
 let peer: Peer | null = null;
 let isCleaningUp = false;
@@ -54,127 +38,13 @@ function getRemoteHostID() {
   return window.location.pathname.split("/").slice(-1)[0];
 }
 
-function onMessageFromHost(data: HostTypes, dispatch: AppDispatch) {
-  console.log(data);
-
-  switch (data.type) {
-    case HostTypeConstants.CONNECTION_ACCEPTED: {
-      dispatch(setSettings(data.settings));
-      dispatch(
-        setRound({
-          round: data.round,
-          targetHeroes: data.targetHeroes,
-          currentHeroes: data.currentHeroes,
-          statusText: data.statusText,
-          gameStatus: data.gameStatus,
-        })
-      );
-      dispatch(
-        updateSelectedIcons({
-          selectedIcons: data.selected,
-          invalidIcons: data.invalidIcons,
-          players: data.players,
-          statusText: data.statusText,
-          gameStatus: data.gameStatus,
-        })
-      );
-      dispatch(setRemoteHostID(getRemoteHostID()));
-      break;
-    }
-    case HostTypeConstants.UPDATE_PLAYERS_LIST: {
-      dispatch(
-        updatePlayersList({
-          players: data.players,
-        })
-      );
-      break;
-    }
-    case HostTypeConstants.PLAYER_NAME_TAKEN: {
-      dispatch(setIsNameTaken(true));
-      cleanUp();
-      break;
-    }
-    case HostTypeConstants.APP_VERSION_MISMATCH: {
-      dispatch(
-        clientForcefulDisconnect(OtherErrorTypes.APP_VERSION_MISMATCH, [
-          `The application version does not match between yourself, and the \
-             person who invited you.`,
-          `Your version: ${data.clientVersion}`,
-          `The inviter's version: ${data.hostVersion}`,
-          `Please try refreshing your game, or tell the person who invited \
-             you to refresh their game in order to get the latest update.`,
-        ])
-      );
-
-      cleanUp();
-      break;
-    }
-    case HostTypeConstants.UPDATE_SETTINGS: {
-      dispatch(setSettings(data.settings));
-      break;
-    }
-    case HostTypeConstants.UPDATE_ROUND: {
-      if (data.gameStatus === GameStatus.SETTINGS) {
-        dispatch(setIsInviteLinkCopied(false));
-      }
-      dispatch(
-        setRound({
-          round: data.round,
-          targetHeroes: data.targetHeroes,
-          currentHeroes: data.currentHeroes,
-          statusText: data.statusText,
-          gameStatus: data.gameStatus,
-        })
-      );
-      break;
-    }
-    case HostTypeConstants.SELECT_ICON: {
-      if (data.gameStatus === GameStatus.FINISHED) {
-        dispatch(playAudio(SoundEffects.Applause));
-      } else if (
-        // data.lastClickedPlayerName === selectPlayerName(store.getState())
-        data.lastClickedPlayerName === ""
-      ) {
-        if (data.isCorrectHero) {
-          dispatch(playAudio(SoundEffects.PartyHorn));
-        } else {
-          dispatch(playAudio(SoundEffects.Headshake));
-        }
-      } else if (data.isCorrectHero) {
-        dispatch(playAudio(SoundEffects.Frog));
-      }
-      dispatch(
-        updateSelectedIcons({
-          invalidIcons: data.invalidIcons,
-          selectedIcons: data.selected,
-          players: data.players,
-          statusText: data.statusText,
-          gameStatus: data.gameStatus,
-        })
-      );
-      break;
-    }
-    default: {
-      try {
-        const invalidData = JSON.stringify(data);
-        setContext("Invalid Data From Host", {
-          fromHost: invalidData,
-        });
-      } catch (err) {
-        captureException(err);
-      }
-      captureException(new Error("Invalid data received from host"));
-    }
-  }
-}
-
 function createClientMiddleware(): Middleware {
   return ({ dispatch, getState }: MiddlewareAPI<AppDispatch, RootState>) =>
     (next: AppDispatch) =>
     (action: PayloadAction<AppDispatch>) => {
       if (action.type) {
         switch (action.type) {
-          case PEER_CLIENT_CONNECT:
+          case CLIENT_PEER_START:
             peer = new Peer(getPeerConfig());
 
             peer.on("open", () => {
@@ -196,7 +66,7 @@ function createClientMiddleware(): Middleware {
                       version: getAppVersion(),
                     };
                   }
-                  onMessageFromHost(data, dispatch);
+                  dispatch(handleHostMessage(data));
                 });
 
                 hostConnection.on("close", () => {
@@ -264,12 +134,12 @@ function createClientMiddleware(): Middleware {
             });
             break;
 
-          case PEER_CLIENT_DISCONNECT:
+          case CLIENT_PEER_STOP:
             cleanUp();
             break;
 
-          case PEER_CLIENT_SEND:
-            if (peer && clientWSSend.match(action)) {
+          case CLIENT_PEER_SEND:
+            if (peer && clientPeerSendAction.match(action)) {
               for (const key in peer.connections) {
                 peer.connections[key].forEach(
                   (hostConnection: HostDataConnection) => {

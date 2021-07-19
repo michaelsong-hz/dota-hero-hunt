@@ -1,12 +1,32 @@
 import { createAction } from "@reduxjs/toolkit";
 
+import { GameSettings } from "models/GameSettingsType";
+import { GameStatus } from "models/GameStatus";
 import { ClientTypes } from "models/MessageClientTypes";
-import {
-  PEER_CLIENT_CONNECT,
-  PEER_CLIENT_DISCONNECT,
-  PEER_CLIENT_SEND,
-} from "store/middleware/middlewareConstants";
+import { HostTypeConstants } from "models/MessageHostTypes";
+import { PlayerState } from "models/PlayerState";
 
-export const startClientWS = createAction(PEER_CLIENT_CONNECT);
-export const stopClientWS = createAction(PEER_CLIENT_DISCONNECT);
-export const clientWSSend = createAction<ClientTypes>(PEER_CLIENT_SEND);
+import {
+  CLIENT_PEER_CONNECTED,
+  CLIENT_PEER_SEND,
+  CLIENT_PEER_START,
+  CLIENT_PEER_STOP,
+} from "./clientConstants";
+
+export const clientPeerStartAction = createAction(CLIENT_PEER_START);
+export const clientPeerStopAction = createAction(CLIENT_PEER_STOP);
+export const clientPeerSendAction = createAction<ClientTypes>(CLIENT_PEER_SEND);
+
+export const clientPeerConnectedAction = createAction<{
+  type: HostTypeConstants.CONNECTION_ACCEPTED;
+  settings: GameSettings;
+  players: Record<string, PlayerState>;
+  round: number;
+  targetHeroes: number[];
+  currentHeroes: number[][];
+  selected: number[];
+  invalidIcons: number[];
+  statusText: string;
+  gameStatus: GameStatus;
+  hostID: string;
+}>(CLIENT_PEER_CONNECTED);

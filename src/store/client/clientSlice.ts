@@ -13,7 +13,12 @@ import { initializeSettingsAsync } from "store/game/gameThunks";
 import { AppDispatch, AppThunk, RootState } from "store/rootStore";
 import { StorageConstants } from "utils/constants";
 
-import { startClientWS, stopClientWS } from "./clientActions";
+import {
+  clientPeerConnectedAction,
+  clientPeerStartAction,
+  clientPeerStopAction,
+} from "./clientActions";
+import { CLIENT_PEER_CONNECTED } from "./clientConstants";
 
 export interface ClientState {
   remoteHostID: string | null;
@@ -50,6 +55,12 @@ export const clientSlice = createSlice({
       state.isNameTaken = false;
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(CLIENT_PEER_CONNECTED, (state, action) => {
+      if (clientPeerConnectedAction.match(action))
+        state.remoteHostID = action.payload.hostID;
+    });
+  },
 });
 
 export const {
@@ -68,7 +79,7 @@ export const selectIsNameTaken = (state: RootState): boolean =>
 
 export const connectToHost = (): AppThunk => (dispatch, getState) => {
   if (selectIsJoiningGame(getState()) === false) {
-    dispatch(startClientWS());
+    dispatch(clientPeerStartAction());
     dispatch(setIsJoiningGame(true));
     dispatch(setIsNameTaken(false));
 
@@ -103,7 +114,7 @@ export const clientForcefulDisconnect =
   };
 
 export const clientDisconnect = (): AppThunk => (dispatch) => {
-  dispatch(stopClientWS());
+  dispatch(clientPeerStopAction());
   clientReset(dispatch);
 };
 

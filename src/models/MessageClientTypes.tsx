@@ -2,7 +2,6 @@ import Peer from "peerjs";
 
 // Definitions for messages from the client to the host
 export enum ClientTypeConstants {
-  NEW_CONNECTION,
   PLAYER_ACTION,
 }
 

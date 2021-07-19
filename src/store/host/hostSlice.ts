@@ -73,6 +73,12 @@ export const hostSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(GAME_SET_SETTINGS, (state, action) => {
+        // When new game settings are set, update modified settings to be equal
+        if (setSettingsAction.match(action))
+          state.modifiedGameSettings = action.payload;
+      })
+
       .addCase(HOST_VISIT_SETTINGS, (state, action) => {
         // Reset the modified settings when visiting the settings page
         if (visitSettingsPageAction.match(action)) {
@@ -100,12 +106,6 @@ export const hostSlice = createSlice({
         if (hostPeerStopAction.match(action)) {
           hostSlice.caseReducers.resetHostState(state);
         }
-      })
-
-      .addCase(GAME_SET_SETTINGS, (state, action) => {
-        // When new game settings are set, update modified settings to be equal
-        if (setSettingsAction.match(action))
-          state.modifiedGameSettings = action.payload;
       });
   },
 });
