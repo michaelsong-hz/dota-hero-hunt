@@ -4,23 +4,19 @@ import localForage from "localforage";
 import { GameStatus } from "models/GameStatus";
 import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
 import { Modals, OtherErrorTypes } from "models/Modals";
-import { playAudio } from "store/application/applicationActions";
 import {
   selectPlayerName,
   setIsInviteLinkCopied,
   updateModalToShow,
 } from "store/application/applicationSlice";
-import {
-  setRound,
-  updateSelectedIcons,
-  updatePlayersList,
-} from "store/game/gameSlice";
+import { setRound, updatePlayersList } from "store/game/gameSlice";
 import { initializeSettingsAsync, setSettings } from "store/game/gameThunks";
 import { AppThunk } from "store/rootStore";
 import { SoundEffects } from "utils/SoundEffectList";
 import { StorageConstants } from "utils/constants";
 
 import {
+  clientIconUpdateAction,
   clientNameChangeAction,
   clientPeerConnectedAction,
   clientPeerStartAction,
@@ -128,26 +124,28 @@ export const handleHostMessage =
       }
 
       case HostTypeConstants.SELECT_ICON: {
+        let soundEffect;
         if (data.gameStatus === GameStatus.FINISHED) {
-          dispatch(playAudio(SoundEffects.Applause));
+          soundEffect = SoundEffects.Applause;
         } else if (
           data.lastClickedPlayerName === selectPlayerName(getState())
         ) {
           if (data.isCorrectHero) {
-            dispatch(playAudio(SoundEffects.PartyHorn));
+            soundEffect = SoundEffects.PartyHorn;
           } else {
-            dispatch(playAudio(SoundEffects.Headshake));
+            soundEffect = SoundEffects.Headshake;
           }
         } else if (data.isCorrectHero) {
-          dispatch(playAudio(SoundEffects.Frog));
+          soundEffect = SoundEffects.Frog;
         }
         dispatch(
-          updateSelectedIcons({
+          clientIconUpdateAction({
             invalidIcons: data.invalidIcons,
             selectedIcons: data.selected,
             players: data.players,
             statusText: data.statusText,
             gameStatus: data.gameStatus,
+            soundEffect,
           })
         );
         break;

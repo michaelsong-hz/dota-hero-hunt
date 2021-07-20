@@ -5,8 +5,10 @@ import { GameStatus } from "models/GameStatus";
 import { ClientTypes } from "models/MessageClientTypes";
 import { HostTypeConstants } from "models/MessageHostTypes";
 import { PlayerState } from "models/PlayerState";
+import { SoundEffects } from "utils/SoundEffectList";
 
 import {
+  CLIENT_ICON_UPDATE,
   CLIENT_NAME_CHANGE,
   CLIENT_PEER_CONNECTED,
   CLIENT_PEER_SEND,
@@ -36,3 +38,12 @@ export const clientPeerConnectedAction = createAction<{
   gameStatus: GameStatus;
   hostID: string;
 }>(CLIENT_PEER_CONNECTED);
+
+export const clientIconUpdateAction = createAction<{
+  selectedIcons: number[];
+  invalidIcons: number[];
+  players: Record<string, PlayerState>;
+  statusText: string;
+  gameStatus: GameStatus;
+  soundEffect: SoundEffects | undefined;
+}>(CLIENT_ICON_UPDATE);

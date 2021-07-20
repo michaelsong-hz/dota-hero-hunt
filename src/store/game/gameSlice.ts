@@ -8,10 +8,12 @@ import {
 import { GameStatus } from "models/GameStatus";
 import { PlayerState } from "models/PlayerState";
 import {
+  clientIconUpdateAction,
   clientPeerConnectedAction,
   clientPeerStopAction,
 } from "store/client/clientActions";
 import {
+  CLIENT_ICON_UPDATE,
   CLIENT_PEER_CONNECTED,
   CLIENT_PEER_STOP,
 } from "store/client/clientConstants";
@@ -236,6 +238,15 @@ export const gameSlice = createSlice({
             score: 0,
             isDisabled: false,
           };
+        }
+      })
+      .addCase(CLIENT_ICON_UPDATE, (state, action) => {
+        if (clientIconUpdateAction.match(action)) {
+          state.selectedIcons = action.payload.selectedIcons;
+          state.invalidIcons = action.payload.invalidIcons;
+          state.players = action.payload.players;
+          state.statusText = action.payload.statusText;
+          state.gameStatus = action.payload.gameStatus;
         }
       });
   },
