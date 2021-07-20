@@ -24,20 +24,22 @@ let peer: Peer | null = null;
 let isCleaningUp = false;
 
 function cleanUp() {
-  isCleaningUp = true;
-  if (peer) {
-    if (!peer.disconnected) {
-      peer.disconnect();
-      peer.destroy();
-      peer = null;
-    } else if (!peer.destroyed) {
-      peer.destroy();
-      peer = null;
-    } else {
-      peer = null;
+  if (isCleaningUp === false) {
+    isCleaningUp = true;
+    if (peer) {
+      if (!peer.disconnected) {
+        peer.disconnect();
+        peer.destroy();
+        peer = null;
+      } else if (!peer.destroyed) {
+        peer.destroy();
+        peer = null;
+      } else {
+        peer = null;
+      }
     }
+    isCleaningUp = false;
   }
-  isCleaningUp = false;
 }
 
 function getRemoteHostID() {

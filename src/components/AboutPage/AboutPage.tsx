@@ -1,20 +1,28 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Container } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
-import { useAppSelector } from "hooks/useStore";
+import { useAppDispatch, useAppSelector } from "hooks/useStore";
 import HeroHuntIcon from "images/HeroHuntIcon.svg";
 import { InstallStatus } from "models/InstallStatus";
 import {
   selectInstallStatus,
   selectIsDark,
 } from "store/application/applicationSlice";
+import { visitAboutPage } from "store/host/hostThunks";
 import { appendTheme, getAppVersion } from "utils/utilities";
 
 function AboutPage(): JSX.Element {
   const installStatus = useAppSelector(selectInstallStatus);
   const isDark = useAppSelector(selectIsDark);
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(visitAboutPage());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function getInstallStatus() {
     switch (installStatus) {

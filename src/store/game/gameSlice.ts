@@ -20,6 +20,7 @@ import {
   hostPeerStartAction,
   incrementRoundAction,
   submitPlayerNameAction,
+  visitAboutPageAction,
   visitSettingsPageAction,
 } from "store/host/hostActions";
 import {
@@ -27,6 +28,7 @@ import {
   HOST_PEER_START,
   HOST_SELECT_ICON,
   HOST_SUBMIT_PLAYER_NAME,
+  HOST_VISIT_ABOUT,
   HOST_VISIT_SETTINGS,
 } from "store/host/hostConstants";
 import { RootState } from "store/rootStore";
@@ -183,6 +185,7 @@ export const gameSlice = createSlice({
       .addCase(HOST_VISIT_SETTINGS, (state, action) => {
         if (visitSettingsPageAction.match(action)) {
           state.gameStatus = GameStatus.SETTINGS;
+          state.round = 0;
           // Clear the hero grid when visiting the settings page
           state.selectedIcons = [];
           state.invalidIcons = [];
@@ -193,6 +196,16 @@ export const gameSlice = createSlice({
       .addCase(HOST_SUBMIT_PLAYER_NAME, (state, action) => {
         if (submitPlayerNameAction.match(action)) {
           state.players = action.payload.players;
+        }
+      })
+      .addCase(HOST_VISIT_ABOUT, (state, action) => {
+        if (visitAboutPageAction.match(action)) {
+          state.round = 0;
+          // Clear the hero grid when visiting the about page
+          state.selectedIcons = [];
+          state.invalidIcons = [];
+          state.targetHeroes = [];
+          state.currentHeroes = [[]];
         }
       })
       .addCase(HOST_PEER_START, (state, action) => {

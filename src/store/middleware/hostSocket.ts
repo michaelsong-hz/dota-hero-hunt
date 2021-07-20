@@ -22,6 +22,7 @@ import {
 import {
   HOST_INCREMENT_ROUND,
   HOST_MODIFY_SETTINGS,
+  HOST_PEER_FORCED_DC,
   HOST_PEER_START,
   HOST_PEER_STOP,
   HOST_SELECT_ICON,
@@ -47,20 +48,22 @@ const invalidConnLabels: Set<string> = new Set();
 let isCleaningUp = false;
 
 function cleanUp() {
-  isCleaningUp = true;
-  if (peer) {
-    if (!peer.disconnected) {
-      peer.disconnect();
-      peer.destroy();
-      peer = null;
-    } else if (!peer.destroyed) {
-      peer.destroy();
-      peer = null;
-    } else {
-      peer = null;
+  if (isCleaningUp === false) {
+    isCleaningUp = true;
+    if (peer) {
+      if (!peer.disconnected) {
+        peer.disconnect();
+        peer.destroy();
+        peer = null;
+      } else if (!peer.destroyed) {
+        peer.destroy();
+        peer = null;
+      } else {
+        peer = null;
+      }
     }
+    isCleaningUp = false;
   }
-  isCleaningUp = false;
 }
 
 function onMessage(
@@ -233,7 +236,6 @@ function createHostMiddleware(): Middleware {
                   )
                 );
               }
-              cleanUp();
             });
 
             peer.on("close", () => {
@@ -244,7 +246,6 @@ function createHostMiddleware(): Middleware {
                   )
                 );
               }
-              cleanUp();
             });
 
             peer.on("error", (error) => {
@@ -254,12 +255,15 @@ function createHostMiddleware(): Middleware {
                 captureMessage(error.type);
                 captureException(error);
                 dispatch(hostForcefulDisconnect(error.type));
-                cleanUp();
               }
             });
             break;
 
           case HOST_PEER_STOP:
+            cleanUp();
+            break;
+
+          case HOST_PEER_FORCED_DC:
             cleanUp();
             break;
 

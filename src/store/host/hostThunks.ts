@@ -24,6 +24,7 @@ import {
   hostForcefulDisconnectAction,
   hostPeerStartAction,
   hostPeerStopAction,
+  visitAboutPageAction,
 } from "./hostActions";
 import { selectNextRoundTimer } from "./hostSlice";
 
@@ -281,6 +282,10 @@ export const submitPlayerName =
       })
     );
   };
+
+export const visitAboutPage = (): AppThunk => (dispatch) => {
+  dispatch(visitAboutPageAction());
+};
 
 export const hostPeerStart = (): AppThunk => (dispatch, getState) => {
   dispatch(hostPeerStartAction(selectPlayerName(getState())));

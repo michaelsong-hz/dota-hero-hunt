@@ -15,6 +15,7 @@ import {
   HOST_MODIFY_SETTINGS,
   HOST_PEER_START,
   HOST_PEER_STOP,
+  HOST_VISIT_ABOUT,
 } from "./hostConstants";
 
 export const incrementRoundAction = createAction<{
@@ -56,6 +57,8 @@ export const submitPlayerNameAction = createAction<{
   playerName: string;
   players: Record<string, PlayerState>;
 }>(HOST_SUBMIT_PLAYER_NAME);
+
+export const visitAboutPageAction = createAction(HOST_VISIT_ABOUT);
 
 export const hostPeerStartAction = createAction<string>(HOST_PEER_START);
 export const hostPeerStopAction = createAction(HOST_PEER_STOP);
