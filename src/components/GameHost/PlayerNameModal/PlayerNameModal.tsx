@@ -11,23 +11,28 @@ import {
   selectPlayerName,
   updateModalToShow,
 } from "store/application/applicationSlice";
+import { selectPlayers } from "store/game/gameSlice";
 import { submitPlayerName } from "store/host/hostThunks";
 import { appendTheme } from "utils/utilities";
 
+enum PlayerNameErrors {
+  NONE,
+  EMPTY,
+  TAKEN,
+}
+
 function PlayerNameModal(): JSX.Element {
+  const players = useAppSelector(selectPlayers);
   const playerName = useAppSelector(selectPlayerName);
   const modalToShow = useAppSelector(selectModalToShow);
   const isDark = useAppSelector(selectIsDark);
   const dispatch = useAppDispatch();
 
-  const [isInvalidName, setIsInvalidName] = useState(false);
+  const [isInvalidName, setIsInvalidName] = useState(PlayerNameErrors.NONE);
   const [typedPlayerName, setTypedPlayerName] = useState(playerName);
 
   function handleClose() {
-    // TODO: Check that the player name hasn't been taken
-    if (!isStringValid(typedPlayerName)) {
-      setIsInvalidName(true);
-    } else {
+    if (isNameValid(typedPlayerName)) {
       dispatch(submitPlayerName(typedPlayerName));
     }
   }
@@ -39,32 +44,57 @@ function PlayerNameModal(): JSX.Element {
     handleClose();
   }
 
-  function isStringValid(strTocheck: string) {
+  function isNameValid(strTocheck: string) {
+    // Check that the entered name isn't empty
     if (strTocheck === "") {
+      setIsInvalidName(PlayerNameErrors.EMPTY);
       return false;
     }
+
+    // Check that the entered name doesn't exist in the list of players
+    for (const existingPlayerName of Object.keys(players)) {
+      if (
+        playerName !== existingPlayerName &&
+        strTocheck === existingPlayerName
+      ) {
+        setIsInvalidName(PlayerNameErrors.TAKEN);
+        return false;
+      }
+    }
+
     return true;
   }
 
   function setPlayerName(playerName: string) {
-    setIsInvalidName(false);
+    setIsInvalidName(PlayerNameErrors.NONE);
     setTypedPlayerName(playerName);
   }
 
   // Autofocuses the text field
-  function NameInput() {
+  function NameInputForm() {
     const innerRef = useRef<HTMLInputElement>();
     useEffect(() => innerRef.current && innerRef.current.focus());
 
+    let feedback = "";
+    if (isInvalidName === PlayerNameErrors.EMPTY) {
+      feedback = "Please enter a player name.";
+    } else if (isInvalidName === PlayerNameErrors.TAKEN) {
+      feedback =
+        "This player name has already been taken. Please choose a different name.";
+    }
+
     return (
-      <Form.Control
-        ref={innerRef as MutableRefObject<HTMLInputElement | null>}
-        isInvalid={isInvalidName}
-        type="text"
-        placeholder="Enter your name"
-        defaultValue={typedPlayerName}
-        onChange={(e) => setPlayerName(e.target.value)}
-      />
+      <Form.Group>
+        <Form.Control
+          ref={innerRef as MutableRefObject<HTMLInputElement | null>}
+          isInvalid={isInvalidName !== PlayerNameErrors.NONE}
+          type="text"
+          placeholder="Enter your name"
+          defaultValue={typedPlayerName}
+          onChange={(e) => setPlayerName(e.target.value)}
+        />
+        <Form.Control.Feedback type="invalid">{feedback}</Form.Control.Feedback>
+      </Form.Group>
     );
   }
 
@@ -90,12 +120,7 @@ function PlayerNameModal(): JSX.Element {
               player name.
             </p>
           )}
-          <Form.Group>
-            {NameInput()}
-            <Form.Control.Feedback type="invalid">
-              Please enter a player name.
-            </Form.Control.Feedback>
-          </Form.Group>
+          {NameInputForm()}
         </Modal.Body>
         <Modal.Footer>
           <Button
