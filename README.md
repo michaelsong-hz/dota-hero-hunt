@@ -14,7 +14,7 @@ REACT_APP_PEER_JS_PATH=/myapp
 REACT_APP_PEER_JS_PORT=9000
 ```
 
-You can now start the React development server at `npm start`.
+You can now start the React development server using `npm start`.
 
 ## Running the backend
 
@@ -49,11 +49,13 @@ Dota Hero Hunt is licensed under the GNU Affero General Public License. See `NOT
 
 ## Contact
 
-You can reach me via <hello@michaelsong.me>
+You can reach me at <hello@michaelsong.me>.
 
 ## Deployment
 
-All commits to master are automatically deployed. All new deployments should be versioned.
+All commits pushed to GitHub on any branch, as well as any PRs will be automatically deployed by Cloudflare Pages to `https://*.dota-hero-hunt.pages.dev/`.
+
+All commits to the `production` branch are automatically deployed to `dotaherohunt.com`, and all new deployments should be versioned.
 
 ```bash
 npm version 1.0.0 -m "Bump version to %s"
