@@ -113,10 +113,31 @@ function AboutPage(): JSX.Element {
       </Row>
       <Row className="mt-3">
         <Col>
-          <p>
+          <p className="mb-2">
             First seen in The International 10 Battle Pass, Dota Hero Hunt is a
             recreation of the beloved Dota minigame which you can play anywhere,
             anytime!
+          </p>
+          <p>
+            All hero icons and sounds are from the video game{" "}
+            <a
+              className={appendTheme("about-license-link", isDark)}
+              target="_blank"
+              href="https://www.dota2.com"
+              rel="noreferrer"
+            >
+              Dota 2
+            </a>{" "}
+            by{" "}
+            <a
+              className={appendTheme("about-license-link", isDark)}
+              target="_blank"
+              href="https://www.valvesoftware.com"
+              rel="noreferrer"
+            >
+              Valve
+            </a>
+            .
           </p>
         </Col>
       </Row>
