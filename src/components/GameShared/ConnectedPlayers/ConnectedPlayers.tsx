@@ -12,7 +12,7 @@ function ConnectedPlayers(): JSX.Element {
 
   for (const [readPlayerName, player] of Object.entries(players)) {
     let playerName = readPlayerName;
-    if (playerName === "" && gameStatus !== GameStatus.SETTINGS) {
+    if (playerName === "" && gameStatus !== GameStatus.LOBBY) {
       playerName = "Your score:";
     }
     connectedPlayers.push(
@@ -23,7 +23,7 @@ function ConnectedPlayers(): JSX.Element {
         <div className="conn-player-name align-self-center">
           <h4>{playerName}</h4>
         </div>
-        {gameStatus !== GameStatus.SETTINGS && (
+        {gameStatus !== GameStatus.LOBBY && (
           <div className="align-self-center ml-3">
             <h5 className="">{player.score}</h5>
           </div>

@@ -10,7 +10,7 @@ import {
   HOST_INCREMENT_ROUND,
   HOST_PEER_FORCED_DC,
   HOST_SELECT_ICON,
-  HOST_VISIT_SETTINGS,
+  HOST_VISIT_LOBBY,
   HOST_SUBMIT_PLAYER_NAME,
   HOST_MODIFY_SETTINGS,
   HOST_PEER_START,
@@ -47,8 +47,8 @@ export const addSelectedIconAction = createAction<
   | undefined
 >(HOST_SELECT_ICON);
 
-export const visitSettingsPageAction =
-  createAction<GameSettings>(HOST_VISIT_SETTINGS);
+export const visitLobbyPageAction =
+  createAction<GameSettings>(HOST_VISIT_LOBBY);
 
 export const modifyGameSettingsAction =
   createAction<GameSettings>(HOST_MODIFY_SETTINGS);

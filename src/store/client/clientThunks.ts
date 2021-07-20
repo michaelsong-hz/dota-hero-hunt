@@ -107,7 +107,7 @@ export const handleHostMessage =
       }
 
       case HostTypeConstants.UPDATE_ROUND: {
-        if (data.gameStatus === GameStatus.SETTINGS) {
+        if (data.gameStatus === GameStatus.LOBBY) {
           dispatch(setIsInviteLinkCopied(false));
         }
         dispatch(

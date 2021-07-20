@@ -22,7 +22,7 @@ import {
   modifyGameSettingsAction,
   incrementRoundAction,
   addSelectedIconAction,
-  visitSettingsPageAction,
+  visitLobbyPageAction,
   hostForcefulDisconnectAction,
   hostPeerStartAction,
   hostPeerStopAction,
@@ -243,10 +243,10 @@ export const addSelectedIcon =
     );
   };
 
-export const visitSettingsPage =
+export const visitLobbyPage =
   (settings: GameSettings): AppThunk =>
   (dispatch) => {
-    dispatch(visitSettingsPageAction(settings));
+    dispatch(visitLobbyPageAction(settings));
   };
 
 export const modifyGameSettings =

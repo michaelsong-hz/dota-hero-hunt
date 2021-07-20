@@ -25,7 +25,7 @@ function GameClientPage(): JSX.Element {
   }
 
   // Game lobby
-  if (gameStatus === GameStatus.SETTINGS) {
+  if (gameStatus === GameStatus.LOBBY) {
     return <LobbyView />;
   }
 

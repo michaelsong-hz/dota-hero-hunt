@@ -16,13 +16,13 @@ import {
   hostPeerStartAction,
   hostPeerStopAction,
   modifyGameSettingsAction,
-  visitSettingsPageAction,
+  visitLobbyPageAction,
 } from "./hostActions";
 import {
   HOST_PEER_FORCED_DC,
   HOST_MODIFY_SETTINGS,
   HOST_SELECT_ICON,
-  HOST_VISIT_SETTINGS,
+  HOST_VISIT_LOBBY,
   HOST_PEER_START,
   HOST_PEER_STOP,
 } from "./hostConstants";
@@ -72,9 +72,9 @@ export const hostSlice = createSlice({
           state.modifiedGameSettings = action.payload;
       })
 
-      .addCase(HOST_VISIT_SETTINGS, (state, action) => {
+      .addCase(HOST_VISIT_LOBBY, (state, action) => {
         // Reset the modified settings when visiting the settings page
-        if (visitSettingsPageAction.match(action)) {
+        if (visitLobbyPageAction.match(action)) {
           state.modifiedGameSettings = action.payload;
           if (state.nextRoundTimer) clearTimeout(state.nextRoundTimer);
         }

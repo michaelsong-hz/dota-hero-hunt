@@ -23,7 +23,7 @@ import {
   incrementRoundAction,
   submitPlayerNameAction,
   visitAboutPageAction,
-  visitSettingsPageAction,
+  visitLobbyPageAction,
 } from "store/host/hostActions";
 import {
   HOST_INCREMENT_ROUND,
@@ -31,7 +31,7 @@ import {
   HOST_SELECT_ICON,
   HOST_SUBMIT_PLAYER_NAME,
   HOST_VISIT_ABOUT,
-  HOST_VISIT_SETTINGS,
+  HOST_VISIT_LOBBY,
 } from "store/host/hostConstants";
 import { RootState } from "store/rootStore";
 
@@ -143,9 +143,9 @@ export const gameSlice = createSlice({
           state.gameStatus = action.payload.newState.gameStatus;
         }
       })
-      .addCase(HOST_VISIT_SETTINGS, (state, action) => {
-        if (visitSettingsPageAction.match(action)) {
-          state.gameStatus = GameStatus.SETTINGS;
+      .addCase(HOST_VISIT_LOBBY, (state, action) => {
+        if (visitLobbyPageAction.match(action)) {
+          state.gameStatus = GameStatus.LOBBY;
           state.round = 0;
           // Clear the hero grid when visiting the settings page
           state.selectedIcons = [];

@@ -14,7 +14,7 @@ import {
   HOST_PEER_FORCED_DC,
   HOST_PEER_STOP,
   HOST_SUBMIT_PLAYER_NAME,
-  HOST_VISIT_SETTINGS,
+  HOST_VISIT_LOBBY,
 } from "store/host/hostConstants";
 import { RootState } from "store/rootStore";
 
@@ -103,7 +103,7 @@ export const applicationSlice = createSlice({
       .addCase(HOST_PEER_STOP, (state) => {
         state.isInviteLinkCopied = false;
       })
-      .addCase(HOST_VISIT_SETTINGS, (state) => {
+      .addCase(HOST_VISIT_LOBBY, (state) => {
         state.isInviteLinkCopied = false;
       })
 

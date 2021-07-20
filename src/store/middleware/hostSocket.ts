@@ -17,7 +17,7 @@ import {
   incrementRoundAction,
   modifyGameSettingsAction,
   submitPlayerNameAction,
-  visitSettingsPageAction,
+  visitLobbyPageAction,
 } from "store/host/hostActions";
 import {
   HOST_INCREMENT_ROUND,
@@ -27,7 +27,7 @@ import {
   HOST_PEER_STOP,
   HOST_SELECT_ICON,
   HOST_SUBMIT_PLAYER_NAME,
-  HOST_VISIT_SETTINGS,
+  HOST_VISIT_LOBBY,
 } from "store/host/hostConstants";
 import {
   selectHostID,
@@ -297,16 +297,15 @@ function createHostMiddleware(): Middleware {
               });
             break;
 
-          // TODO: Probably want a custom host type to end the game
-          case HOST_VISIT_SETTINGS:
-            if (visitSettingsPageAction.match(action)) {
+          case HOST_VISIT_LOBBY:
+            if (visitLobbyPageAction.match(action)) {
               broadcastMessage({
                 type: HostTypeConstants.UPDATE_ROUND,
                 round: 0,
                 targetHeroes: [],
                 currentHeroes: [],
                 statusText: "",
-                gameStatus: GameStatus.SETTINGS,
+                gameStatus: GameStatus.LOBBY,
                 players: selectPlayers(getState()),
               });
             }
