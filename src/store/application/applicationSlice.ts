@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ApplicationSettings } from "models/ApplicationSettings";
 import { InstallStatus } from "models/InstallStatus";
-import { Modals, RegularModals } from "models/Modals";
+import { Modals } from "models/Modals";
 import { clientNameChangeAction } from "store/client/clientActions";
 import { CLIENT_NAME_CHANGE } from "store/client/clientConstants";
 import { initializeSettingsAsync } from "store/game/gameThunks";
@@ -16,18 +16,16 @@ import {
   HOST_SUBMIT_PLAYER_NAME,
   HOST_VISIT_SETTINGS,
 } from "store/host/hostConstants";
-import { AppThunk, RootState } from "store/rootStore";
+import { RootState } from "store/rootStore";
 
 import {
   setIsDarkAction,
   setLoadedSettingsAction,
-  setPlayerNameAction,
   setVolumeAction,
 } from "./applicationActions";
 import {
   APPLICATION_SET_IS_DARK,
   APPLICATION_SET_LOADED_SETTINGS,
-  APPLICATION_SET_PLAYER_NAME,
   APPLICATION_SET_VOLUME,
 } from "./applicationConstants";
 
@@ -60,16 +58,6 @@ export const applicationSlice = createSlice({
   name: "application",
   initialState,
   reducers: {
-    setVolume: (state, action: PayloadAction<number>) => {
-      state.appSettings.volume = action.payload;
-    },
-
-    setSettingsLoaded: (state, action: PayloadAction<boolean>) => {
-      state.settingsLoaded = action.payload;
-    },
-    _setPlayerName: (state, action: PayloadAction<string>) => {
-      state.playerName = action.payload;
-    },
     updateModalToShow: (
       state,
       action: PayloadAction<{ modal: Modals | null; message?: string[] }>
@@ -123,10 +111,6 @@ export const applicationSlice = createSlice({
         if (clientNameChangeAction.match(action))
           state.playerName = action.payload;
       })
-      .addCase(APPLICATION_SET_PLAYER_NAME, (state, action) => {
-        if (setPlayerNameAction.match(action))
-          state.playerName = action.payload;
-      })
       .addCase(APPLICATION_SET_VOLUME, (state, action) => {
         if (setVolumeAction.match(action))
           state.appSettings.volume = action.payload;
@@ -144,12 +128,8 @@ export const applicationSlice = createSlice({
   },
 });
 
-export const {
-  setSettingsLoaded,
-  updateModalToShow,
-  setInstallStatus,
-  setIsInviteLinkCopied,
-} = applicationSlice.actions;
+export const { updateModalToShow, setInstallStatus, setIsInviteLinkCopied } =
+  applicationSlice.actions;
 
 export const selectVolume = (state: RootState): number =>
   state.application.appSettings.volume;
@@ -167,9 +147,5 @@ export const selectInstallStatus = (state: RootState): InstallStatus =>
   state.application.installStatus;
 export const selectIsInviteLinkCopied = (state: RootState): boolean =>
   state.application.isInviteLinkCopied;
-
-export const changeName = (): AppThunk => (dispatch) => {
-  dispatch(updateModalToShow({ modal: RegularModals.PLAYER_NAME_MODAL }));
-};
 
 export default applicationSlice.reducer;

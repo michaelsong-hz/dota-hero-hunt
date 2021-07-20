@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 import { RootState } from "store/rootStore";
 
@@ -29,26 +29,7 @@ const initialState: ClientState = {
 export const clientSlice = createSlice({
   name: "client",
   initialState,
-  reducers: {
-    setRemoteHostID: (state, action: PayloadAction<string | null>) => {
-      state.remoteHostID = action.payload;
-    },
-    setIsJoiningGame: (state, action: PayloadAction<boolean>) => {
-      state.isJoiningGame = action.payload;
-    },
-    setIsNameTaken: (state, action: PayloadAction<boolean>) => {
-      if (action.payload === true) {
-        state.remoteHostID = null;
-        state.isJoiningGame = false;
-      }
-      state.isNameTaken = action.payload;
-    },
-    resetClientState: (state) => {
-      state.remoteHostID = null;
-      state.isJoiningGame = false;
-      state.isNameTaken = false;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(CLIENT_PEER_START, (state) => {
@@ -73,13 +54,6 @@ export const clientSlice = createSlice({
       });
   },
 });
-
-export const {
-  setRemoteHostID,
-  setIsJoiningGame,
-  setIsNameTaken,
-  resetClientState,
-} = clientSlice.actions;
 
 export const selectRemoteHostID = (state: RootState): string | null =>
   state.client.remoteHostID;

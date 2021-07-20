@@ -5,11 +5,10 @@ import {
   gridSizes,
   GridSizeTypes,
 } from "models/GameSettingsType";
-import { setIsInviteLinkCopied } from "store/application/applicationSlice";
 import { setSettingsAction } from "store/game/gameActions";
 import { GAME_SET_SETTINGS } from "store/game/gameConstants";
-import { AppThunk, RootState } from "store/rootStore";
-import { getHostInviteLink, isClient } from "utils/utilities";
+import { RootState } from "store/rootStore";
+import { isClient } from "utils/utilities";
 
 import {
   addSelectedIconAction,
@@ -64,12 +63,6 @@ export const hostSlice = createSlice({
       state.hostID = null;
       state.isGeneratingLink = false;
     },
-    setIsGeneratingLink: (state, action: PayloadAction<boolean>) => {
-      state.isGeneratingLink = action.payload;
-    },
-    setModifiedGameSettings: (state, action: PayloadAction<GameSettings>) => {
-      state.modifiedGameSettings = action.payload;
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -110,12 +103,7 @@ export const hostSlice = createSlice({
   },
 });
 
-export const {
-  setHostID,
-  resetHostState,
-  setIsGeneratingLink,
-  setModifiedGameSettings,
-} = hostSlice.actions;
+export const { setHostID, resetHostState } = hostSlice.actions;
 
 export const selectHostID = (state: RootState): string | null =>
   state.host.hostID;
@@ -136,31 +124,5 @@ export const isSinglePlayer = (state: RootState): boolean => {
   }
   return false;
 };
-
-export const setHostIDAndCopyLink =
-  (hostID: string): AppThunk =>
-  async (dispatch) => {
-    dispatch(setHostID(hostID));
-    try {
-      await navigator.clipboard.writeText(getHostInviteLink(hostID));
-      dispatch(setIsInviteLinkCopied(true));
-    } catch (err) {
-      /* 😡 SAFARI won't let you copy text to the clipboard if "it's not a
-        user action" and this technically isn't tied to a user action as we have
-        to wait for the invite link to come back from the server before writing
-        it to the clipboard THANKS TIM APPLE 🤡
-        It works if you hit copy after the link is generated because then it's
-        tied to a "user action" */
-    }
-  };
-
-// // Called when the host is forcefully disconnected
-// // Clean up state and display error modal
-// export const hostForcefulDisconnect =
-//   (modal: Modals, message?: string[]): AppThunk =>
-//   (dispatch) => {
-//     dispatch(updateModalToShow({ modal, message }));
-//     dispatch(resetHostState());
-//   };
 
 export default hostSlice.reducer;

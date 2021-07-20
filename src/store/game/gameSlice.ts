@@ -99,28 +99,6 @@ export const gameSlice = createSlice({
       state.gameStatus = action.payload.gameStatus;
       state.players = action.payload.players;
     },
-    updateSelectedIcons: (
-      state,
-      action: PayloadAction<{
-        selectedIcons: number[];
-        invalidIcons: number[];
-        players: Record<string, PlayerState>;
-        statusText: string;
-        gameStatus: GameStatus;
-      }>
-    ) => {
-      state.selectedIcons = action.payload.selectedIcons;
-      state.invalidIcons = action.payload.invalidIcons;
-      state.players = action.payload.players;
-      state.statusText = action.payload.statusText;
-      state.gameStatus = action.payload.gameStatus;
-    },
-    clearHeroGrid: (state) => {
-      state.selectedIcons = [];
-      state.invalidIcons = [];
-      state.targetHeroes = [];
-      state.currentHeroes = [[]];
-    },
     updatePlayersList: (
       state,
       action: PayloadAction<{
@@ -128,25 +106,6 @@ export const gameSlice = createSlice({
       }>
     ) => {
       state.players = action.payload.players;
-    },
-    setCurrentHeroes: (
-      state,
-      action: PayloadAction<{
-        currentHeroes: number[][];
-      }>
-    ) => {
-      state.currentHeroes = action.payload.currentHeroes;
-    },
-    _setSettings: (
-      state,
-      action: PayloadAction<{
-        gameSettings: GameSettings;
-      }>
-    ) => {
-      state.gameSettings = action.payload.gameSettings;
-    },
-    setGameStatus: (state, action: PayloadAction<GameStatus>) => {
-      state.gameStatus = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -252,15 +211,7 @@ export const gameSlice = createSlice({
   },
 });
 
-export const {
-  setRound,
-  updateSelectedIcons,
-  clearHeroGrid,
-  updatePlayersList,
-  setCurrentHeroes,
-  _setSettings,
-  setGameStatus,
-} = gameSlice.actions;
+export const { setRound, updatePlayersList } = gameSlice.actions;
 
 export const selectRound = (state: RootState): number => state.game.round;
 export const selectPlayers = (state: RootState): Record<string, PlayerState> =>

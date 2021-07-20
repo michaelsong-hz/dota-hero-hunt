@@ -1,19 +1,14 @@
 import { Howler } from "howler";
 
+import { RegularModals } from "models/Modals";
 import { AppThunk } from "store/rootStore";
 
 import {
   setIsDarkAction,
   setLoadedSettingsAction,
-  setPlayerNameAction,
   setVolumeAction,
 } from "./applicationActions";
-
-export const setPlayerName =
-  (playerName: string): AppThunk =>
-  (dispatch) => {
-    dispatch(setPlayerNameAction(playerName));
-  };
+import { updateModalToShow } from "./applicationSlice";
 
 export const setVolume =
   (volume: string | number): AppThunk =>
@@ -40,3 +35,7 @@ export const setLoadedSettings =
     dispatch(setLoadedSettingsAction({ volume, playerName }));
     Howler.volume(volume / 100);
   };
+
+export const changeName = (): AppThunk => (dispatch) => {
+  dispatch(updateModalToShow({ modal: RegularModals.PLAYER_NAME_MODAL }));
+};

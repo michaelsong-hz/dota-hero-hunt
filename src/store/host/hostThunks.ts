@@ -7,6 +7,7 @@ import { Modals, OtherErrorTypes, RegularModals } from "models/Modals";
 import { PlayerState } from "models/PlayerState";
 import {
   selectPlayerName,
+  setIsInviteLinkCopied,
   updateModalToShow,
 } from "store/application/applicationSlice";
 import { selectTimeBetweenRounds } from "store/game/gameSlice";
@@ -14,6 +15,7 @@ import { AppDispatch, AppThunk } from "store/rootStore";
 import { heroList } from "utils/HeroList";
 import { SoundEffects } from "utils/SoundEffectList";
 import { Constants, StorageConstants } from "utils/constants";
+import { getHostInviteLink } from "utils/utilities";
 
 import {
   submitPlayerNameAction,
@@ -26,7 +28,7 @@ import {
   hostPeerStopAction,
   visitAboutPageAction,
 } from "./hostActions";
-import { selectNextRoundTimer } from "./hostSlice";
+import { selectNextRoundTimer, setHostID } from "./hostSlice";
 
 function reportTargetRoundScoreNotSet(dispatch: AppDispatch) {
   captureException(
@@ -299,4 +301,21 @@ export const hostForcefulDisconnect =
   (modal: Modals, message?: string[]): AppThunk =>
   (dispatch) => {
     dispatch(hostForcefulDisconnectAction({ modal, message }));
+  };
+
+export const setHostIDAndCopyLink =
+  (hostID: string): AppThunk =>
+  async (dispatch) => {
+    dispatch(setHostID(hostID));
+    try {
+      await navigator.clipboard.writeText(getHostInviteLink(hostID));
+      dispatch(setIsInviteLinkCopied(true));
+    } catch (err) {
+      /* 😡 SAFARI won't let you copy text to the clipboard if "it's not a
+        user action" and this technically isn't tied to a user action as we have
+        to wait for the invite link to come back from the server before writing
+        it to the clipboard THANKS TIM APPLE 🤡
+        It works if you hit copy after the link is generated because then it's
+        tied to a "user action" */
+    }
   };

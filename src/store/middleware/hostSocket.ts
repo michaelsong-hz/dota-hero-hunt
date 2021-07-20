@@ -32,9 +32,12 @@ import {
 import {
   selectHostID,
   selectHostModifiedGameSettings,
-  setHostIDAndCopyLink,
 } from "store/host/hostSlice";
-import { addSelectedIcon, hostForcefulDisconnect } from "store/host/hostThunks";
+import {
+  addSelectedIcon,
+  hostForcefulDisconnect,
+  setHostIDAndCopyLink,
+} from "store/host/hostThunks";
 import { AppDispatch, RootState } from "store/rootStore";
 import {
   getPeerConfig,

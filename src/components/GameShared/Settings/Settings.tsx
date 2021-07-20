@@ -21,10 +21,10 @@ import {
   GridSizeTypes,
 } from "models/GameSettingsType";
 import {
-  changeName,
   selectIsDark,
   selectPlayerName,
 } from "store/application/applicationSlice";
+import { changeName } from "store/application/applicationThunks";
 import { selectGameSettings } from "store/game/gameSlice";
 import { setSettings } from "store/game/gameThunks";
 import { selectHostModifiedGameSettings } from "store/host/hostSlice";
