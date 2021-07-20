@@ -3,11 +3,8 @@ import localForage from "localforage";
 
 import { StorageConstants } from "utils/constants";
 
-import {
-  initialApplicationSettings,
-  setIsDark,
-  setLoadedSettings,
-} from "./application/applicationSlice";
+import { initialApplicationSettings } from "./application/applicationSlice";
+import { setIsDark, setLoadedSettings } from "./application/applicationThunks";
 import { initializeSettingsAsync } from "./game/gameThunks";
 import { store } from "./rootStore";
 
@@ -22,12 +19,7 @@ function setStoredApplicationSettings(storedAppSettings: [unknown, unknown]) {
     initializedPlayerName = storedAppSettings[1];
   }
 
-  store.dispatch(
-    setLoadedSettings({
-      volume: initializedVolume,
-      playerName: initializedPlayerName,
-    })
-  );
+  store.dispatch(setLoadedSettings(initializedVolume, initializedPlayerName));
 }
 
 async function loadStoredApplicationSettings() {

@@ -18,12 +18,8 @@ import Switch from "react-switch";
 
 import { useAppSelector, useAppDispatch } from "hooks/useStore";
 import HeroHuntIcon from "images/HeroHuntIcon.svg";
-import {
-  selectIsDark,
-  selectVolume,
-  setIsDark,
-  setVolume,
-} from "store/application/applicationSlice";
+import { selectIsDark, selectVolume } from "store/application/applicationSlice";
+import { setVolume, setIsDark } from "store/application/applicationThunks";
 import { selectRemoteHostID } from "store/client/clientSlice";
 import { GlobalConstants, StorageConstants } from "utils/constants";
 import { appendTheme } from "utils/utilities";
@@ -51,16 +47,14 @@ function Header(): JSX.Element {
     setShowVolume(show);
   }
 
-  const renderTooltip = (props: unknown) => (
+  const renderVolumeTooltip = (props: unknown) => (
     <Tooltip id="button-tooltip" className="tooltip" {...props}>
       <RangeSlider
         tooltipLabel={(currentValue) => `${currentValue}%`}
         tooltipPlacement="top"
         value={volume}
         onChange={(changeEvent) => {
-          const volume = parseInt(changeEvent.target.value);
-          dispatch(setVolume(volume));
-          Howler.volume(volume / 100);
+          dispatch(setVolume(changeEvent.target.value));
         }}
         step={GlobalConstants.VOLUME_STEP}
       />
@@ -115,7 +109,7 @@ function Header(): JSX.Element {
           rootClose
           placement="bottom"
           trigger="click"
-          overlay={renderTooltip}
+          overlay={renderVolumeTooltip}
           show={showVolume}
           onToggle={(show: boolean) => toggleTooltip(show)}
         >

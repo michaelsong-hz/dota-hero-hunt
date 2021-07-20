@@ -17,8 +17,18 @@ import {
 } from "store/host/hostConstants";
 import { AppThunk, RootState } from "store/rootStore";
 
-import { setPlayerNameAction } from "./applicationActions";
-import { APPLICATION_SET_PLAYER_NAME } from "./applicationConstants";
+import {
+  setIsDarkAction,
+  setLoadedSettingsAction,
+  setPlayerNameAction,
+  setVolumeAction,
+} from "./applicationActions";
+import {
+  APPLICATION_SET_IS_DARK,
+  APPLICATION_SET_LOADED_SETTINGS,
+  APPLICATION_SET_PLAYER_NAME,
+  APPLICATION_SET_VOLUME,
+} from "./applicationConstants";
 
 export interface ApplicationState {
   appSettings: ApplicationSettings;
@@ -52,27 +62,12 @@ export const applicationSlice = createSlice({
     setVolume: (state, action: PayloadAction<number>) => {
       state.appSettings.volume = action.payload;
     },
-    setIsDark: (state, action: PayloadAction<boolean>) => {
-      state.appSettings.isDark = action.payload;
-    },
-    setApplicationSettings: (
-      state,
-      action: PayloadAction<ApplicationSettings>
-    ) => {
-      state.appSettings = action.payload;
-    },
+
     setSettingsLoaded: (state, action: PayloadAction<boolean>) => {
       state.settingsLoaded = action.payload;
     },
     _setPlayerName: (state, action: PayloadAction<string>) => {
       state.playerName = action.payload;
-    },
-    setLoadedSettings: (
-      state,
-      action: PayloadAction<{ volume: number; playerName: string }>
-    ) => {
-      state.appSettings.volume = action.payload.volume;
-      state.playerName = action.payload.playerName;
     },
     updateModalToShow: (
       state,
@@ -124,20 +119,29 @@ export const applicationSlice = createSlice({
         if (clientNameChangeAction.match(action))
           state.playerName = action.payload;
       })
-
       .addCase(APPLICATION_SET_PLAYER_NAME, (state, action) => {
         if (setPlayerNameAction.match(action))
           state.playerName = action.payload;
+      })
+      .addCase(APPLICATION_SET_VOLUME, (state, action) => {
+        if (setVolumeAction.match(action))
+          state.appSettings.volume = action.payload;
+      })
+      .addCase(APPLICATION_SET_IS_DARK, (state, action) => {
+        if (setIsDarkAction.match(action))
+          state.appSettings.isDark = action.payload;
+      })
+      .addCase(APPLICATION_SET_LOADED_SETTINGS, (state, action) => {
+        if (setLoadedSettingsAction.match(action)) {
+          state.appSettings.volume = action.payload.volume;
+          state.playerName = action.payload.playerName;
+        }
       });
   },
 });
 
 export const {
-  setVolume,
-  setIsDark,
-  setApplicationSettings,
   setSettingsLoaded,
-  setLoadedSettings,
   updateModalToShow,
   setInstallStatus,
   setIsInviteLinkCopied,
