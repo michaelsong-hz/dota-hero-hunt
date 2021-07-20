@@ -4,12 +4,13 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { useHistory } from "react-router-dom";
 
-import { useStoreState } from "reducer/store";
+import { useAppSelector } from "hooks/useStore";
+import { selectIsDark } from "store/application/applicationSlice";
 import { appendTheme } from "utils/utilities";
 
 function PageNotFound(): JSX.Element {
   const history = useHistory();
-  const state = useStoreState();
+  const isDark = useAppSelector(selectIsDark);
 
   return (
     <Container className="my-4 text-center">
@@ -26,7 +27,7 @@ function PageNotFound(): JSX.Element {
         <Col xs="12" className="mt-2">
           <Button
             size="lg"
-            variant={appendTheme("primary", state.appSettings.isDark)}
+            variant={appendTheme("primary", isDark)}
             onClick={() => history.push("/")}
           >
             Return Home

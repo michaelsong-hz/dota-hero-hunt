@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 
-import { useStoreState } from "reducer/store";
+import { useAppSelector } from "hooks/useStore";
+import { selectIsDark } from "store/application/applicationSlice";
 
 function HelmetWrapper(): JSX.Element {
-  const state = useStoreState();
+  const isDark = useAppSelector(selectIsDark);
 
   const [animateBgColorChange, setAnimateBgColorChange] = useState(false);
 
@@ -20,7 +21,7 @@ function HelmetWrapper(): JSX.Element {
 
   function getClassName(): string {
     let baseName = "";
-    if (state.appSettings.isDark) {
+    if (isDark) {
       baseName += "helmet-body-dark";
     } else {
       baseName += "helmet-body-light";

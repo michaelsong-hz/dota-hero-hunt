@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
 
+import { useAppSelector, useAppDispatch } from "hooks/useStore";
 import { InstallStatus } from "models/InstallStatus";
 import { SWConfig, SWRegistrationStatus } from "models/SWConfig";
-import { useStoreDispatch, useStoreState } from "reducer/store";
-import { StoreConstants } from "reducer/storeReducer";
 import { register } from "serviceWorkerRegistration";
+import {
+  selectIsDark,
+  setInstallStatus,
+} from "store/application/applicationSlice";
 import { appendTheme } from "utils/utilities";
 
 function UpdateMessage(): JSX.Element {
-  const state = useStoreState();
-  const dispatch = useStoreDispatch();
+  const isDark = useAppSelector(selectIsDark);
+
+  const dispatch = useAppDispatch();
 
   const [swUpdateReady, setSWUpdateReady] = useState(false);
   const [swRegistration, setSWRegistration] =
@@ -29,31 +33,19 @@ function UpdateMessage(): JSX.Element {
 
       switch (status) {
         case SWRegistrationStatus.REGISTERED:
-          dispatch({
-            type: StoreConstants.SET_INSTALL_STATUS,
-            status: InstallStatus.INSTALLING,
-          });
+          dispatch(setInstallStatus(InstallStatus.INSTALLING));
           break;
         case SWRegistrationStatus.SUCCESS:
-          dispatch({
-            type: StoreConstants.SET_INSTALL_STATUS,
-            status: InstallStatus.INSTALLED,
-          });
+          dispatch(setInstallStatus(InstallStatus.INSTALLED));
           break;
         case SWRegistrationStatus.UPDATE_FOUND:
           setSWUpdateReady(true);
           break;
         case SWRegistrationStatus.NOT_SUPPORTED:
-          dispatch({
-            type: StoreConstants.SET_INSTALL_STATUS,
-            status: InstallStatus.NOT_SUPPORTED,
-          });
+          dispatch(setInstallStatus(InstallStatus.NOT_SUPPORTED));
           break;
         case SWRegistrationStatus.ERROR:
-          dispatch({
-            type: StoreConstants.SET_INSTALL_STATUS,
-            status: InstallStatus.ERROR,
-          });
+          dispatch(setInstallStatus(InstallStatus.ERROR));
           break;
       }
     };
@@ -67,10 +59,7 @@ function UpdateMessage(): JSX.Element {
   useEffect(() => {
     let pollForUpdates: NodeJS.Timeout;
     if (swRegistration && swRegistration.active) {
-      dispatch({
-        type: StoreConstants.SET_INSTALL_STATUS,
-        status: InstallStatus.INSTALLED,
-      });
+      dispatch(setInstallStatus(InstallStatus.INSTALLED));
 
       pollForUpdates = setInterval(() => {
         swRegistration.update();
@@ -93,14 +82,14 @@ function UpdateMessage(): JSX.Element {
         <div
           className={`d-flex update-alert ${appendTheme(
             "update-alert",
-            state.appSettings.isDark
+            isDark
           )} slide-down-appear`}
         >
           An update for Dota Hero Hunt is available!{" "}
           <div
             className={`update-alert-refresh ${appendTheme(
               "update-alert-refresh",
-              state.appSettings.isDark
+              isDark
             )}`}
             onClick={handleReload}
           >

@@ -3,29 +3,37 @@ import { Modal } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 
-import { useStoreState } from "reducer/store";
-import { StorageConstants } from "utils/constants";
+import { useAppDispatch, useAppSelector } from "hooks/useStore";
+import { RegularModals } from "models/Modals";
+import {
+  selectIsDark,
+  selectModalToShow,
+  selectPlayerName,
+  updateModalToShow,
+} from "store/application/applicationSlice";
+import { selectPlayers } from "store/game/gameSlice";
+import { submitPlayerName } from "store/host/hostThunks";
 import { appendTheme } from "utils/utilities";
 
-interface PlayerNameModalProps {
-  playerName: string;
-  showPlayerNameModal: boolean;
-  submitPlayerName: (playerName: string) => void;
-  goBack: () => void;
+enum PlayerNameErrors {
+  NONE,
+  EMPTY,
+  TAKEN,
 }
 
-function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
-  const state = useStoreState();
-  const [isInvalidName, setIsInvalidName] = useState(false);
-  const [typedPlayerName, setTypedPlayerName] = useState(props.playerName);
+function PlayerNameModal(): JSX.Element {
+  const players = useAppSelector(selectPlayers);
+  const playerName = useAppSelector(selectPlayerName);
+  const modalToShow = useAppSelector(selectModalToShow);
+  const isDark = useAppSelector(selectIsDark);
+  const dispatch = useAppDispatch();
+
+  const [isInvalidName, setIsInvalidName] = useState(PlayerNameErrors.NONE);
+  const [typedPlayerName, setTypedPlayerName] = useState(playerName);
 
   function handleClose() {
-    // TODO: Check that the player name hasn't been taken
-    if (!isStringValid(typedPlayerName)) {
-      setIsInvalidName(true);
-    } else {
-      localStorage.setItem(StorageConstants.PLAYER_NAME, typedPlayerName);
-      props.submitPlayerName(typedPlayerName);
+    if (isNameValid(typedPlayerName)) {
+      dispatch(submitPlayerName(typedPlayerName));
     }
   }
 
@@ -36,73 +44,92 @@ function PlayerNameModal(props: PlayerNameModalProps): JSX.Element {
     handleClose();
   }
 
-  function isStringValid(strTocheck: string) {
+  function isNameValid(strTocheck: string) {
+    // Check that the entered name isn't empty
     if (strTocheck === "") {
+      setIsInvalidName(PlayerNameErrors.EMPTY);
       return false;
     }
+
+    // Check that the entered name doesn't exist in the list of players
+    for (const existingPlayerName of Object.keys(players)) {
+      if (
+        playerName !== existingPlayerName &&
+        strTocheck === existingPlayerName
+      ) {
+        setIsInvalidName(PlayerNameErrors.TAKEN);
+        return false;
+      }
+    }
+
     return true;
   }
 
   function setPlayerName(playerName: string) {
-    setIsInvalidName(false);
+    setIsInvalidName(PlayerNameErrors.NONE);
     setTypedPlayerName(playerName);
   }
 
   // Autofocuses the text field
-  function NameInput() {
+  function NameInputForm() {
     const innerRef = useRef<HTMLInputElement>();
     useEffect(() => innerRef.current && innerRef.current.focus());
 
+    let feedback = "";
+    if (isInvalidName === PlayerNameErrors.EMPTY) {
+      feedback = "Please enter a player name.";
+    } else if (isInvalidName === PlayerNameErrors.TAKEN) {
+      feedback =
+        "This player name has already been taken. Please choose a different name.";
+    }
+
     return (
-      <Form.Control
-        ref={innerRef as MutableRefObject<HTMLInputElement | null>}
-        isInvalid={isInvalidName}
-        type="text"
-        placeholder="Enter your name"
-        defaultValue={typedPlayerName}
-        onChange={(e) => setPlayerName(e.target.value)}
-      />
+      <Form.Group>
+        <Form.Control
+          ref={innerRef as MutableRefObject<HTMLInputElement | null>}
+          isInvalid={isInvalidName !== PlayerNameErrors.NONE}
+          type="text"
+          placeholder="Enter your name"
+          defaultValue={typedPlayerName}
+          onChange={(e) => setPlayerName(e.target.value)}
+        />
+        <Form.Control.Feedback type="invalid">{feedback}</Form.Control.Feedback>
+      </Form.Group>
     );
   }
 
   function handleCancel() {
     // Reset typed name in the modal in case it is reopened
-    setTypedPlayerName(props.playerName);
-    // Submit the old name to close the modal
-    props.submitPlayerName(props.playerName);
+    setTypedPlayerName(playerName);
+    dispatch(updateModalToShow({ modal: null }));
   }
 
   return (
-    <Modal show={props.showPlayerNameModal} onHide={() => handleCancel()}>
+    <Modal
+      show={modalToShow === RegularModals.PLAYER_NAME_MODAL}
+      onHide={() => handleCancel()}
+    >
       <Form onSubmit={handleSubmit}>
         <Modal.Header>
           <Modal.Title>Set Your Player Name</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {props.playerName === "" && (
+          {playerName === "" && (
             <p style={{ color: "#212529" }}>
               To invite your friends to play with you, you first need to set a
               player name.
             </p>
           )}
-          <Form.Group>
-            {NameInput()}
-            <Form.Control.Feedback type="invalid">
-              Please enter a player name.
-            </Form.Control.Feedback>
-          </Form.Group>
+          {NameInputForm()}
         </Modal.Body>
         <Modal.Footer>
           <Button
-            variant={appendTheme("secondary", state.appSettings.isDark)}
+            variant={appendTheme("secondary", isDark)}
             onClick={handleCancel}
           >
             Cancel
           </Button>
-          <Button
-            variant={appendTheme("primary", state.appSettings.isDark)}
-            type="submit"
-          >
+          <Button variant={appendTheme("primary", isDark)} type="submit">
             Submit
           </Button>
         </Modal.Footer>

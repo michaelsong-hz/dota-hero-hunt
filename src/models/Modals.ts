@@ -1,6 +1,10 @@
 import { PeerJSErrorTypes } from "./PeerErrors";
 
-export type Modals = PeerJSErrorTypes | OtherErrorTypes;
+export type Modals = RegularModals | PeerJSErrorTypes | OtherErrorTypes;
+
+export enum RegularModals {
+  PLAYER_NAME_MODAL,
+}
 
 export enum OtherErrorTypes {
   GENERIC_ERROR,

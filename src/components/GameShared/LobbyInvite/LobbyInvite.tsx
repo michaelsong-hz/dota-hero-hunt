@@ -1,27 +1,53 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 
-import { OtherErrorTypes } from "models/Modals";
-import { PeerJSErrorTypes } from "models/PeerErrors";
-import { useStoreState } from "reducer/store";
-import { appendTheme } from "utils/utilities";
+import { useAppSelector, useAppDispatch } from "hooks/useStore";
+import {
+  selectIsDark,
+  selectIsInviteLinkCopied,
+  setIsInviteLinkCopied,
+} from "store/application/applicationSlice";
+import {
+  isSinglePlayer,
+  selectHostID,
+  selectIsGeneratingLink,
+} from "store/host/hostSlice";
+import { startHosting, stopHosting } from "store/host/hostThunks";
+import {
+  appendTheme,
+  getClientInviteLink,
+  getHostInviteLink,
+  isClient,
+} from "utils/utilities";
 
-interface LobbyInviteProps {
-  inviteLink: string;
-  isSingleP: boolean;
-  playerName: string;
-  startHosting?: () => void;
-}
+function LobbyInvite(): JSX.Element {
+  const isSingleP = useAppSelector(isSinglePlayer);
+  const hostID = useAppSelector(selectHostID);
+  const isGeneratingLink = useAppSelector(selectIsGeneratingLink);
+  const isInviteLinkCopied = useAppSelector(selectIsInviteLinkCopied);
+  const isDark = useAppSelector(selectIsDark);
 
-function LobbyInvite(props: LobbyInviteProps): JSX.Element {
-  const state = useStoreState();
+  const dispatch = useAppDispatch();
 
-  const [generatingLink, setGeneratingLink] = useState(false);
-  const [showLinkCopied, setShowLinkCopied] = useState(false);
+  function getStopHostingButton() {
+    if (!isSingleP && !isClient())
+      return (
+        <div className="mb-2 ml-2">
+          <Button
+            disabled={isGeneratingLink}
+            variant={appendTheme("danger", isDark)}
+            onClick={() => dispatch(stopHosting())}
+          >
+            Stop Hosting
+          </Button>
+        </div>
+      );
+    return <></>;
+  }
 
   function getHeaderText(): string {
-    if (props.isSingleP) {
-      if (generatingLink) {
+    if (isSingleP) {
+      if (isGeneratingLink) {
         return "Generating Invite Link...";
       } else {
         return "Invite Your Friends!";
@@ -31,81 +57,40 @@ function LobbyInvite(props: LobbyInviteProps): JSX.Element {
   }
 
   function getInviteText(): string {
-    if (props.isSingleP) {
-      return "Click generate to get an invite link";
+    if (isClient()) {
+      return getClientInviteLink();
     }
-    return props.inviteLink;
+    return getHostInviteLink(hostID);
   }
 
   function getButtonText(): string {
-    if (props.isSingleP) {
+    if (isSingleP) {
       return "Generate";
     }
     return "Copy";
   }
 
   function handleGenerateInvite() {
-    if (props.isSingleP) {
-      if (props.startHosting) {
-        // We need a player name before we can start hosting
-        if (props.playerName !== "") {
-          setGeneratingLink(true);
-        }
-        props.startHosting();
-      }
+    if (isSingleP) {
+      dispatch(startHosting());
     } else {
-      navigator.clipboard.writeText(props.inviteLink);
-      setShowLinkCopied(true);
+      if (isClient()) {
+        navigator.clipboard.writeText(getClientInviteLink());
+      } else {
+        navigator.clipboard.writeText(getHostInviteLink(hostID));
+      }
+      dispatch(setIsInviteLinkCopied(true));
     }
   }
 
-  // Writes the invite link to the clipboard once we receive it from the server
-  const prevIsSinglePRef = useRef<boolean>();
-  useEffect(() => {
-    async function writeLinkToClipboard() {
-      try {
-        await navigator.clipboard.writeText(props.inviteLink);
-        setShowLinkCopied(true);
-        setGeneratingLink(false);
-      } catch (err) {
-        /* 😡 SAFARI won't let you copy text to the clipboard if "it's not a
-        user action" and this technically isn't tied to a user action as we have
-        to wait for the invite link to come back from the server before writing
-        it to the clipboard THANKS TIM APPLE 🤡
-        It works if you hit copy after the link is generated because then it's
-        tied to a "user action" */
-        setGeneratingLink(false);
-      }
-    }
-
-    if (prevIsSinglePRef.current === true && props.isSingleP === false) {
-      writeLinkToClipboard();
-    }
-    prevIsSinglePRef.current = props.isSingleP;
-  }, [props.inviteLink, props.isSingleP]);
-
-  // If there was an error with generating an invite link and the user tries
-  // again, reset the generate button to be enabled
-  const prevModalToShowRef = useRef<PeerJSErrorTypes | OtherErrorTypes | null>(
-    null
-  );
-  useEffect(() => {
-    if (prevModalToShowRef !== null && state.modalToShow === null) {
-      setGeneratingLink(false);
-    }
-    prevModalToShowRef.current = state.modalToShow;
-  }, [state.modalToShow]);
-
   return (
-    <div
-      className={`${appendTheme(
-        "content-holder",
-        state.appSettings.isDark
-      )} px-3 py-2`}
-    >
+    <div className={`${appendTheme("content-holder", isDark)} px-3 py-2`}>
       <Row>
-        <Col>
-          <h3>{getHeaderText()}</h3>
+        <Col className="d-flex">
+          <div className="mr-auto">
+            <h3>{getHeaderText()}</h3>
+          </div>
+          {getStopHostingButton()}
         </Col>
       </Row>
       <Row className="no-gutters pb-1">
@@ -114,15 +99,15 @@ function LobbyInvite(props: LobbyInviteProps): JSX.Element {
         </Col>
         <Col xs="auto">
           <Button
-            disabled={generatingLink}
-            variant={appendTheme("secondary", state.appSettings.isDark)}
+            disabled={isGeneratingLink}
+            variant={appendTheme("secondary", isDark)}
             onClick={() => handleGenerateInvite()}
           >
             {getButtonText()}
           </Button>
         </Col>
       </Row>
-      {showLinkCopied === true && (
+      {isInviteLinkCopied === true && (
         <Row className="slide-down-appear">
           <Col>
             <p className="float-right mt-1 mb-0">Link copied to clipboard</p>

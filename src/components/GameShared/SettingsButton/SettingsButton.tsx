@@ -1,23 +1,36 @@
 import React from "react";
 import { Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
-import { useStoreState } from "reducer/store";
-import { appendTheme } from "utils/utilities";
+import { useAppDispatch, useAppSelector } from "hooks/useStore";
+import { selectIsDark } from "store/application/applicationSlice";
+import { clientPeerDisconnect } from "store/client/clientThunks";
+import { appendTheme, isClient } from "utils/utilities";
 
-interface SettingsButtonProps {
-  handleClick: () => void;
-}
+function SettingsButton(): JSX.Element {
+  const isDark = useAppSelector(selectIsDark);
 
-function SettingsButton(props: SettingsButtonProps): JSX.Element {
-  const state = useStoreState();
+  const dispatch = useAppDispatch();
+
+  if (isClient()) {
+    return (
+      <Link to="/">
+        <Button
+          variant={appendTheme("danger", isDark)}
+          onClick={() => dispatch(clientPeerDisconnect())}
+        >
+          Disconnect
+        </Button>
+      </Link>
+    );
+  }
 
   return (
-    <Button
-      variant={appendTheme("primary", state.appSettings.isDark)}
-      onClick={() => props.handleClick()}
-    >
-      Settings / Invite Friends
-    </Button>
+    <Link to="/settings">
+      <Button variant={appendTheme("primary", isDark)}>
+        Settings / Invite Friends
+      </Button>
+    </Link>
   );
 }
 

@@ -6,6 +6,7 @@ import {
   GameSettingErrors,
   GridSizeTypes,
 } from "models/GameSettingsType";
+import { ClientDataConnection } from "models/MessageHostTypes";
 
 export function appendTheme(themeName: string, isDark: boolean): string {
   if (isDark) {
@@ -32,7 +33,7 @@ export function getPeerConfig(): Peer.PeerJSOption {
 }
 
 export function getPlayerNameFromConn(
-  incomingConn: Peer.DataConnection
+  incomingConn: ClientDataConnection
 ): string {
   try {
     return incomingConn.metadata.playerName;
@@ -52,7 +53,7 @@ export function getPlayerNameFromConn(
   }
 }
 
-export function getVersionFromConn(incomingConn: Peer.DataConnection): string {
+export function getVersionFromConn(incomingConn: ClientDataConnection): string {
   try {
     return incomingConn.metadata.version;
   } catch (err) {
@@ -127,4 +128,25 @@ export function checkForSettingsErrors(
   }
 
   return settingsErrors;
+}
+
+export function isClient(): boolean {
+  // Clients always have a pathname: /play/:gameID
+  // Hosts have / or /settings
+  if ((window.location.pathname.match(/\//g) || []).length === 2) {
+    return true;
+  }
+  return false;
+}
+
+export function getHostInviteLink(hostID: string | null): string {
+  if (hostID !== undefined && hostID !== null) {
+    const pathParts = window.location.href.split("/");
+    return `${pathParts[0]}//${pathParts[2]}/play/${hostID}`;
+  }
+  return "Click generate to get an invite link";
+}
+
+export function getClientInviteLink(): string {
+  return window.location.href;
 }

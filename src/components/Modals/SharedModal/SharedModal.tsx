@@ -4,22 +4,30 @@ import { Button } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 
 import ErrorModal from "components/Modals/ErrorModal";
+import { useAppSelector, useAppDispatch } from "hooks/useStore";
 import { OtherErrorTypes } from "models/Modals";
 import { PeerJSErrorTypes } from "models/PeerErrors";
-import { useStoreDispatch, useStoreState } from "reducer/store";
-import { StoreConstants } from "reducer/storeReducer";
+import {
+  selectIsDark,
+  selectModalToShow,
+  updateModalToShow,
+} from "store/application/applicationSlice";
 import { appendTheme } from "utils/utilities";
 
 function SharedModal(): JSX.Element {
   const history = useHistory();
-  const state = useStoreState();
-  const dispatch = useStoreDispatch();
+
+  const modalToShow = useAppSelector(selectModalToShow);
+  const isDark = useAppSelector(selectIsDark);
+
+  const dispatch = useAppDispatch();
 
   function handleHide() {
-    dispatch({
-      type: StoreConstants.SET_MODAL,
-      modal: null,
-    });
+    dispatch(
+      updateModalToShow({
+        modal: null,
+      })
+    );
   }
 
   function handleReturnHome() {
@@ -32,11 +40,11 @@ function SharedModal(): JSX.Element {
   }
 
   function getModal(): JSX.Element {
-    if (state.modalToShow === null) {
+    if (modalToShow === null) {
       return <></>;
     }
 
-    switch (state.modalToShow) {
+    switch (modalToShow) {
       case PeerJSErrorTypes.BROWSER_INCOMPATIBLE:
         return (
           <ErrorModal
@@ -106,19 +114,19 @@ function SharedModal(): JSX.Element {
         const customFooter = (
           <>
             <Button
-              variant={appendTheme("secondary", state.appSettings.isDark)}
+              variant={appendTheme("secondary", isDark)}
               onClick={() => handleReturnHome()}
             >
               Return to Home Page
             </Button>
             <Button
-              variant={appendTheme("secondary", state.appSettings.isDark)}
+              variant={appendTheme("secondary", isDark)}
               onClick={() => handleRefresh()}
             >
               Refresh Page
             </Button>
             <Button
-              variant={appendTheme("primary", state.appSettings.isDark)}
+              variant={appendTheme("primary", isDark)}
               onClick={() => handleHide()}
             >
               Try Again
@@ -137,7 +145,7 @@ function SharedModal(): JSX.Element {
     }
 
     try {
-      const unknownModal = state.modalToShow as unknown as string;
+      const unknownModal = modalToShow as unknown as string;
       setContext("Unknown Modal", {
         modal: unknownModal,
       });
@@ -149,7 +157,7 @@ function SharedModal(): JSX.Element {
     const customFooter = (
       <>
         <Button
-          variant={appendTheme("primary", state.appSettings.isDark)}
+          variant={appendTheme("primary", isDark)}
           onClick={() => window.location.reload()}
         >
           Reload Application

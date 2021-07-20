@@ -1,7 +1,7 @@
 import { faSun, faMoon } from "@fortawesome/free-regular-svg-icons";
 import { faVolumeUp, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Howler } from "howler";
+import localForage from "localforage";
 import React, { useState } from "react";
 import {
   Navbar,
@@ -15,40 +15,45 @@ import RangeSlider from "react-bootstrap-range-slider";
 import { Link } from "react-router-dom";
 import Switch from "react-switch";
 
+import { useAppSelector, useAppDispatch } from "hooks/useStore";
 import HeroHuntIcon from "images/HeroHuntIcon.svg";
-import { useStoreState, useStoreDispatch } from "reducer/store";
-import { StoreConstants } from "reducer/storeReducer";
+import { selectIsDark, selectVolume } from "store/application/applicationSlice";
+import { setVolume, setIsDark } from "store/application/applicationThunks";
+import { selectRemoteHostID } from "store/client/clientSlice";
 import { GlobalConstants, StorageConstants } from "utils/constants";
 import { appendTheme } from "utils/utilities";
 
 function Header(): JSX.Element {
-  const state = useStoreState();
-  const dispatch = useStoreDispatch();
+  const isDark = useAppSelector(selectIsDark);
+  const volume = useAppSelector(selectVolume);
+  const remoteHostID = useAppSelector(selectRemoteHostID);
+
+  const dispatch = useAppDispatch();
+
   const [showVolume, setShowVolume] = useState(false);
+
+  function getHeaderToRoot() {
+    if (remoteHostID !== null) {
+      return `/play/${remoteHostID}`;
+    }
+    return "/";
+  }
 
   function toggleTooltip(show: boolean) {
     if (show === false) {
-      localStorage.setItem(
-        StorageConstants.VOLUME,
-        state.appSettings.volume.toString()
-      );
+      localForage.setItem(StorageConstants.VOLUME, volume);
     }
     setShowVolume(show);
   }
 
-  const renderTooltip = (props: unknown) => (
+  const renderVolumeTooltip = (props: unknown) => (
     <Tooltip id="button-tooltip" className="tooltip" {...props}>
       <RangeSlider
         tooltipLabel={(currentValue) => `${currentValue}%`}
         tooltipPlacement="top"
-        value={state.appSettings.volume}
+        value={volume}
         onChange={(changeEvent) => {
-          const volume = parseInt(changeEvent.target.value);
-          dispatch({
-            type: StoreConstants.SET_VOLUME,
-            volume: volume,
-          });
-          Howler.volume(volume / 100);
+          dispatch(setVolume(changeEvent.target.value));
         }}
         step={GlobalConstants.VOLUME_STEP}
       />
@@ -56,27 +61,24 @@ function Header(): JSX.Element {
   );
 
   function toggleTheme(isDark: boolean) {
-    dispatch({
-      type: StoreConstants.SET_THEME,
-      isDark,
-    });
-    localStorage.setItem(StorageConstants.THEME_IS_DARK, isDark.toString());
+    dispatch(setIsDark(isDark));
+    localForage.setItem(StorageConstants.THEME_IS_DARK, isDark);
   }
 
   function getHeaderSecondaryClass(): string {
-    if (state.appSettings.isDark) {
+    if (isDark) {
       return "header-secondary";
     }
     return "text-muted";
   }
 
   return (
-    <Navbar bg={appendTheme("header", state.appSettings.isDark)} expand="sm">
-      <Link to="/">
+    <Navbar bg={appendTheme("header", isDark)} expand="sm">
+      <Link to={getHeaderToRoot()}>
         <Navbar.Brand
           className={`align-middle font-weight-bold ${appendTheme(
             "text",
-            !state.appSettings.isDark
+            !isDark
           )}`}
         >
           <img
@@ -93,9 +95,7 @@ function Header(): JSX.Element {
       <Navbar.Toggle
         label="Toggle navigation"
         className={
-          state.appSettings.isDark
-            ? "navbar-toggle navbar-toggle-dark"
-            : "navbar-toggle"
+          isDark ? "navbar-toggle navbar-toggle-dark" : "navbar-toggle"
         }
       />
       <Navbar.Collapse id="basic-navbar-nav">
@@ -108,16 +108,16 @@ function Header(): JSX.Element {
           rootClose
           placement="bottom"
           trigger="click"
-          overlay={renderTooltip}
+          overlay={renderVolumeTooltip}
           show={showVolume}
           onToggle={(show: boolean) => toggleTooltip(show)}
         >
           <Button
             className="mr-1 header-btn"
-            variant={appendTheme("navbar-brand", state.appSettings.isDark)}
+            variant={appendTheme("navbar-brand", isDark)}
           >
             <div className={getHeaderSecondaryClass()}>
-              {state.appSettings.volume > 0 ? (
+              {volume > 0 ? (
                 <FontAwesomeIcon icon={faVolumeUp} />
               ) : (
                 <FontAwesomeIcon icon={faVolumeMute} />
@@ -128,16 +128,12 @@ function Header(): JSX.Element {
         <Form inline className="header-switch-wrapper">
           <label>
             <Switch
-              className={
-                state.appSettings.isDark
-                  ? "header-switch-on"
-                  : "header-switch-off"
-              }
+              className={isDark ? "header-switch-on" : "header-switch-off"}
               height={24}
               width={50}
               handleDiameter={22}
               onChange={(checked: boolean) => toggleTheme(checked)}
-              checked={state.appSettings.isDark}
+              checked={isDark}
               checkedIcon={
                 <div
                   style={{

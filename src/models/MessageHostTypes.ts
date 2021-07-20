@@ -11,19 +11,12 @@ export enum HostTypeConstants {
   UPDATE_PLAYERS_LIST,
   PLAYER_NAME_TAKEN,
   APP_VERSION_MISMATCH,
-  UPDATE_FROM_CLICK,
+  SELECT_ICON,
   UPDATE_SETTINGS,
 }
 
 export type HostTypes =
-  | {
-      type: HostTypeConstants.UPDATE_ROUND;
-      round: number;
-      targetHeroes: number[];
-      currentHeroes: number[][];
-      statusText: string;
-      gameStatus: GameStatus;
-    }
+  // Connection negotiation messages
   | {
       type: HostTypeConstants.CONNECTION_ACCEPTED;
       settings: GameSettings;
@@ -35,10 +28,7 @@ export type HostTypes =
       invalidIcons: number[];
       statusText: string;
       gameStatus: GameStatus;
-    }
-  | {
-      type: HostTypeConstants.UPDATE_PLAYERS_LIST;
-      players: Record<string, PlayerState>;
+      hostID: string;
     }
   | {
       type: HostTypeConstants.PLAYER_NAME_TAKEN;
@@ -49,14 +39,22 @@ export type HostTypes =
       hostVersion: string;
       clientVersion: string;
     }
+
+  // Gameplay messages
   | {
-      type: HostTypeConstants.UPDATE_FROM_CLICK;
+      type: HostTypeConstants.UPDATE_ROUND;
+      round: number;
+      targetHeroes: number[];
+      currentHeroes: number[][];
+      statusText: string;
+      gameStatus: GameStatus;
+      players: Record<string, PlayerState>;
+    }
+  | {
+      type: HostTypeConstants.SELECT_ICON;
       isCorrectHero: boolean;
       lastClickedPlayerName: string;
       players: Record<string, PlayerState>;
-      // Will prefer to send sets as those are our native data structure,
-      // but Peer JS does not seem to like sets.
-      // Maybe revisit in the future to see if they make an update to support sets.
       selected: number[];
       invalidIcons: number[];
       statusText: string;
@@ -65,6 +63,10 @@ export type HostTypes =
   | {
       type: HostTypeConstants.UPDATE_SETTINGS;
       settings: GameSettings;
+    }
+  | {
+      type: HostTypeConstants.UPDATE_PLAYERS_LIST;
+      players: Record<string, PlayerState>;
     };
 
 export interface ClientDataConnection extends Peer.DataConnection {
