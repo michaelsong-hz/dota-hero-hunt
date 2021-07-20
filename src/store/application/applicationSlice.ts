@@ -3,6 +3,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ApplicationSettings } from "models/ApplicationSettings";
 import { InstallStatus } from "models/InstallStatus";
 import { Modals, RegularModals } from "models/Modals";
+import { clientNameChangeAction } from "store/client/clientActions";
+import { CLIENT_NAME_CHANGE } from "store/client/clientConstants";
 import { initializeSettingsAsync } from "store/game/gameThunks";
 import {
   hostForcefulDisconnectAction,
@@ -95,9 +97,13 @@ export const applicationSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(initializeSettingsAsync.pending, (state) => {
+        state.settingsLoaded = false;
+      })
       .addCase(initializeSettingsAsync.fulfilled, (state) => {
         state.settingsLoaded = true;
       })
+
       .addCase(HOST_PEER_FORCED_DC, (state, action) => {
         if (hostForcefulDisconnectAction.match(action)) {
           state.modalToShow = action.payload.modal;
@@ -113,6 +119,12 @@ export const applicationSlice = createSlice({
       .addCase(HOST_PEER_STOP, (state) => {
         state.isInviteLinkCopied = false;
       })
+
+      .addCase(CLIENT_NAME_CHANGE, (state, action) => {
+        if (clientNameChangeAction.match(action))
+          state.playerName = action.payload;
+      })
+
       .addCase(APPLICATION_SET_PLAYER_NAME, (state, action) => {
         if (setPlayerNameAction.match(action))
           state.playerName = action.payload;

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "hooks/useStore";
 import { selectIsDark } from "store/application/applicationSlice";
-import { clientDisconnect } from "store/client/clientSlice";
+import { clientPeerDisconnect } from "store/client/clientThunks";
 import { appendTheme, isClient } from "utils/utilities";
 
 function SettingsButton(): JSX.Element {
@@ -17,7 +17,7 @@ function SettingsButton(): JSX.Element {
       <Link to="/">
         <Button
           variant={appendTheme("danger", isDark)}
-          onClick={() => dispatch(clientDisconnect())}
+          onClick={() => dispatch(clientPeerDisconnect())}
         >
           Disconnect
         </Button>

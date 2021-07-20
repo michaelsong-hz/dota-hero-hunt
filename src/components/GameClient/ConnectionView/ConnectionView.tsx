@@ -10,11 +10,10 @@ import {
   selectPlayerName,
 } from "store/application/applicationSlice";
 import {
-  clientNameChange,
-  connectToHost,
   selectIsJoiningGame,
   selectIsNameTaken,
 } from "store/client/clientSlice";
+import { clientNameChange, clientPeerStart } from "store/client/clientThunks";
 import { appendTheme } from "utils/utilities";
 
 function ConnectionView(): JSX.Element {
@@ -27,7 +26,7 @@ function ConnectionView(): JSX.Element {
   function joinGame(e: React.FormEvent) {
     // Prevent form post
     e.preventDefault();
-    dispatch(connectToHost());
+    dispatch(clientPeerStart());
   }
 
   function renderJoinGameStatus(): JSX.Element {
@@ -52,20 +51,6 @@ function ConnectionView(): JSX.Element {
   function handleNameChange(newPlayerName: string) {
     dispatch(clientNameChange(newPlayerName));
   }
-
-  // Re-enable button after name conflict error
-  // useEffect(() => {
-  //   if (props.isNameTaken) {
-  //     setIsJoiningGame(false);
-  //   }
-  // }, [props.isNameTaken]);
-
-  // Re-enable button after connection error
-  // useEffect(() => {
-  //   if (state.modalToShow !== null) {
-  //     setIsJoiningGame(false);
-  //   }
-  // }, [state.modalToShow]);
 
   return (
     <>

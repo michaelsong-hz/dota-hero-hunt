@@ -7,9 +7,14 @@ import {
 } from "models/GameSettingsType";
 import { GameStatus } from "models/GameStatus";
 import { PlayerState } from "models/PlayerState";
-import { selectPlayerName } from "store/application/applicationSlice";
-import { clientPeerConnectedAction } from "store/client/clientActions";
-import { CLIENT_PEER_CONNECTED } from "store/client/clientConstants";
+import {
+  clientPeerConnectedAction,
+  clientPeerStopAction,
+} from "store/client/clientActions";
+import {
+  CLIENT_PEER_CONNECTED,
+  CLIENT_PEER_STOP,
+} from "store/client/clientConstants";
 import {
   addSelectedIconAction,
   hostPeerStartAction,
@@ -24,7 +29,7 @@ import {
   HOST_SUBMIT_PLAYER_NAME,
   HOST_VISIT_SETTINGS,
 } from "store/host/hostConstants";
-import { AppThunk, RootState } from "store/rootStore";
+import { RootState } from "store/rootStore";
 
 import { setSettingsAction } from "./gameActions";
 import { GAME_INIT_SETTINGS, GAME_SET_SETTINGS } from "./gameConstants";
@@ -139,13 +144,6 @@ export const gameSlice = createSlice({
     setGameStatus: (state, action: PayloadAction<GameStatus>) => {
       state.gameStatus = action.payload;
     },
-    resetPlayersToName: (state, action: PayloadAction<string>) => {
-      state.players = {};
-      state.players[action.payload] = {
-        score: 0,
-        isDisabled: false,
-      };
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -153,9 +151,10 @@ export const gameSlice = createSlice({
         if (setSettingsAction.match(action))
           state.gameSettings = action.payload;
       })
-      .addCase(GAME_INIT_SETTINGS, (state, action) => {
-        if (initializeSettingsAsync.fulfilled.match(action))
+      .addCase(`${GAME_INIT_SETTINGS}/fulfilled`, (state, action) => {
+        if (initializeSettingsAsync.fulfilled.match(action)) {
           state.gameSettings = action.payload;
+        }
       })
 
       .addCase(HOST_INCREMENT_ROUND, (state, action) => {
@@ -216,6 +215,15 @@ export const gameSlice = createSlice({
           state.statusText = action.payload.statusText;
           state.gameStatus = action.payload.gameStatus;
         }
+      })
+      .addCase(CLIENT_PEER_STOP, (state, action) => {
+        if (clientPeerStopAction.match(action)) {
+          state.players = {};
+          state.players[action.payload.playerName] = {
+            score: 0,
+            isDisabled: false,
+          };
+        }
       });
   },
 });
@@ -228,7 +236,6 @@ export const {
   setCurrentHeroes,
   _setSettings,
   setGameStatus,
-  resetPlayersToName,
 } = gameSlice.actions;
 
 export const selectRound = (state: RootState): number => state.game.round;
@@ -250,9 +257,5 @@ export const selectStatusText = (state: RootState): string =>
   state.game.statusText;
 export const selectGameStatus = (state: RootState): GameStatus =>
   state.game.gameStatus;
-
-export const resetPlayers = (): AppThunk => (dispatch, getState) => {
-  dispatch(resetPlayersToName(selectPlayerName(getState())));
-};
 
 export default gameSlice.reducer;

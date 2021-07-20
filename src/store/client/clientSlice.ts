@@ -1,24 +1,18 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import localForage from "localforage";
 
-import { Modals } from "models/Modals";
-import {
-  selectPlayerName,
-  setSettingsLoaded,
-  updateModalToShow,
-} from "store/application/applicationSlice";
-import { setPlayerName } from "store/application/applicationThunks";
-import { resetPlayers } from "store/game/gameSlice";
-import { initializeSettingsAsync } from "store/game/gameThunks";
-import { AppDispatch, AppThunk, RootState } from "store/rootStore";
-import { StorageConstants } from "utils/constants";
+import { RootState } from "store/rootStore";
 
 import {
+  clientNameChangeAction,
   clientPeerConnectedAction,
-  clientPeerStartAction,
   clientPeerStopAction,
 } from "./clientActions";
-import { CLIENT_PEER_CONNECTED } from "./clientConstants";
+import {
+  CLIENT_NAME_CHANGE,
+  CLIENT_PEER_CONNECTED,
+  CLIENT_PEER_START,
+  CLIENT_PEER_STOP,
+} from "./clientConstants";
 
 export interface ClientState {
   remoteHostID: string | null;
@@ -56,10 +50,27 @@ export const clientSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(CLIENT_PEER_CONNECTED, (state, action) => {
-      if (clientPeerConnectedAction.match(action))
-        state.remoteHostID = action.payload.hostID;
-    });
+    builder
+      .addCase(CLIENT_PEER_START, (state) => {
+        state.isJoiningGame = true;
+        state.isNameTaken = false;
+      })
+      .addCase(CLIENT_PEER_STOP, (state, action) => {
+        if (clientPeerStopAction.match(action)) {
+          state.remoteHostID = null;
+          state.isJoiningGame = false;
+          action.payload.nameTaken === true
+            ? (state.isNameTaken = true)
+            : (state.isNameTaken = false);
+        }
+      })
+      .addCase(CLIENT_PEER_CONNECTED, (state, action) => {
+        if (clientPeerConnectedAction.match(action))
+          state.remoteHostID = action.payload.hostID;
+      })
+      .addCase(CLIENT_NAME_CHANGE, (state, action) => {
+        if (clientNameChangeAction.match(action)) state.isNameTaken = false;
+      });
   },
 });
 
@@ -76,46 +87,5 @@ export const selectIsJoiningGame = (state: RootState): boolean =>
   state.client.isJoiningGame;
 export const selectIsNameTaken = (state: RootState): boolean =>
   state.client.isNameTaken;
-
-export const connectToHost = (): AppThunk => (dispatch, getState) => {
-  if (selectIsJoiningGame(getState()) === false) {
-    dispatch(clientPeerStartAction());
-    dispatch(setIsJoiningGame(true));
-    dispatch(setIsNameTaken(false));
-
-    localForage.setItem(
-      StorageConstants.PLAYER_NAME,
-      selectPlayerName(getState())
-    );
-  }
-};
-
-export const clientNameChange =
-  (newPlayerName: string): AppThunk =>
-  (dispatch) => {
-    dispatch(setPlayerName(newPlayerName));
-    dispatch(setIsNameTaken(false));
-  };
-
-function clientReset(dispatch: AppDispatch) {
-  dispatch(setSettingsLoaded(false));
-  dispatch(initializeSettingsAsync());
-  dispatch(resetClientState());
-  dispatch(resetPlayers());
-}
-
-// Called when the client is forcefully disconnected
-// Clean up state and display error modal
-export const clientForcefulDisconnect =
-  (modal: Modals, message?: string[]): AppThunk =>
-  (dispatch) => {
-    dispatch(updateModalToShow({ modal, message }));
-    clientReset(dispatch);
-  };
-
-export const clientDisconnect = (): AppThunk => (dispatch) => {
-  dispatch(clientPeerStopAction());
-  clientReset(dispatch);
-};
 
 export default clientSlice.reducer;

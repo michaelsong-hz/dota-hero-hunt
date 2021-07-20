@@ -1,27 +1,86 @@
 import { setContext, captureException } from "@sentry/react";
+import localForage from "localforage";
 
 import { GameStatus } from "models/GameStatus";
 import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
-import { OtherErrorTypes } from "models/Modals";
+import { Modals, OtherErrorTypes } from "models/Modals";
 import { playAudio } from "store/application/applicationActions";
 import {
   selectPlayerName,
   setIsInviteLinkCopied,
+  updateModalToShow,
 } from "store/application/applicationSlice";
 import {
   setRound,
   updateSelectedIcons,
   updatePlayersList,
 } from "store/game/gameSlice";
-import { setSettings } from "store/game/gameThunks";
+import { initializeSettingsAsync, setSettings } from "store/game/gameThunks";
 import { AppThunk } from "store/rootStore";
 import { SoundEffects } from "utils/SoundEffectList";
+import { StorageConstants } from "utils/constants";
 
 import {
+  clientNameChangeAction,
   clientPeerConnectedAction,
+  clientPeerStartAction,
   clientPeerStopAction,
 } from "./clientActions";
-import { setIsNameTaken, clientForcefulDisconnect } from "./clientSlice";
+import { selectIsJoiningGame } from "./clientSlice";
+
+export const clientPeerStart = (): AppThunk => (dispatch, getState) => {
+  // Proceed if not currently joining a game
+  if (selectIsJoiningGame(getState()) === false) {
+    dispatch(clientPeerStartAction());
+    localForage.setItem(
+      StorageConstants.PLAYER_NAME,
+      selectPlayerName(getState())
+    );
+  }
+};
+
+/**
+ * Called when the client manually disconnects from the game
+ */
+export const clientPeerDisconnect = (): AppThunk => (dispatch) => {
+  dispatch(clientPeerStop());
+  dispatch(initializeSettingsAsync());
+};
+
+/**
+ * Called when the client failed to negotiate a proper connection with the host
+ * and needs to disconnect
+ * @param nameTaken Boolean set to true if the reason for disconnecting was
+ * because the player name was taken
+ */
+export const clientPeerStop =
+  (nameTaken?: boolean): AppThunk =>
+  (dispatch, getState) => {
+    dispatch(
+      clientPeerStopAction({
+        playerName: selectPlayerName(getState()),
+        nameTaken,
+      })
+    );
+  };
+
+/**
+ * Called when the client is forcefully disconnected (by network errors)
+ * @param modal Type of modal to display
+ * @param message Custom message in the modal, if any
+ */
+export const clientForcefulDisconnect =
+  (modal: Modals, message?: string[]): AppThunk =>
+  (dispatch) => {
+    dispatch(clientPeerStop());
+    dispatch(updateModalToShow({ modal, message }));
+  };
+
+export const clientNameChange =
+  (newPlayerName: string): AppThunk =>
+  (dispatch) => {
+    dispatch(clientNameChangeAction(newPlayerName));
+  };
 
 export const handleHostMessage =
   (data: HostTypes): AppThunk =>
@@ -33,8 +92,7 @@ export const handleHostMessage =
       }
 
       case HostTypeConstants.PLAYER_NAME_TAKEN: {
-        dispatch(setIsNameTaken(true));
-        dispatch(clientPeerStopAction());
+        dispatch(clientPeerStop(true));
         break;
       }
 
@@ -49,7 +107,6 @@ export const handleHostMessage =
              you to reload their game in order to get the latest update.`,
           ])
         );
-        dispatch(clientPeerStopAction());
         break;
       }
 

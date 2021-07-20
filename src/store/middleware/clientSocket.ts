@@ -13,8 +13,10 @@ import {
   CLIENT_PEER_START,
   CLIENT_PEER_STOP,
 } from "store/client/clientConstants";
-import { clientForcefulDisconnect } from "store/client/clientSlice";
-import { handleHostMessage } from "store/client/clientThunks";
+import {
+  clientForcefulDisconnect,
+  handleHostMessage,
+} from "store/client/clientThunks";
 import { AppDispatch, RootState } from "store/rootStore";
 import { getPeerConfig, getAppVersion } from "utils/utilities";
 
@@ -26,12 +28,16 @@ function cleanUp() {
   if (peer) {
     if (!peer.disconnected) {
       peer.disconnect();
+      peer.destroy();
+      peer = null;
     } else if (!peer.destroyed) {
       peer.destroy();
+      peer = null;
     } else {
       peer = null;
     }
   }
+  isCleaningUp = false;
 }
 
 function getRemoteHostID() {
@@ -101,7 +107,6 @@ function createClientMiddleware(): Middleware {
                   }
 
                   dispatch(clientForcefulDisconnect(error.type));
-                  cleanUp();
                 });
               }
             });
@@ -114,7 +119,6 @@ function createClientMiddleware(): Middleware {
                   )
                 );
               }
-              cleanUp();
             });
 
             peer.on("close", () => {
@@ -125,12 +129,10 @@ function createClientMiddleware(): Middleware {
                   )
                 );
               }
-              cleanUp();
             });
 
             peer.on("error", (error: PeerError) => {
               dispatch(clientForcefulDisconnect(error.type));
-              cleanUp();
             });
             break;
 
