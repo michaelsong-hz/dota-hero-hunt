@@ -50,6 +50,7 @@ function LobbyView(): JSX.Element {
           <Link to="/" className="lobby-view-disconnect">
             <Button
               variant={appendTheme("danger", isDark)}
+              className="mb-1"
               onClick={() => dispatch(clientPeerDisconnect())}
             >
               Disconnect
