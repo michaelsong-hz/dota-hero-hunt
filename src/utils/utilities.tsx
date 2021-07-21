@@ -150,3 +150,7 @@ export function getHostInviteLink(hostID: string | null): string {
 export function getClientInviteLink(): string {
   return window.location.href;
 }
+
+export function convertRemToPixels(rem: number): number {
+  return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+}

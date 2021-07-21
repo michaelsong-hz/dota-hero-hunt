@@ -13,22 +13,9 @@
   flex: auto;
 }
 
-.lobby-view-player-in {
-  -webkit-animation: cardFadeDown 1s ease-out;
-  -moz-animation: cardFadeDown 1s ease-out;
-  animation: cardFadeDown 1s ease-out;
-  max-height: initial;
-}
-
 @media (min-width: 768px) {
   .lobby-view-panels {
     flex-direction: row;
-  }
-
-  .lobby-view-player-in {
-    -webkit-animation: cardFadeRight 0.3s ease-out;
-    -moz-animation: cardFadeRight 0.3s ease-out;
-    animation: cardFadeRight 0.3s ease-out;
   }
 }
 

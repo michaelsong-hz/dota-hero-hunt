@@ -18,3 +18,10 @@ export enum GlobalConstants {
 export const Constants = {
   GAME_STATUS_DEFAULT: "Find the following heroes:",
 };
+
+export enum MediaQueries {
+  SM = "(min-width: 576px)",
+  MD = "(min-width: 768px)",
+  LG = "(min-width: 992px)",
+  XL = "(min-width: 1200px)",
+}
