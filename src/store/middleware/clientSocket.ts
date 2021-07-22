@@ -144,13 +144,13 @@ function createClientMiddleware(): Middleware {
 
           case CLIENT_PEER_SEND:
             if (peer && clientPeerSendAction.match(action)) {
-              for (const key in peer.connections) {
-                peer.connections[key].forEach(
-                  (hostConnection: HostDataConnection) => {
-                    hostConnection.send(action.payload);
-                  }
-                );
-              }
+              Object.keys(peer.connections).map((key: string) => {
+                if (peer)
+                  peer.connections[key].map(
+                    (hostConnection: HostDataConnection) =>
+                      hostConnection.send(action.payload)
+                  );
+              });
             }
             break;
         }

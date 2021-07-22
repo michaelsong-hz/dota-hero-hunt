@@ -97,13 +97,12 @@ function onMessage(
 
 function broadcastMessage(data: HostTypes) {
   if (peer) {
-    for (const key in peer.connections) {
-      peer.connections[key].forEach(
-        (clientConnection: ClientDataConnection) => {
-          clientConnection.send(data);
-        }
-      );
-    }
+    Object.keys(peer.connections).map((key: string) => {
+      if (peer)
+        peer.connections[key].map((clientConnection: ClientDataConnection) =>
+          clientConnection.send(data)
+        );
+    });
   }
 }
 
