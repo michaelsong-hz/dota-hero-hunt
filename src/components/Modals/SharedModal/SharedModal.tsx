@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 
 import ErrorModal from "components/Modals/ErrorModal";
 import { useAppSelector, useAppDispatch } from "hooks/useStore";
-import { OtherErrorTypes } from "models/Modals";
+import { OtherErrorTypes, RegularModals } from "models/Modals";
 import { PeerJSErrorTypes } from "models/PeerErrors";
 import {
   selectIsDark,
@@ -40,7 +40,10 @@ function SharedModal(): JSX.Element {
   }
 
   function getModal(): JSX.Element {
-    if (modalToShow === null) {
+    if (
+      modalToShow === null ||
+      modalToShow === RegularModals.PLAYER_NAME_MODAL
+    ) {
       return <></>;
     }
 

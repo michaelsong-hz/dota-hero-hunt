@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "hooks/useStore";
 import { RegularModals } from "models/Modals";
 import {
   selectIsDark,
+  selectIsPlayerNameSet,
   selectModalToShow,
   selectPlayerName,
   updateModalToShow,
@@ -25,6 +26,7 @@ function PlayerNameModal(): JSX.Element {
   const players = useAppSelector(selectPlayers);
   const playerName = useAppSelector(selectPlayerName);
   const modalToShow = useAppSelector(selectModalToShow);
+  const isPlayerNameSet = useAppSelector(selectIsPlayerNameSet);
   const isDark = useAppSelector(selectIsDark);
   const dispatch = useAppDispatch();
 
@@ -108,14 +110,15 @@ function PlayerNameModal(): JSX.Element {
     <Modal
       show={modalToShow === RegularModals.PLAYER_NAME_MODAL}
       onHide={() => handleCancel()}
+      contentClassName={appendTheme("modal-content", isDark)}
     >
       <Form onSubmit={handleSubmit}>
         <Modal.Header>
           <Modal.Title>Set Your Player Name</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {playerName === "" && (
-            <p style={{ color: "#212529" }}>
+          {!isPlayerNameSet && (
+            <p>
               To invite your friends to play with you, you first need to set a
               player name.
             </p>
@@ -130,7 +133,7 @@ function PlayerNameModal(): JSX.Element {
             Cancel
           </Button>
           <Button variant={appendTheme("primary", isDark)} type="submit">
-            Submit
+            {!isPlayerNameSet ? "Continue" : "Submit"}
           </Button>
         </Modal.Footer>
       </Form>

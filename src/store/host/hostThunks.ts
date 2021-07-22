@@ -6,6 +6,7 @@ import { GameStatus } from "models/GameStatus";
 import { Modals, OtherErrorTypes, RegularModals } from "models/Modals";
 import { PlayerState } from "models/PlayerState";
 import {
+  selectIsPlayerNameSet,
   selectPlayerName,
   setIsInviteLinkCopied,
   updateModalToShow,
@@ -42,8 +43,8 @@ function reportTargetRoundScoreNotSet(dispatch: AppDispatch) {
 }
 
 export const startHosting = (): AppThunk => (dispatch, getState) => {
-  const playerName = selectPlayerName(getState());
-  if (playerName === "") {
+  const isPlayerNameSet = selectIsPlayerNameSet(getState());
+  if (!isPlayerNameSet) {
     dispatch(updateModalToShow({ modal: RegularModals.PLAYER_NAME_MODAL }));
   } else {
     dispatch(hostPeerStart());
@@ -264,6 +265,7 @@ export const submitPlayerName =
     dispatch(updateModalToShow({ modal: null }));
 
     const playerName = selectPlayerName(getState());
+    const isPlayerNameSet = selectIsPlayerNameSet(getState());
     const players = { ...getState().game.players };
 
     const currentPlayers: Record<string, PlayerState> = {};
@@ -283,6 +285,12 @@ export const submitPlayerName =
         players: currentPlayers,
       })
     );
+
+    // Start hosting if the flow was triggered by prompting for a name
+    // (the user originally wanted to start hosting)
+    if (!isPlayerNameSet) {
+      dispatch(startHosting());
+    }
   };
 
 export const visitAboutPage = (): AppThunk => (dispatch) => {

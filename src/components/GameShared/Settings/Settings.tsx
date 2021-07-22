@@ -20,14 +20,14 @@ import {
   gridSizes,
   GridSizeTypes,
 } from "models/GameSettingsType";
-import {
-  selectIsDark,
-  selectPlayerName,
-} from "store/application/applicationSlice";
+import { selectIsDark } from "store/application/applicationSlice";
 import { changeName } from "store/application/applicationThunks";
 import { selectGameSettings } from "store/game/gameSlice";
 import { setSettings } from "store/game/gameThunks";
-import { selectHostModifiedGameSettings } from "store/host/hostSlice";
+import {
+  isSinglePlayer,
+  selectHostModifiedGameSettings,
+} from "store/host/hostSlice";
 import { modifyGameSettings } from "store/host/hostThunks";
 import { StorageConstants } from "utils/constants";
 import { appendTheme, checkForSettingsErrors, isClient } from "utils/utilities";
@@ -35,9 +35,9 @@ import { appendTheme, checkForSettingsErrors, isClient } from "utils/utilities";
 function GameSettings(): JSX.Element {
   const history = useHistory();
 
-  const playerNameHost = useAppSelector(selectPlayerName);
   const storeGameSettings = useAppSelector(selectGameSettings);
   const modifiedGameSettings = useAppSelector(selectHostModifiedGameSettings);
+  const isSingleP = useAppSelector(isSinglePlayer);
   const isDark = useAppSelector(selectIsDark);
 
   const dispatch = useAppDispatch();
@@ -275,13 +275,13 @@ function GameSettings(): JSX.Element {
             <h3>Game Settings{disabled === true && ` (Read Only)`}</h3>
           </div>
           <div className="d-flex settings-actions">
-            {disabled === false && (
+            {isSingleP === false && (
               <div>
                 <Button
                   variant={appendTheme("secondary", isDark)}
                   onClick={() => dispatch(changeName())}
                 >
-                  {playerNameHost === "" ? "Set Name" : "Change Name"}
+                  Change Name
                 </Button>
               </div>
             )}

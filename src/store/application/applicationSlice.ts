@@ -148,4 +148,7 @@ export const selectInstallStatus = (state: RootState): InstallStatus =>
 export const selectIsInviteLinkCopied = (state: RootState): boolean =>
   state.application.isInviteLinkCopied;
 
+export const selectIsPlayerNameSet = (state: RootState): boolean =>
+  state.application.playerName !== "";
+
 export default applicationSlice.reducer;
