@@ -301,7 +301,7 @@ function GameSettings(): JSX.Element {
           <Col xs="12" sm="6">
             <label>
               <span>
-                <p className="mb-1">Show Icon to Search For</p>
+                <p className="mb-1">Show icon to search for</p>
               </span>
               <Switch
                 disabled={disabled}
@@ -314,7 +314,7 @@ function GameSettings(): JSX.Element {
           </Col>
 
           <Col xs="12" sm="6" className="mb-3">
-            <p className="mb-1">Grid Size</p>
+            <p className="mb-1">Grid size</p>
             <DropdownButton
               id="grid-dropdown-button"
               disabled={disabled}
@@ -349,7 +349,7 @@ function GameSettings(): JSX.Element {
           </Col>
 
           <Col xs="12" sm="6" className="mb-3">
-            <p className="mb-1">Points to Win</p>
+            <p className="mb-1">Points to win</p>
             <Row className="no-gutters">
               <Col xs="auto" className="mr-2">
                 <Form.Control
@@ -378,7 +378,7 @@ function GameSettings(): JSX.Element {
           </Col>
 
           <Col xs="12" sm="6" className="pb-3">
-            <p className="mb-1">Points to Advance Round</p>
+            <p className="mb-1">Heroes per round</p>
             <Form.Control
               type="number"
               className="settings-num-input"
