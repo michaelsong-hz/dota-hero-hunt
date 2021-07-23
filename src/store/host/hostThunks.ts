@@ -29,7 +29,7 @@ import {
   hostPeerStopAction,
   visitAboutPageAction,
 } from "./hostActions";
-import { selectNextRoundTimer, setHostID } from "./hostSlice";
+import { isSinglePlayer, selectNextRoundTimer, setHostID } from "./hostSlice";
 
 function reportTargetRoundScoreNotSet(dispatch: AppDispatch) {
   captureException(
@@ -148,6 +148,7 @@ export const addSelectedIcon =
   (selectedIcon: number, selectedPlayerName: string): AppThunk =>
   (dispatch, getState) => {
     const currState = getState().game;
+    const isSingleP = isSinglePlayer(getState());
     const playerName = selectPlayerName(getState());
 
     if (currState.gameSettings.targetRoundScore === null) {
@@ -200,7 +201,7 @@ export const addSelectedIcon =
       ) {
         // A player has won the game
         soundEffect = SoundEffects.Applause;
-        if (selectedPlayerName === "") {
+        if (isSingleP) {
           statusText = "Victory!";
         } else {
           statusText = `${selectedPlayerName} wins!`;
