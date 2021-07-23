@@ -5,6 +5,7 @@ import {
   gridSizes,
   GridSizeTypes,
 } from "models/GameSettingsType";
+import { APPLICATION_RESET } from "store/application/applicationConstants";
 import { setSettingsAction } from "store/game/gameActions";
 import { GAME_SET_SETTINGS } from "store/game/gameConstants";
 import { RootState } from "store/rootStore";
@@ -99,6 +100,10 @@ export const hostSlice = createSlice({
         if (hostPeerStopAction.match(action)) {
           hostSlice.caseReducers.resetHostState(state);
         }
+      })
+
+      .addCase(APPLICATION_RESET, () => {
+        return initialState;
       });
   },
 });

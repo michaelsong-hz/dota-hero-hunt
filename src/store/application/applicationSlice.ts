@@ -24,6 +24,7 @@ import {
   setVolumeAction,
 } from "./applicationActions";
 import {
+  APPLICATION_RESET,
   APPLICATION_SET_IS_DARK,
   APPLICATION_SET_LOADED_SETTINGS,
   APPLICATION_SET_VOLUME,
@@ -124,6 +125,9 @@ export const applicationSlice = createSlice({
           state.appSettings.volume = action.payload.volume;
           state.playerName = action.payload.playerName;
         }
+      })
+      .addCase(APPLICATION_RESET, () => {
+        return initialState;
       });
   },
 });

@@ -6,7 +6,7 @@ import clientReducer from "store/client/clientSlice";
 import gameReducer from "store/game/gameSlice";
 import hostReducer from "store/host/hostSlice";
 
-import { loadStoredSettings } from "./loadSettings";
+import { loadStoredSettings } from "./application/applicationThunks";
 import { audioMiddleware } from "./middleware/audio";
 import { clientMiddleware } from "./middleware/clientSocket";
 import { hostMiddleware } from "./middleware/hostSocket";
@@ -41,7 +41,7 @@ export const store = configureStore({
   enhancers: [sentryReduxEnhancer],
 });
 
-loadStoredSettings();
+store.dispatch(loadStoredSettings());
 
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;

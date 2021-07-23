@@ -7,6 +7,7 @@ import {
 } from "models/GameSettingsType";
 import { GameStatus } from "models/GameStatus";
 import { PlayerState } from "models/PlayerState";
+import { APPLICATION_RESET } from "store/application/applicationConstants";
 import {
   clientIconUpdateAction,
   clientPeerConnectedAction,
@@ -207,6 +208,10 @@ export const gameSlice = createSlice({
           state.statusText = action.payload.statusText;
           state.gameStatus = action.payload.gameStatus;
         }
+      })
+
+      .addCase(APPLICATION_RESET, () => {
+        return initialState;
       });
   },
 });

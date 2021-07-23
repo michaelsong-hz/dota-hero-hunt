@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+import { APPLICATION_RESET } from "store/application/applicationConstants";
 import { RootState } from "store/rootStore";
 
 import {
@@ -51,6 +52,9 @@ export const clientSlice = createSlice({
       })
       .addCase(CLIENT_NAME_CHANGE, (state, action) => {
         if (clientNameChangeAction.match(action)) state.isNameTaken = false;
+      })
+      .addCase(APPLICATION_RESET, () => {
+        return initialState;
       });
   },
 });

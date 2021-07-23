@@ -6,8 +6,8 @@ import { useAppSelector, useAppDispatch } from "hooks/useStore";
 import {
   selectIsDark,
   selectModalCustomMessage,
-  updateModalToShow,
 } from "store/application/applicationSlice";
+import { resetApplication } from "store/application/applicationThunks";
 import { clientPeerStop } from "store/client/clientThunks";
 import { appendTheme } from "utils/utilities";
 
@@ -29,11 +29,7 @@ function ErrorModal(props: ErrorModalProps): JSX.Element {
   const { title, bodyText, isDismissible, footer } = props;
 
   function handleHide() {
-    dispatch(
-      updateModalToShow({
-        modal: null,
-      })
-    );
+    dispatch(resetApplication());
   }
 
   function handleReturnHome() {

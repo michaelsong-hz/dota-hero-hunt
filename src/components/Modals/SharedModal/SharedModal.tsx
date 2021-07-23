@@ -10,8 +10,8 @@ import { PeerJSErrorTypes } from "models/PeerErrors";
 import {
   selectIsDark,
   selectModalToShow,
-  updateModalToShow,
 } from "store/application/applicationSlice";
+import { resetApplication } from "store/application/applicationThunks";
 import { appendTheme } from "utils/utilities";
 
 function SharedModal(): JSX.Element {
@@ -23,11 +23,7 @@ function SharedModal(): JSX.Element {
   const dispatch = useAppDispatch();
 
   function handleHide() {
-    dispatch(
-      updateModalToShow({
-        modal: null,
-      })
-    );
+    dispatch(resetApplication());
   }
 
   function handleReturnHome() {

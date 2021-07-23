@@ -1,6 +1,7 @@
 import { createAction } from "@reduxjs/toolkit";
 
 import {
+  APPLICATION_RESET,
   APPLICATION_SET_IS_DARK,
   APPLICATION_SET_LOADED_SETTINGS,
   APPLICATION_SET_VOLUME,
@@ -12,3 +13,5 @@ export const setLoadedSettingsAction = createAction<{
   volume: number;
   playerName: string;
 }>(APPLICATION_SET_LOADED_SETTINGS);
+
+export const resetAction = createAction(APPLICATION_RESET);
