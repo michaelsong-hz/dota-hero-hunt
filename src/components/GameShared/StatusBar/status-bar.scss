@@ -1,3 +1,5 @@
+@import "styles/variables.scss";
+
 .status-hero-icon {
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -10,7 +12,7 @@
   font-size: 5vw;
 }
 
-@media (min-width: 576px) {
+@media (min-width: $breakpoint-sm) {
   .status-hero-name {
     font-size: 1.5rem;
   }

@@ -1,5 +1,7 @@
+@import "styles/variables.scss";
+
 .lobby-view-disconnect {
-  margin-left: initial;
+  margin-left: auto;
   margin-bottom: 0.6rem;
 }
 
@@ -13,14 +15,8 @@
   flex: auto;
 }
 
-@media (min-width: 768px) {
+@media (min-width: $breakpoint-md) {
   .lobby-view-panels {
     flex-direction: row;
-  }
-}
-
-@media (min-width: 576px) {
-  .lobby-view-disconnect {
-    margin-left: auto;
   }
 }

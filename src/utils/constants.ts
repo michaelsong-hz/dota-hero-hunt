@@ -20,6 +20,7 @@ export const Constants = {
 };
 
 export enum MediaQueries {
+  XS = "(min-width: 476px)",
   SM = "(min-width: 576px)",
   MD = "(min-width: 768px)",
   LG = "(min-width: 992px)",

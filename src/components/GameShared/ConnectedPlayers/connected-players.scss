@@ -1,3 +1,5 @@
+@import "styles/variables.scss";
+
 .conn-player-name {
   flex: 1;
   min-width: 0;
@@ -13,13 +15,13 @@
   max-width: default;
 }
 
-@media (min-width: 768px) {
+@media (min-width: $breakpoint-md) {
   .connected-players {
     max-width: 33vw;
   }
 }
 
-@media (min-width: 1200px) {
+@media (min-width: $breakpoint-xl) {
   .connected-players {
     max-width: 320px;
   }

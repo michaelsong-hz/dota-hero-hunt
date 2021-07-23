@@ -226,6 +226,8 @@ export const selectCurrentHeroes = (state: RootState): number[][] =>
   state.game.currentHeroes;
 export const selectGameSettings = (state: RootState): GameSettings =>
   state.game.gameSettings;
+export const selectTargetTotalScore = (state: RootState): number | null =>
+  state.game.gameSettings.targetTotalScore;
 export const selectTimeBetweenRounds = (state: RootState): number =>
   state.game.gameSettings.timeBetweenRounds;
 export const selectStatusText = (state: RootState): string =>

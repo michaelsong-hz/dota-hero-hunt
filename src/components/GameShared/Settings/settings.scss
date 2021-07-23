@@ -15,7 +15,7 @@
   margin-bottom: 0.5rem;
 }
 
-@media (min-width: 476px) {
+@media (min-width: $breakpoint-sm) {
   .settings-actions {
     flex-direction: row;
   }
