@@ -6,10 +6,11 @@ import { Provider } from "react-redux";
 
 import { store } from "store/rootStore";
 
-import "./styles/index.scss";
-import App from "./App";
-
+import "@fontsource/roboto";
 import "react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css";
+import "./styles/index.scss";
+
+import App from "./App";
 
 // Sentry error logging in production
 if (process.env.NODE_ENV === "production") {
