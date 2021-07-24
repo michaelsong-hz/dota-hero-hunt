@@ -8,9 +8,9 @@ import {
   selectPlayerName,
 } from "store/application/applicationSlice";
 import { clientPeerSendAction } from "store/client/clientActions";
-import { selectGameStatus } from "store/game/gameSlice";
+import { selectGameStatus, selectTargetHeroes } from "store/game/gameSlice";
 import { addSelectedIcon } from "store/host/hostThunks";
-import { appendTheme, isClient } from "utils/utilities";
+import { appendTheme, isClient, isDevCheatsEnabled } from "utils/utilities";
 
 interface HeroIconProps {
   src: string;
@@ -25,6 +25,7 @@ function HeroIcon(props: HeroIconProps): JSX.Element {
   const isDark = useAppSelector(selectIsDark);
   const gameStatus = useAppSelector(selectGameStatus);
   const playerNameHost = useAppSelector(selectPlayerName);
+  const targetHeroes = useAppSelector(selectTargetHeroes);
 
   const dispatch = useAppDispatch();
 
@@ -55,6 +56,14 @@ function HeroIcon(props: HeroIconProps): JSX.Element {
     } else if (isHighlightedInvalid) {
       return appendTheme("hero-icon-wrapper hero-icon-wrapper-invalid", isDark);
     }
+
+    // Make development easier by highlighting icons to find
+    if (isDevCheatsEnabled()) {
+      if (targetHeroes.find((element) => element === heroNumber)) {
+        return "hero-icon-wrapper hero-icon-wrapper-dev";
+      }
+    }
+
     return "hero-icon-wrapper";
   }
 

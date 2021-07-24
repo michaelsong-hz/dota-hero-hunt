@@ -154,3 +154,13 @@ export function getClientInviteLink(): string {
 export function convertRemToPixels(rem: number): number {
   return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
+
+export function isDevCheatsEnabled(): boolean {
+  if (
+    process.env.NODE_ENV === "development" &&
+    process.env.REACT_APP_DEV_CHEATS === "True"
+  ) {
+    return true;
+  }
+  return false;
+}

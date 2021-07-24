@@ -12,6 +12,9 @@ REACT_APP_CDN_URL=https://cdn.dotaherohunt.com/
 REACT_APP_PEER_JS_HOST=localhost
 REACT_APP_PEER_JS_PATH=/myapp
 REACT_APP_PEER_JS_PORT=9000
+
+# If you wish to enable cheats (only works in development mode)
+REACT_APP_DEV_CHEATS=True
 ```
 
 You can now start the React development server using `npm start`.
