@@ -12,7 +12,7 @@ import {
   selectStatusText,
   selectTargetHeroes,
 } from "store/game/gameSlice";
-import { incrementRound } from "store/host/hostThunks";
+import { startGame } from "store/host/hostThunks";
 import { heroList } from "utils/HeroList";
 import { appendTheme, getIconPath, isClient } from "utils/utilities";
 
@@ -67,7 +67,7 @@ function GameStatusBar(): JSX.Element {
             size="lg"
             className="slide-down-appear"
             variant={appendTheme("primary", isDark)}
-            onClick={() => dispatch(incrementRound(1))}
+            onClick={() => dispatch(startGame())}
           >
             New Game
           </Button>
@@ -107,15 +107,37 @@ function GameStatusBar(): JSX.Element {
     return heroesToFind;
   }
 
+  function getStatusText() {
+    if (gameStatus === GameStatus.PLAYING_COUNTDOWN) {
+      let statusTextClass = "status-bar-text status-bar-text-large";
+
+      if (statusText !== "Get Ready!") {
+        statusTextClass += " status-bar-text-fade";
+      }
+
+      // Assign a key so the fade animation replays when the text changes when
+      // counting down
+      return (
+        <div key={`status-text-${statusText}`} className={statusTextClass}>
+          <h3>{statusText}</h3>
+        </div>
+      );
+    }
+
+    return (
+      <div className="status-bar-text">
+        <h3>{statusText}</h3>
+      </div>
+    );
+  }
+
   let statusBarClass = "status-bar";
   if (gameSettings.showTargetIcons === false)
     statusBarClass = "status-bar-no-icons";
 
   return (
     <div className={`d-flex flex-column ${statusBarClass}`}>
-      <div className="status-bar-text">
-        <h3>{statusText}</h3>
-      </div>
+      {getStatusText()}
       {getNewGameButton()}
       <div className="text-wrap">
         <Row

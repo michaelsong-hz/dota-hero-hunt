@@ -14,12 +14,14 @@ import { PeerJSErrorTypes } from "models/PeerErrors";
 import { selectPlayers, updatePlayersList } from "store/game/gameSlice";
 import {
   addSelectedIconAction,
+  hostCountdownAction,
   incrementRoundAction,
   modifyGameSettingsAction,
   submitPlayerNameAction,
   visitLobbyPageAction,
 } from "store/host/hostActions";
 import {
+  HOST_COUNTDOWN_TICK,
   HOST_INCREMENT_ROUND,
   HOST_MODIFY_SETTINGS,
   HOST_PEER_FORCED_DC,
@@ -293,6 +295,16 @@ function createHostMiddleware(): Middleware {
                 invalidIcons: action.payload.newState.invalidIcons,
                 statusText: action.payload.newState.statusText,
                 gameStatus: action.payload.newState.gameStatus,
+              });
+            break;
+
+          case HOST_COUNTDOWN_TICK:
+            if (hostCountdownAction.match(action))
+              broadcastMessage({
+                type: HostTypeConstants.COUNTDOWN_TICK,
+                countdown: action.payload.countdown,
+                statusText: action.payload.statusText,
+                isFirstTick: action.payload.isFirstTick,
               });
             break;
 

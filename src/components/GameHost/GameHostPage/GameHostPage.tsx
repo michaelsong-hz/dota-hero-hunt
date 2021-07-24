@@ -6,7 +6,8 @@ import {
   selectPlayerName,
   selectSettingsLoaded,
 } from "store/application/applicationSlice";
-import { incrementRound } from "store/host/hostThunks";
+import { cancelCountdown } from "store/game/gameSlice";
+import { startGame } from "store/host/hostThunks";
 
 function GameHostPage(): JSX.Element {
   const isSettingsLoaded = useAppSelector(selectSettingsLoaded);
@@ -17,8 +18,12 @@ function GameHostPage(): JSX.Element {
   // Start the game when visiting the homepage
   useEffect(() => {
     if (isSettingsLoaded) {
-      dispatch(incrementRound(1));
+      dispatch(startGame());
     }
+
+    return () => {
+      dispatch(cancelCountdown());
+    };
   }, [dispatch, isSettingsLoaded, playerName]);
 
   return <GamePage />;

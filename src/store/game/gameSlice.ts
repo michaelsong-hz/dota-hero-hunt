@@ -20,6 +20,7 @@ import {
 } from "store/client/clientConstants";
 import {
   addSelectedIconAction,
+  hostCountdownAction,
   hostPeerStartAction,
   incrementRoundAction,
   submitPlayerNameAction,
@@ -27,6 +28,7 @@ import {
   visitLobbyPageAction,
 } from "store/host/hostActions";
 import {
+  HOST_COUNTDOWN_TICK,
   HOST_INCREMENT_ROUND,
   HOST_PEER_START,
   HOST_SELECT_ICON,
@@ -52,6 +54,7 @@ export interface GameState {
   gameSettings: GameSettings;
   statusText: string;
   gameStatus: GameStatus;
+  countdown: number; //seconds
 }
 
 export const initialGameSettings: GameSettings = {
@@ -74,6 +77,7 @@ const initialState: GameState = {
   gameSettings: initialGameSettings,
   statusText: "",
   gameStatus: GameStatus.PLAYING,
+  countdown: 0,
 };
 
 export const gameSlice = createSlice({
@@ -107,6 +111,33 @@ export const gameSlice = createSlice({
       }>
     ) => {
       state.players = action.payload.players;
+    },
+    clientCountdown: (
+      state,
+      action: PayloadAction<{
+        countdown: number;
+        statusText: string;
+        isFirstTick?: boolean | undefined;
+      }>
+    ) => {
+      if (action.payload.isFirstTick === true) {
+        state.round = 0;
+        state.selectedIcons = [];
+        state.invalidIcons = [];
+        state.targetHeroes = [];
+        state.currentHeroes = [[]];
+        state.gameStatus = GameStatus.PLAYING_COUNTDOWN;
+
+        for (const key in state.players) {
+          state.players[key].score = 0;
+        }
+      }
+
+      state.countdown = action.payload.countdown;
+      state.statusText = action.payload.statusText;
+    },
+    cancelCountdown: (state) => {
+      state.countdown = -1;
     },
   },
   extraReducers: (builder) => {
@@ -142,6 +173,25 @@ export const gameSlice = createSlice({
           state.invalidIcons = action.payload.newState.invalidIcons;
           state.statusText = action.payload.newState.statusText;
           state.gameStatus = action.payload.newState.gameStatus;
+        }
+      })
+      .addCase(HOST_COUNTDOWN_TICK, (state, action) => {
+        if (hostCountdownAction.match(action) && action.payload) {
+          if (action.payload.isFirstTick === true) {
+            state.round = 0;
+            state.selectedIcons = [];
+            state.invalidIcons = [];
+            state.targetHeroes = [];
+            state.currentHeroes = [[]];
+            state.gameStatus = GameStatus.PLAYING_COUNTDOWN;
+
+            for (const key in state.players) {
+              state.players[key].score = 0;
+            }
+          }
+
+          state.countdown = action.payload.countdown;
+          state.statusText = action.payload.statusText;
         }
       })
       .addCase(HOST_VISIT_LOBBY, (state, action) => {
@@ -216,7 +266,8 @@ export const gameSlice = createSlice({
   },
 });
 
-export const { setRound, updatePlayersList } = gameSlice.actions;
+export const { setRound, updatePlayersList, clientCountdown, cancelCountdown } =
+  gameSlice.actions;
 
 export const selectRound = (state: RootState): number => state.game.round;
 export const selectPlayers = (state: RootState): Record<string, PlayerState> =>
@@ -231,6 +282,10 @@ export const selectCurrentHeroes = (state: RootState): number[][] =>
   state.game.currentHeroes;
 export const selectGameSettings = (state: RootState): GameSettings =>
   state.game.gameSettings;
+export const selectGridRowsCols = (state: RootState): [number, number] => [
+  state.game.gameSettings.rows,
+  state.game.gameSettings.columns,
+];
 export const selectTargetTotalScore = (state: RootState): number | null =>
   state.game.gameSettings.targetTotalScore;
 export const selectTimeBetweenRounds = (state: RootState): number =>
@@ -239,5 +294,7 @@ export const selectStatusText = (state: RootState): string =>
   state.game.statusText;
 export const selectGameStatus = (state: RootState): GameStatus =>
   state.game.gameStatus;
+export const selectCountdown = (state: RootState): number =>
+  state.game.countdown;
 
 export default gameSlice.reducer;

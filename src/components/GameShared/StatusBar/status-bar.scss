@@ -14,6 +14,18 @@
   justify-content: center;
 }
 
+.status-bar-text-large {
+  h3 {
+    font-size: 3rem;
+  }
+}
+
+.status-bar-text-fade {
+  -webkit-animation: statusTextFade 1s;
+  -moz-animation: statusTextFade 1s;
+  animation: statusTextFade 1s;
+}
+
 .status-hero-icon {
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -45,15 +57,49 @@
   }
 
   .status-bar {
-    min-height: 6rem;
+    min-height: 7.5rem;
   }
   .status-bar-no-icons {
-    min-height: 4rem;
+    min-height: 4.5rem;
   }
 }
 
 @media (min-width: $breakpoint-md) {
   .status-hero-name {
     font-size: 1.5rem;
+  }
+}
+
+@-webkit-keyframes statusTextFade {
+  0% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@-moz-keyframes statusTextFade {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes statusTextFade {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
   }
 }

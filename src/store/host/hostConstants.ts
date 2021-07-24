@@ -1,5 +1,6 @@
 export const HOST_INCREMENT_ROUND = "host/incrementRound";
 export const HOST_SELECT_ICON = "host/selectIcon";
+export const HOST_COUNTDOWN_TICK = "host/countDownTick";
 export const HOST_VISIT_LOBBY = "host/visitLobby";
 export const HOST_MODIFY_SETTINGS = "host/modifyGameSettings";
 export const HOST_SUBMIT_PLAYER_NAME = "host/submitPlayerName";

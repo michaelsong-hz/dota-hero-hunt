@@ -4,18 +4,31 @@ import HeroIcon from "components/GameShared/HeroIcon";
 import GameStatusBar from "components/GameShared/StatusBar";
 import { useAppSelector } from "hooks/useStore";
 import Placeholder_icon from "images/Placeholder_icon.png";
+import { GameStatus } from "models/GameStatus";
 import {
   selectCurrentHeroes,
+  selectGameStatus,
+  selectGridRowsCols,
   selectInvalidIcons,
   selectSelectedIcons,
 } from "store/game/gameSlice";
 import { heroList } from "utils/HeroList";
 import { getIconPath } from "utils/utilities";
 
+import HeroIconStarting from "../HeroIconStarting";
+
+enum GridState {
+  COUNTDOWN,
+  LOADING_IMAGES,
+  LOADED_IMAGES,
+}
+
 function HeroGrid(): JSX.Element {
   const currentHeroes = useAppSelector(selectCurrentHeroes);
   const invalidIcons = useAppSelector(selectInvalidIcons);
   const selectedIcons = useAppSelector(selectSelectedIcons);
+  const gameStatus = useAppSelector(selectGameStatus);
+  const [gameRows, gameCols] = useAppSelector(selectGridRowsCols);
 
   const [loading, setLoading] = useState(true);
 
@@ -59,35 +72,46 @@ function HeroGrid(): JSX.Element {
 
   function createHeroImagesRow(
     rowNumber: number,
-    loadingImages: boolean
+    gridState: GridState
   ): JSX.Element[] {
     const heroImagesRow: JSX.Element[] = [];
 
-    for (let i = 0; i < currentHeroes[rowNumber].length; i++) {
-      const heroNumber = currentHeroes[rowNumber][i];
-      heroImagesRow.push(
-        <HeroIcon
-          key={`heroIcon${i}`}
-          src={
-            loadingImages
-              ? Placeholder_icon
-              : getIconPath(heroList[heroNumber].url)
-          }
-          heroNumber={heroNumber}
-          invalidIcons={invalidIconsSet}
-          selectedIcons={selectedIconsSet}
-        />
-      );
+    if (gameStatus !== GameStatus.PLAYING_COUNTDOWN) {
+      for (let i = 0; i < currentHeroes[rowNumber].length; i++) {
+        const heroNumber = currentHeroes[rowNumber][i];
+        heroImagesRow.push(
+          <HeroIcon
+            key={`heroIcon-${i}`}
+            src={
+              gridState !== GridState.LOADED_IMAGES
+                ? Placeholder_icon
+                : getIconPath(heroList[heroNumber].url)
+            }
+            heroNumber={heroNumber}
+            invalidIcons={invalidIconsSet}
+            selectedIcons={selectedIconsSet}
+          />
+        );
+      }
+    } else {
+      for (let i = 0; i < gameCols; i++) {
+        heroImagesRow.push(<HeroIconStarting key={`iconStarting-${i}`} />);
+      }
     }
     return heroImagesRow;
   }
 
-  function createHeroImages(loadingImages: boolean): JSX.Element[] {
+  function createHeroImages(gridState: GridState): JSX.Element[] {
+    let numRows = gameRows;
+    if (gameStatus !== GameStatus.PLAYING_COUNTDOWN) {
+      numRows = currentHeroes.length;
+    }
+
     const heroImages: JSX.Element[] = [];
-    for (let i = 0; i < currentHeroes.length; i++) {
+    for (let i = 0; i < numRows; i++) {
       heroImages.push(
         <div className="d-flex justify-content-center" key={`heroIconRow${i}`}>
-          {createHeroImagesRow(i, loadingImages)}
+          {createHeroImagesRow(i, gridState)}
         </div>
       );
     }
@@ -97,15 +121,21 @@ function HeroGrid(): JSX.Element {
   return (
     <div className="text-center">
       <GameStatusBar />
-      <div style={{ display: loading ? "block" : "none" }}>
-        {createHeroImages(true)}
-      </div>
-      <div
-        className="fast-fade-reveal"
-        style={{ display: loading ? "none" : "block" }}
-      >
-        {createHeroImages(false)}
-      </div>
+      {gameStatus === GameStatus.PLAYING_COUNTDOWN ? (
+        <div>{createHeroImages(GridState.COUNTDOWN)}</div>
+      ) : (
+        <>
+          <div style={{ display: loading ? "block" : "none" }}>
+            {createHeroImages(GridState.LOADING_IMAGES)}
+          </div>
+          <div
+            className="fast-fade-reveal"
+            style={{ display: loading ? "none" : "block" }}
+          >
+            {createHeroImages(GridState.LOADED_IMAGES)}
+          </div>
+        </>
+      )}
     </div>
   );
 }

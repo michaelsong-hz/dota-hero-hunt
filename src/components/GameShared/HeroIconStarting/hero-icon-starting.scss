@@ -1,0 +1,99 @@
+@import "styles/variables.scss";
+
+.hero-icon-starting-light {
+  animation: fadeAnimationLight 5s infinite;
+  -webkit-animation: fadeAnimationLight 5s infinite;
+  -moz-animation: fadeAnimationLight 5s infinite;
+}
+
+.hero-icon-starting-dark {
+  animation: fadeAnimationDark 5s infinite;
+  -webkit-animation: fadeAnimationDark 5s infinite;
+  -moz-animation: fadeAnimationDark 5s infinite;
+}
+
+@keyframes fadeAnimationLight {
+  0% {
+    background-color: $primary-color-light;
+  }
+  20% {
+    background-color: $secondary-color-light;
+  }
+  80% {
+    background-color: $secondary-color-light;
+  }
+  100% {
+    background-color: $primary-color-light;
+  }
+}
+@-webkit-keyframes fadeAnimationLight {
+  0% {
+    background-color: $primary-color-light;
+  }
+  20% {
+    background-color: $secondary-color-light;
+  }
+  80% {
+    background-color: $secondary-color-light;
+  }
+  100% {
+    background-color: $primary-color-light;
+  }
+}
+@-moz-keyframes fadeAnimationLight {
+  0% {
+    background-color: $primary-color-light;
+  }
+  20% {
+    background-color: $secondary-color-light;
+  }
+  80% {
+    background-color: $secondary-color-light;
+  }
+  100% {
+    background-color: $primary-color-light;
+  }
+}
+
+@keyframes fadeAnimationDark {
+  0% {
+    background-color: $primary-color-dark;
+  }
+  20% {
+    background-color: $secondary-color-dark;
+  }
+  80% {
+    background-color: $secondary-color-dark;
+  }
+  100% {
+    background-color: $primary-color-dark;
+  }
+}
+@-webkit-keyframes fadeAnimationDark {
+  0% {
+    background-color: $primary-color-dark;
+  }
+  20% {
+    background-color: $secondary-color-dark;
+  }
+  80% {
+    background-color: $secondary-color-dark;
+  }
+  100% {
+    background-color: $primary-color-dark;
+  }
+}
+@-moz-keyframes fadeAnimationDark {
+  0% {
+    background-color: $primary-color-dark;
+  }
+  20% {
+    background-color: $secondary-color-dark;
+  }
+  80% {
+    background-color: $secondary-color-dark;
+  }
+  100% {
+    background-color: $primary-color-dark;
+  }
+}

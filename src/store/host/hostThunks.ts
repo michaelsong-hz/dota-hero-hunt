@@ -11,7 +11,7 @@ import {
   setIsInviteLinkCopied,
   updateModalToShow,
 } from "store/application/applicationSlice";
-import { selectTimeBetweenRounds } from "store/game/gameSlice";
+import { selectCountdown, selectTimeBetweenRounds } from "store/game/gameSlice";
 import { AppDispatch, AppThunk } from "store/rootStore";
 import { heroList } from "utils/HeroList";
 import { SoundEffects } from "utils/SoundEffectList";
@@ -28,6 +28,7 @@ import {
   hostPeerStartAction,
   hostPeerStopAction,
   visitAboutPageAction,
+  hostCountdownAction,
 } from "./hostActions";
 import { isSinglePlayer, selectNextRoundTimer, setHostID } from "./hostSlice";
 
@@ -55,7 +56,47 @@ export const stopHosting = (): AppThunk => (dispatch) => {
   dispatch(hostPeerStop());
 };
 
-export const incrementRound =
+export const startGame = (): AppThunk => (dispatch, getState) => {
+  if (isSinglePlayer(getState())) {
+    dispatch(incrementRoundImp(1));
+  } else {
+    let timer: NodeJS.Timer | undefined = undefined;
+    clearInterval(timer);
+
+    // Wait on "Get Ready!" for 2 seconds, then start counting down from 3
+    dispatch(
+      hostCountdownAction({
+        countdown: 4,
+        statusText: "Get Ready!",
+        isFirstTick: true,
+      })
+    );
+    setTimeout(() => {
+      timer = setInterval(() => {
+        const countdown = selectCountdown(getState()) - 1;
+
+        if (countdown <= 0 && timer) {
+          clearInterval(timer);
+          // Only dispatch if the timer wasn't cancelled
+          if (countdown === 0) dispatch(incrementRoundImp(1));
+        } else {
+          dispatch(
+            hostCountdownAction({
+              countdown,
+              statusText: countdown.toString(),
+            })
+          );
+        }
+      }, 1000);
+    }, 1000);
+  }
+};
+
+export const incrementRound = (): AppThunk => (dispatch) => {
+  dispatch(incrementRoundImp());
+};
+
+const incrementRoundImp =
   (overrideRound?: number): AppThunk =>
   (dispatch, getState) => {
     // Shuffles provided array

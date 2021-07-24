@@ -16,6 +16,7 @@ import {
   HOST_PEER_START,
   HOST_PEER_STOP,
   HOST_VISIT_ABOUT,
+  HOST_COUNTDOWN_TICK,
 } from "./hostConstants";
 
 export const incrementRoundAction = createAction<{
@@ -46,6 +47,12 @@ export const addSelectedIconAction = createAction<
     }
   | undefined
 >(HOST_SELECT_ICON);
+
+export const hostCountdownAction = createAction<{
+  countdown: number;
+  statusText: string;
+  isFirstTick?: boolean;
+}>(HOST_COUNTDOWN_TICK);
 
 export const visitLobbyPageAction =
   createAction<GameSettings>(HOST_VISIT_LOBBY);

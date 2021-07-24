@@ -1,5 +1,6 @@
 export enum GameStatus {
   LOBBY,
+  PLAYING_COUNTDOWN,
   PLAYING,
   PLAYING_ROUND_END,
   FINISHED,

@@ -9,7 +9,11 @@ import {
   setIsInviteLinkCopied,
   updateModalToShow,
 } from "store/application/applicationSlice";
-import { setRound, updatePlayersList } from "store/game/gameSlice";
+import {
+  clientCountdown,
+  setRound,
+  updatePlayersList,
+} from "store/game/gameSlice";
 import { initializeSettingsAsync, setSettings } from "store/game/gameThunks";
 import { AppThunk } from "store/rootStore";
 import { SoundEffects } from "utils/SoundEffectList";
@@ -146,6 +150,17 @@ export const handleHostMessage =
             statusText: data.statusText,
             gameStatus: data.gameStatus,
             soundEffect,
+          })
+        );
+        break;
+      }
+
+      case HostTypeConstants.COUNTDOWN_TICK: {
+        dispatch(
+          clientCountdown({
+            countdown: data.countdown,
+            statusText: data.statusText,
+            isFirstTick: data.isFirstTick,
           })
         );
         break;
