@@ -25,7 +25,7 @@ import { changeName } from "store/application/applicationThunks";
 import { selectGameSettings } from "store/game/gameSlice";
 import { setSettings } from "store/game/gameThunks";
 import {
-  isSinglePlayer,
+  selectHostID,
   selectHostModifiedGameSettings,
 } from "store/host/hostSlice";
 import { modifyGameSettings } from "store/host/hostThunks";
@@ -37,7 +37,7 @@ function GameSettings(): JSX.Element {
 
   const storeGameSettings = useAppSelector(selectGameSettings);
   const modifiedGameSettings = useAppSelector(selectHostModifiedGameSettings);
-  const isSingleP = useAppSelector(isSinglePlayer);
+  const hostID = useAppSelector(selectHostID);
   const isDark = useAppSelector(selectIsDark);
 
   const dispatch = useAppDispatch();
@@ -275,7 +275,7 @@ function GameSettings(): JSX.Element {
             <h3>Game Settings{disabled === true && ` (Read Only)`}</h3>
           </div>
           <div className="d-flex settings-actions">
-            {isSingleP === false && (
+            {hostID !== null && (
               <div>
                 <Button
                   variant={appendTheme("secondary", isDark)}
