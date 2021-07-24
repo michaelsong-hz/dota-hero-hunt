@@ -14,7 +14,12 @@ function TargetScore(): JSX.Element {
   let score: JSX.Element;
 
   if (targetTotalScore === null) {
-    score = <FontAwesomeIcon icon={faInfinity} />;
+    score = (
+      <FontAwesomeIcon
+        className={isSingleP ? "" : "target-score-score-infinity"}
+        icon={faInfinity}
+      />
+    );
   } else {
     score = <>{targetTotalScore}</>;
   }

@@ -79,9 +79,13 @@ function GameStatusBar(): JSX.Element {
 
   function renderHeroesToFind(loadingIcons: boolean): JSX.Element[] {
     const heroesToFind: JSX.Element[] = [];
-    targetHeroes.forEach((targetHero) => {
+    targetHeroes.forEach((targetHero, i) => {
+      // Force text to break-wrap on the rightmost column
+      let textBreak = "";
+      if (i % 3 === 2) textBreak = "text-break";
+
       heroesToFind.push(
-        <Col key={`${heroList[targetHero].name}-icon`} xs="4" md="auto">
+        <Col key={`${heroList[targetHero].name}-icon`} xs="4" md="4" lg="auto">
           {gameSettings.showTargetIcons === true && (
             <img
               className="status-hero-icon fast-fade-reveal"
@@ -94,20 +98,26 @@ function GameStatusBar(): JSX.Element {
               draggable="false"
             ></img>
           )}
-          <h5 className="status-hero-name mb-3">{heroList[targetHero].name}</h5>
+          <h5 className={`status-hero-name mb-3 ${textBreak}`}>
+            {heroList[targetHero].name}
+          </h5>
         </Col>
       );
     });
     return heroesToFind;
   }
 
+  let statusBarClass = "status-bar";
+  if (gameSettings.showTargetIcons === false)
+    statusBarClass = "status-bar-no-icons";
+
   return (
-    <div className="d-flex flex-column">
-      <div>
+    <div className={`d-flex flex-column ${statusBarClass}`}>
+      <div className="status-bar-text">
         <h3>{statusText}</h3>
       </div>
       {getNewGameButton()}
-      <div>
+      <div className="text-wrap">
         <Row
           className="justify-content-center"
           style={{ display: loading ? "flex" : "none" }}

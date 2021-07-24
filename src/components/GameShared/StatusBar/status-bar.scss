@@ -1,5 +1,19 @@
 @import "styles/variables.scss";
 
+.status-bar {
+  min-height: 10rem;
+}
+.status-bar-no-icons {
+  min-height: 8rem;
+}
+
+.status-bar-text {
+  flex: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .status-hero-icon {
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -9,10 +23,36 @@
 }
 
 .status-hero-name {
-  font-size: 5vw;
+  font-size: 1.15rem;
+}
+
+@media (min-width: $breakpoint-xs) {
+  .status-hero-name {
+    font-size: 1.3rem;
+  }
+
+  .status-bar {
+    min-height: 10.5rem;
+  }
+  .status-bar-no-icons {
+    min-height: 8.5rem;
+  }
 }
 
 @media (min-width: $breakpoint-sm) {
+  .status-hero-name {
+    font-size: 1.4rem;
+  }
+
+  .status-bar {
+    min-height: 6rem;
+  }
+  .status-bar-no-icons {
+    min-height: 4rem;
+  }
+}
+
+@media (min-width: $breakpoint-md) {
   .status-hero-name {
     font-size: 1.5rem;
   }
