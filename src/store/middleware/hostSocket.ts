@@ -11,6 +11,7 @@ import {
 } from "models/MessageHostTypes";
 import { OtherErrorTypes } from "models/Modals";
 import { PeerJSErrorTypes } from "models/PeerErrors";
+import { APPLICATION_RESET } from "store/application/applicationConstants";
 import { selectPlayers, updatePlayersList } from "store/game/gameSlice";
 import {
   addSelectedIconAction,
@@ -338,6 +339,10 @@ function createHostMiddleware(): Middleware {
                 players: action.payload.players,
               });
             }
+            break;
+
+          case APPLICATION_RESET:
+            cleanUp();
             break;
         }
       }

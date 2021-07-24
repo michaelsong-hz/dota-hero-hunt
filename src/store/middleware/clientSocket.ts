@@ -6,6 +6,7 @@ import { HostDataConnection } from "models/MessageClientTypes";
 import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
 import { OtherErrorTypes } from "models/Modals";
 import { PeerError, PeerJSErrorTypes } from "models/PeerErrors";
+import { APPLICATION_RESET } from "store/application/applicationConstants";
 import { selectPlayerName } from "store/application/applicationSlice";
 import { clientPeerSendAction } from "store/client/clientActions";
 import {
@@ -152,6 +153,10 @@ function createClientMiddleware(): Middleware {
                   );
               });
             }
+            break;
+
+          case APPLICATION_RESET:
+            cleanUp();
             break;
         }
       }
