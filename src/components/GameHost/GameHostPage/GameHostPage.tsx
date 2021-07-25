@@ -6,7 +6,6 @@ import {
   selectPlayerName,
   selectSettingsLoaded,
 } from "store/application/applicationSlice";
-import { cancelCountdown } from "store/game/gameSlice";
 import { startGame } from "store/host/hostThunks";
 
 function GameHostPage(): JSX.Element {
@@ -20,10 +19,6 @@ function GameHostPage(): JSX.Element {
     if (isSettingsLoaded) {
       dispatch(startGame());
     }
-
-    return () => {
-      dispatch(cancelCountdown());
-    };
   }, [dispatch, isSettingsLoaded, playerName]);
 
   return <GamePage />;

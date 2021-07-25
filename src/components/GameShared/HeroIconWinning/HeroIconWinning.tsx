@@ -11,9 +11,9 @@ function HeroIconWinning(props: HeroIconProps): JSX.Element {
   const location = Math.floor(Math.random() * 121) - 10;
   // 0.0 to 12.0 seconds
   const delay = Math.floor(Math.random() * 12) + Math.random();
-  // 3.0 to 6.0 seconds
+  // 3.0 to 5.0 seconds
   const spinSpeed = Math.floor(Math.random() * 2) + 3 + Math.random();
-  // 0.0 to 3.0 seconds
+  // 0.0 to 1.0 seconds
   const flySpeedVariance = Math.random();
 
   let appendClass = "hero-icon-winning-clock";

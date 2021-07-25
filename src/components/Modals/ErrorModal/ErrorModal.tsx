@@ -8,7 +8,6 @@ import {
   selectModalCustomMessage,
 } from "store/application/applicationSlice";
 import { resetApplication } from "store/application/applicationThunks";
-import { clientPeerStop } from "store/client/clientThunks";
 import { appendTheme } from "utils/utilities";
 
 type ErrorModalProps = {
@@ -34,7 +33,7 @@ function ErrorModal(props: ErrorModalProps): JSX.Element {
 
   function handleReturnHome() {
     handleHide();
-    dispatch(clientPeerStop());
+    dispatch(resetApplication());
     history.push("/");
   }
 

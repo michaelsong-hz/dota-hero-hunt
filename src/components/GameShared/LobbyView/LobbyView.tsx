@@ -10,7 +10,7 @@ import LobbyInvite from "components/GameShared/LobbyInvite";
 import GameSettings from "components/GameShared/Settings";
 import { useAppDispatch, useAppSelector } from "hooks/useStore";
 import { selectIsDark } from "store/application/applicationSlice";
-import { clientPeerDisconnect } from "store/client/clientThunks";
+import { resetApplication } from "store/application/applicationThunks";
 import { selectGameSettings } from "store/game/gameSlice";
 import { isSinglePlayer } from "store/host/hostSlice";
 import { visitLobbyPage } from "store/host/hostThunks";
@@ -109,7 +109,7 @@ function LobbyView(): JSX.Element {
             <Button
               variant={appendTheme("danger", isDark)}
               className="mb-1"
-              onClick={() => dispatch(clientPeerDisconnect())}
+              onClick={() => dispatch(resetApplication())}
             >
               Disconnect
             </Button>

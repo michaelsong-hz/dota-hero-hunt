@@ -20,20 +20,20 @@ import {
 } from "store/client/clientConstants";
 import {
   addSelectedIconAction,
+  hostClearBoardAction,
   hostCountdownAction,
   hostPeerStartAction,
   incrementRoundAction,
   submitPlayerNameAction,
-  visitAboutPageAction,
   visitLobbyPageAction,
 } from "store/host/hostActions";
 import {
+  HOST_CLEAR_BOARD,
   HOST_COUNTDOWN_TICK,
   HOST_INCREMENT_ROUND,
   HOST_PEER_START,
   HOST_SELECT_ICON,
   HOST_SUBMIT_PLAYER_NAME,
-  HOST_VISIT_ABOUT,
   HOST_VISIT_LOBBY,
 } from "store/host/hostConstants";
 import { RootState } from "store/rootStore";
@@ -97,7 +97,9 @@ export const gameSlice = createSlice({
     ) => {
       state.round = action.payload.round;
       state.targetHeroes = action.payload.targetHeroes;
-      state.currentHeroes = action.payload.currentHeroes;
+      // Don't clear the board if leaving the page as it breaks the animation
+      if (action.payload.round !== 0)
+        state.currentHeroes = action.payload.currentHeroes;
       state.selectedIcons = [];
       state.invalidIcons = [];
       state.statusText = action.payload.statusText;
@@ -135,9 +137,6 @@ export const gameSlice = createSlice({
 
       state.countdown = action.payload.countdown;
       state.statusText = action.payload.statusText;
-    },
-    cancelCountdown: (state) => {
-      state.countdown = -1;
     },
   },
   extraReducers: (builder) => {
@@ -194,30 +193,24 @@ export const gameSlice = createSlice({
           state.statusText = action.payload.statusText;
         }
       })
-      .addCase(HOST_VISIT_LOBBY, (state, action) => {
-        if (visitLobbyPageAction.match(action)) {
-          state.gameStatus = GameStatus.LOBBY;
-          state.round = 0;
-          // Clear the hero grid when visiting the settings page
+      .addCase(HOST_CLEAR_BOARD, (state, action) => {
+        if (hostClearBoardAction.match(action)) {
           state.selectedIcons = [];
           state.invalidIcons = [];
           state.targetHeroes = [];
           state.currentHeroes = [[]];
+        }
+      })
+      .addCase(HOST_VISIT_LOBBY, (state, action) => {
+        if (visitLobbyPageAction.match(action)) {
+          state.countdown = -1;
+
+          state.gameStatus = GameStatus.LOBBY;
         }
       })
       .addCase(HOST_SUBMIT_PLAYER_NAME, (state, action) => {
         if (submitPlayerNameAction.match(action)) {
           state.players = action.payload.players;
-        }
-      })
-      .addCase(HOST_VISIT_ABOUT, (state, action) => {
-        if (visitAboutPageAction.match(action)) {
-          state.round = 0;
-          // Clear the hero grid when visiting the about page
-          state.selectedIcons = [];
-          state.invalidIcons = [];
-          state.targetHeroes = [];
-          state.currentHeroes = [[]];
         }
       })
       .addCase(HOST_PEER_START, (state, action) => {
@@ -266,7 +259,7 @@ export const gameSlice = createSlice({
   },
 });
 
-export const { setRound, updatePlayersList, clientCountdown, cancelCountdown } =
+export const { setRound, updatePlayersList, clientCountdown } =
   gameSlice.actions;
 
 export const selectRound = (state: RootState): number => state.game.round;

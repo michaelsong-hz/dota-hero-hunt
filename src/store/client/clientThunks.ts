@@ -53,7 +53,7 @@ export const clientPeerDisconnect = (): AppThunk => (dispatch) => {
  * @param nameTaken Boolean set to true if the reason for disconnecting was
  * because the player name was taken
  */
-export const clientPeerStop =
+const clientPeerStop =
   (nameTaken?: boolean): AppThunk =>
   (dispatch, getState) => {
     dispatch(

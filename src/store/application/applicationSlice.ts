@@ -126,8 +126,11 @@ export const applicationSlice = createSlice({
           state.playerName = action.payload.playerName;
         }
       })
-      .addCase(APPLICATION_RESET, () => {
-        return initialState;
+      .addCase(APPLICATION_RESET, (state) => {
+        const resetState = { ...initialState };
+        resetState.appSettings = state.appSettings;
+        resetState.installStatus = state.installStatus;
+        return resetState;
       });
   },
 });

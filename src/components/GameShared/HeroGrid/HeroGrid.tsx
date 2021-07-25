@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import HeroIcon from "components/GameShared/HeroIcon";
 import GameStatusBar from "components/GameShared/StatusBar";
@@ -31,6 +31,7 @@ function HeroGrid(): JSX.Element {
   const [gameRows, gameCols] = useAppSelector(selectGridRowsCols);
 
   const [loading, setLoading] = useState(true);
+  const isAnimatingCountdownOut = useRef(false);
 
   // Pre-compute these into a set so that each HeroIcon doesn't have to
   const invalidIconsSet = useMemo(() => new Set(invalidIcons), [invalidIcons]);
@@ -76,7 +77,7 @@ function HeroGrid(): JSX.Element {
   ): JSX.Element[] {
     const heroImagesRow: JSX.Element[] = [];
 
-    if (gameStatus !== GameStatus.PLAYING_COUNTDOWN) {
+    if (gridState !== GridState.COUNTDOWN) {
       for (let i = 0; i < currentHeroes[rowNumber].length; i++) {
         const heroNumber = currentHeroes[rowNumber][i];
         heroImagesRow.push(
@@ -103,7 +104,7 @@ function HeroGrid(): JSX.Element {
 
   function createHeroImages(gridState: GridState): JSX.Element[] {
     let numRows = gameRows;
-    if (gameStatus !== GameStatus.PLAYING_COUNTDOWN) {
+    if (gridState !== GridState.COUNTDOWN) {
       numRows = currentHeroes.length;
     }
 
@@ -118,10 +119,21 @@ function HeroGrid(): JSX.Element {
     return heroImages;
   }
 
+  // If leaving the page while counting down, keep the animation playing
+  const prevGameStatus = useRef(gameStatus);
+  if (
+    prevGameStatus.current === GameStatus.PLAYING_COUNTDOWN &&
+    gameStatus === GameStatus.LOBBY
+  ) {
+    isAnimatingCountdownOut.current = true;
+  }
+  prevGameStatus.current = gameStatus;
+
   return (
     <div className="text-center">
       <GameStatusBar />
-      {gameStatus === GameStatus.PLAYING_COUNTDOWN ? (
+      {gameStatus === GameStatus.PLAYING_COUNTDOWN ||
+      isAnimatingCountdownOut.current === true ? (
         <div>{createHeroImages(GridState.COUNTDOWN)}</div>
       ) : (
         <>

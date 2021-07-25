@@ -21,6 +21,7 @@
 }
 
 .status-bar-text-fade {
+  opacity: 0;
   -webkit-animation: statusTextFade 1s;
   -moz-animation: statusTextFade 1s;
   animation: statusTextFade 1s;

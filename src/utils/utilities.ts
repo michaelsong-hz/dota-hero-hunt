@@ -1,5 +1,6 @@
 import { captureException, setContext } from "@sentry/react";
 import Peer from "peerjs";
+import { UseTransitionProps } from "react-spring";
 
 import {
   GameSettings,
@@ -153,6 +154,72 @@ export function getClientInviteLink(): string {
 
 export function convertRemToPixels(rem: number): number {
   return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+}
+
+/**
+ * Transitions used to navigate between views
+ * @param isSMPlus Switches to a different transition on mobile/desktop
+ * @param shouldReverse When navigating back to the root view
+ * @returns A react-spring transition object
+ */
+export function getGlobalTransitions(
+  isSMPlus: boolean,
+  shouldReverse: boolean,
+  disableLeave?: boolean
+): UseTransitionProps {
+  if (isSMPlus) {
+    return {
+      initial: {
+        transform: "translate(0%, 0) scale(0.9)",
+      },
+      from: {
+        opacity: 0,
+        transform: shouldReverse
+          ? "translate(0%, 0) scale(1.1)"
+          : "translate(0%, 0) scale(0.9)",
+      },
+      enter: {
+        opacity: 1,
+        transform: "translate(0%, 0) scale(1)",
+      },
+      leave: {
+        opacity: 0,
+        transform: shouldReverse
+          ? "translate(0%, 0) scale(0.9)"
+          : "translate(0%, 0) scale(1.1)",
+        position: "absolute",
+        width: "100%",
+        immediate: disableLeave ? true : false,
+      },
+      config: { mass: 1, tension: 240, friction: 20, clamp: true },
+    };
+  }
+
+  return {
+    initial: {
+      transform: "translate(0%, 0) scale(0.9)",
+    },
+    from: {
+      transform: shouldReverse
+        ? "translate(-20%, 0) scale(1)"
+        : "translate(100%, 0) scale(1)",
+      opacity: 0,
+    },
+    enter: {
+      transform: "translate(0%, 0) scale(1)",
+      opacity: 1,
+    },
+    leave: {
+      transform: shouldReverse
+        ? "translate(100%, 0) scale(1)"
+        : "translate(-20%, 0) scale(1)",
+      opacity: 0,
+      position: "absolute",
+      width: "100%",
+      immediate: disableLeave ? true : false,
+    },
+    config: { mass: 1, tension: 210, friction: 26, clamp: true },
+  };
 }
 
 export function isDevCheatsEnabled(): boolean {

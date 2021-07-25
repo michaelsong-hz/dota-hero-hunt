@@ -11,7 +11,11 @@ import {
   setIsInviteLinkCopied,
   updateModalToShow,
 } from "store/application/applicationSlice";
-import { selectCountdown, selectTimeBetweenRounds } from "store/game/gameSlice";
+import {
+  selectCountdown,
+  selectGameStatus,
+  selectTimeBetweenRounds,
+} from "store/game/gameSlice";
 import { AppDispatch, AppThunk } from "store/rootStore";
 import { heroList } from "utils/HeroList";
 import { SoundEffects } from "utils/SoundEffectList";
@@ -27,8 +31,8 @@ import {
   hostForcefulDisconnectAction,
   hostPeerStartAction,
   hostPeerStopAction,
-  visitAboutPageAction,
   hostCountdownAction,
+  hostClearBoardAction,
 } from "./hostActions";
 import { isSinglePlayer, selectNextRoundTimer, setHostID } from "./hostSlice";
 
@@ -58,8 +62,19 @@ export const stopHosting = (): AppThunk => (dispatch) => {
 
 export const startGame = (): AppThunk => (dispatch, getState) => {
   if (isSinglePlayer(getState())) {
+    dispatch(hostClearBoardAction());
     dispatch(incrementRoundImp(1));
   } else {
+    // Only start a new game if we're going to the page from the lobby
+    const gameStatus = selectGameStatus(getState());
+    if (
+      gameStatus === GameStatus.PLAYING ||
+      gameStatus === GameStatus.PLAYING_COUNTDOWN ||
+      gameStatus === GameStatus.PLAYING_ROUND_END
+    ) {
+      return;
+    }
+
     let timer: NodeJS.Timer | undefined = undefined;
     clearInterval(timer);
 
@@ -334,10 +349,6 @@ export const submitPlayerName =
       dispatch(startHosting());
     }
   };
-
-export const visitAboutPage = (): AppThunk => (dispatch) => {
-  dispatch(visitAboutPageAction());
-};
 
 export const hostPeerStart = (): AppThunk => (dispatch, getState) => {
   dispatch(hostPeerStartAction(selectPlayerName(getState())));
