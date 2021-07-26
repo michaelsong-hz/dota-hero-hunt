@@ -21,7 +21,6 @@ You can now start the React development server using `npm start`.
 
 ## Running the backend
 
-You will also need to run a local instance of peer js when developing. If you have docker installed on your machine, you can run peer js with the following command:
 You will also need to run a local instance of peer js when developing. There are two ways of running peer js:
 
 ### Option 1: Native (with Node JS)
