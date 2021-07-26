@@ -12,7 +12,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import RangeSlider from "react-bootstrap-range-slider";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Switch from "react-switch";
 
 import { useAppSelector, useAppDispatch } from "hooks/useStore";
@@ -29,14 +29,20 @@ function Header(): JSX.Element {
   const remoteHostID = useAppSelector(selectRemoteHostID);
 
   const dispatch = useAppDispatch();
+  const location = useLocation();
 
   const [showVolume, setShowVolume] = useState(false);
 
-  function getHeaderToRoot() {
-    if (remoteHostID !== null) {
-      return `/play/${remoteHostID}`;
-    }
-    return "/";
+  // Hosts and clients have a different root
+  let rootPath = "/";
+  if (remoteHostID !== null) {
+    rootPath = `/play/${remoteHostID}`;
+  }
+
+  // Don't navigate to the same route again if we're already there
+  function shouldNavigateOnClick(to: string) {
+    if (to === location.pathname) return false;
+    return true;
   }
 
   function toggleTooltip(show: boolean) {
@@ -74,7 +80,14 @@ function Header(): JSX.Element {
 
   return (
     <Navbar bg={appendTheme("header", isDark)} expand="sm">
-      <Link to={getHeaderToRoot()}>
+      <Link
+        to={rootPath}
+        onClick={
+          shouldNavigateOnClick(rootPath) === true
+            ? undefined
+            : (event) => event.preventDefault()
+        }
+      >
         <Navbar.Brand
           className={`align-middle font-weight-bold ${appendTheme(
             "text",
@@ -100,7 +113,15 @@ function Header(): JSX.Element {
       />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <Link to="/about" className={`nav-link ${getHeaderSecondaryClass()}`}>
+          <Link
+            to="/about"
+            className={`nav-link ${getHeaderSecondaryClass()}`}
+            onClick={
+              shouldNavigateOnClick("/about") === true
+                ? undefined
+                : (event) => event.preventDefault()
+            }
+          >
             About
           </Link>
         </Nav>
