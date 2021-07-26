@@ -55,6 +55,18 @@ function SharedModal(): JSX.Element {
             ]}
           />
         );
+      case PeerJSErrorTypes.NETWORK:
+        return (
+          <ErrorModal
+            title="Connection Lost"
+            bodyText={[
+              `The connection to the Dota Hero Hunt game coordinator has been
+              lost, and the game session you were hosting has been terminated.`,
+              "Please check your internet connection, or try again later.",
+            ]}
+            isDismissible={true}
+          />
+        );
       case PeerJSErrorTypes.SERVER_ERROR:
         return (
           <ErrorModal
