@@ -10,6 +10,28 @@ const isLocalhost = Boolean(
     )
 );
 
+function registerImp(swEvent: SWConfig) {
+  const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+
+  if (isLocalhost) {
+    // This is running on localhost. Let's check if a service worker still exists or not.
+    checkValidServiceWorker(swUrl, swEvent);
+
+    // Add some additional logging to localhost, pointing developers to the
+    // service worker/PWA documentation.
+    navigator.serviceWorker.ready.then(() => {
+      // eslint-disable-next-line no-console
+      console.log(
+        "This web app is being served cache-first by a service " +
+          "worker. To learn more, visit https://cra.link/PWA"
+      );
+    });
+  } else {
+    // Is not localhost. Just register service worker
+    registerValidSW(swUrl, swEvent);
+  }
+}
+
 export function register(swEvent: SWConfig): void {
   if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
     // The URL constructor is available in all browsers that support SW.
@@ -21,27 +43,15 @@ export function register(swEvent: SWConfig): void {
       return;
     }
 
-    window.addEventListener("load", () => {
-      const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
-
-      if (isLocalhost) {
-        // This is running on localhost. Let's check if a service worker still exists or not.
-        checkValidServiceWorker(swUrl, swEvent);
-
-        // Add some additional logging to localhost, pointing developers to the
-        // service worker/PWA documentation.
-        navigator.serviceWorker.ready.then(() => {
-          // eslint-disable-next-line no-console
-          console.log(
-            "This web app is being served cache-first by a service " +
-              "worker. To learn more, visit https://cra.link/PWA"
-          );
-        });
-      } else {
-        // Is not localhost. Just register service worker
-        registerValidSW(swUrl, swEvent);
-      }
-    });
+    // Start registering if the window is already loaded
+    if (document.readyState === "complete") {
+      registerImp(swEvent);
+    } else {
+      // Otherwise, start registering when the window is loaded
+      window.addEventListener("load", () => {
+        registerImp(swEvent);
+      });
+    }
   } else {
     swEvent(SWRegistrationStatus.NOT_SUPPORTED);
   }
