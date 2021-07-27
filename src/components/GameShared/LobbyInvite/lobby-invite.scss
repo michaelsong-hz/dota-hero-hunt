@@ -1,0 +1,45 @@
+@import "styles/variables.scss";
+
+.lobby-invite {
+  flex-direction: column;
+}
+
+.lobby-invite-text {
+  margin-bottom: 0.4rem;
+}
+
+.lobby-invite-actions {
+  flex-direction: column;
+}
+
+.lobby-invite-actions-host {
+  margin-bottom: 0.4rem;
+}
+
+.lobby-invite-copy {
+  float: none;
+}
+
+@media (min-width: $breakpoint-sm) {
+  .lobby-invite-actions {
+    flex-direction: row;
+  }
+
+  .lobby-invite-actions-host {
+    margin-bottom: 0;
+  }
+}
+
+@media (min-width: $breakpoint-lg) {
+  .lobby-invite {
+    flex-direction: row;
+  }
+
+  .lobby-invite-text {
+    margin-bottom: 0;
+  }
+
+  .lobby-invite-copy {
+    float: right;
+  }
+}

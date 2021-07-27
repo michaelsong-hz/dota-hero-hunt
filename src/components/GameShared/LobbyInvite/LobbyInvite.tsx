@@ -1,5 +1,12 @@
+import {
+  faExternalLinkAlt,
+  faLink,
+  faUserPlus,
+  faUserTimes,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 
 import { useAppSelector, useAppDispatch } from "hooks/useStore";
 import {
@@ -29,88 +36,103 @@ function LobbyInvite(): JSX.Element {
 
   const dispatch = useAppDispatch();
 
+  function getHeaderText(): string {
+    if (isSingleP === true && isGeneratingLink === true) {
+      return "Generating Invite Link...";
+    }
+    return "Invite Your Friends!";
+  }
+
   function getStopHostingButton() {
     if (!isSingleP && !isClient())
       return (
-        <div className="mb-2 ml-2">
-          <Button
-            disabled={isGeneratingLink}
-            variant={appendTheme("danger", isDark)}
-            onClick={() => dispatch(stopHosting())}
-          >
-            Stop Hosting
-          </Button>
-        </div>
+        <Button
+          className="lobby-invite-actions-host mr-2"
+          disabled={isGeneratingLink}
+          variant={appendTheme("danger", isDark)}
+          onClick={() => dispatch(stopHosting())}
+        >
+          <FontAwesomeIcon icon={faUserTimes} className="mr-1" />
+          Stop Hosting
+        </Button>
       );
     return <></>;
   }
 
-  function getHeaderText(): string {
-    if (isSingleP) {
-      if (isGeneratingLink) {
-        return "Generating Invite Link...";
-      } else {
-        return "Invite Your Friends!";
-      }
-    }
-    return "The lobby invite link is:";
-  }
-
-  function getInviteText(): string {
+  function getInviteLink() {
     if (isClient()) {
       return getClientInviteLink();
     }
     return getHostInviteLink(hostID);
   }
 
-  function getButtonText(): string {
-    if (isSingleP) {
-      return "Generate";
-    }
-    return "Copy";
+  function handleShare() {
+    navigator.share({
+      title: "Invite link for Dota Hero Hunt",
+      text: "Let's play Dota Hero Hunt together!",
+      url: getInviteLink(),
+    });
   }
 
-  function handleGenerateInvite() {
-    if (isSingleP) {
-      dispatch(startHosting());
-    } else {
-      if (isClient()) {
-        navigator.clipboard.writeText(getClientInviteLink());
-      } else {
-        navigator.clipboard.writeText(getHostInviteLink(hostID));
-      }
-      dispatch(setIsInviteLinkCopied(true));
-    }
+  function handleCopy() {
+    navigator.clipboard.writeText(getInviteLink());
+    dispatch(setIsInviteLinkCopied(true));
+  }
+
+  function getShareActions() {
+    return (
+      <>
+        {navigator.share !== undefined && (
+          <Button
+            className="mr-2"
+            variant={appendTheme("secondary", isDark)}
+            onClick={() => handleShare()}
+          >
+            <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
+            Share
+          </Button>
+        )}
+        <Button
+          variant={appendTheme("secondary", isDark)}
+          onClick={() => handleCopy()}
+        >
+          <FontAwesomeIcon icon={faLink} className="mr-1" />
+          Copy Link
+        </Button>
+      </>
+    );
   }
 
   return (
     <div className={`${appendTheme("content-holder", isDark)} px-3 py-2`}>
       <Row>
-        <Col className="d-flex">
-          <div className="mr-auto">
-            <h3>{getHeaderText()}</h3>
+        <Col className="lobby-invite d-flex">
+          <h3 className="lobby-invite-text mr-auto">{getHeaderText()}</h3>
+          <div className="lobby-invite-actions d-flex">
+            {isSingleP === true ? (
+              <Button
+                disabled={isGeneratingLink === true}
+                variant={appendTheme("secondary", isDark)}
+                onClick={() => dispatch(startHosting())}
+              >
+                <FontAwesomeIcon icon={faUserPlus} className="mr-1" />
+                Generate Invite Link
+              </Button>
+            ) : (
+              <>
+                <div>{getStopHostingButton()}</div>
+                <div>{getShareActions()}</div>
+              </>
+            )}
           </div>
-          {getStopHostingButton()}
-        </Col>
-      </Row>
-      <Row className="no-gutters pb-1">
-        <Col className="mr-2">
-          <Form.Control disabled={true} value={getInviteText()}></Form.Control>
-        </Col>
-        <Col xs="auto">
-          <Button
-            disabled={isGeneratingLink}
-            variant={appendTheme("secondary", isDark)}
-            onClick={() => handleGenerateInvite()}
-          >
-            {getButtonText()}
-          </Button>
         </Col>
       </Row>
       {isInviteLinkCopied === true && (
         <Row className="slide-down-appear">
           <Col>
-            <p className="float-right mt-1 mb-0">Link copied to clipboard</p>
+            <p className="lobby-invite-copy mt-1 mb-0">
+              Link copied to clipboard
+            </p>
           </Col>
         </Row>
       )}

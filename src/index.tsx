@@ -20,6 +20,11 @@ if (process.env.NODE_ENV === "production") {
     tracesSampleRate: 1.0,
     normalizeDepth: 8, // For sentry redux
     release: process.env.REACT_APP_VERSION,
+    ignoreErrors: [
+      // Ignore errors thrown by Safari 🤡 when the share action is cancelled
+      // https://dev.to/grafton-studio/native-tap-to-share-in-javascript-with-the-web-share-api-current-status-tips-and-limitations-4g4h
+      "AbortError: Abort due to cancellation of share.",
+    ],
   });
   // eslint-disable-next-line no-console
   console.log(
