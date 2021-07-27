@@ -7,6 +7,8 @@ on:
 jobs:
   upload_sourcemaps:
     runs-on: ubuntu-latest
+    env:
+      REACT_APP_BUILD_ENV: production
 
     steps:
       - uses: actions/checkout@v2

@@ -12,6 +12,13 @@ import "./styles/index.scss";
 
 import App from "./App";
 
+function getSentryEnv() {
+  if (process.env.REACT_APP_BUILD_ENV !== undefined) {
+    return process.env.REACT_APP_BUILD_ENV;
+  }
+  return "development";
+}
+
 // Sentry error logging in production
 if (process.env.NODE_ENV === "production") {
   init({
@@ -20,6 +27,7 @@ if (process.env.NODE_ENV === "production") {
     tracesSampleRate: 1.0,
     normalizeDepth: 8, // For sentry redux
     release: process.env.REACT_APP_VERSION,
+    environment: getSentryEnv(),
     ignoreErrors: [
       // Ignore errors thrown by Safari 🤡 when the share action is cancelled
       // https://dev.to/grafton-studio/native-tap-to-share-in-javascript-with-the-web-share-api-current-status-tips-and-limitations-4g4h
@@ -28,7 +36,9 @@ if (process.env.NODE_ENV === "production") {
   });
   // eslint-disable-next-line no-console
   console.log(
-    `Production build detected. Sentry initialized with release version: ${process.env.REACT_APP_VERSION}`
+    `Sentry initialized in environment: "${getSentryEnv()}" with release version: "${
+      process.env.REACT_APP_VERSION
+    }".`
   );
 }
 
