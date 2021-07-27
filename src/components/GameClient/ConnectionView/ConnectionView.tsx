@@ -1,3 +1,5 @@
+import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Col, Spinner } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
@@ -45,7 +47,12 @@ function ConnectionView(): JSX.Element {
         </>
       );
     }
-    return <>Join Game</>;
+    return (
+      <>
+        <FontAwesomeIcon icon={faSignInAlt} className="mr-1" />
+        Join Game
+      </>
+    );
   }
 
   function handleNameChange(newPlayerName: string) {

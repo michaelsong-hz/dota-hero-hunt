@@ -1,3 +1,5 @@
+import { faCog, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMediaQuery } from "@react-hook/media-query";
 import React from "react";
 import { Button } from "react-bootstrap";
@@ -22,6 +24,7 @@ function SettingsButton(): JSX.Element {
           variant={appendTheme("danger", isDark)}
           onClick={() => dispatch(resetApplication())}
         >
+          <FontAwesomeIcon icon={faSignOutAlt} className="mr-1" />
           Disconnect
         </Button>
       </Link>
@@ -31,6 +34,7 @@ function SettingsButton(): JSX.Element {
   return (
     <Link to="/settings">
       <Button variant={appendTheme("primary", isDark)}>
+        <FontAwesomeIcon icon={faCog} className="mr-1" />
         Settings{isXSPlus && " / Invite Friends"}
       </Button>
     </Link>

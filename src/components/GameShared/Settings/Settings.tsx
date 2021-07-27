@@ -1,4 +1,8 @@
-import { faInfinity } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCrosshairs,
+  faInfinity,
+  faTag,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { captureException } from "@sentry/react";
 import localForage from "localforage";
@@ -281,6 +285,7 @@ function GameSettings(): JSX.Element {
                   variant={appendTheme("secondary", isDark)}
                   onClick={() => dispatch(changeName())}
                 >
+                  <FontAwesomeIcon icon={faTag} className="mr-1" />
                   Change Name
                 </Button>
               </div>
@@ -292,6 +297,7 @@ function GameSettings(): JSX.Element {
                 variant={appendTheme("primary", isDark)}
                 type="submit"
               >
+                <FontAwesomeIcon icon={faCrosshairs} className="mr-1" />
                 {disabled ? "Waiting to Start" : "Start Game"}
               </Button>
             </div>

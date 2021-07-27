@@ -1,3 +1,5 @@
+import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMediaQuery } from "@react-hook/media-query";
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Container } from "react-bootstrap";
@@ -111,6 +113,7 @@ function LobbyView(): JSX.Element {
               className="mb-1"
               onClick={() => dispatch(resetApplication())}
             >
+              <FontAwesomeIcon icon={faSignOutAlt} className="mr-1" />
               Disconnect
             </Button>
           </Link>
