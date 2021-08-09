@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import HeroIcon from "components/GameShared/HeroIcon";
 import GameStatusBar from "components/GameShared/StatusBar";
@@ -9,8 +9,6 @@ import {
   selectCurrentHeroes,
   selectGameStatus,
   selectGridRowsCols,
-  selectInvalidIcons,
-  selectSelectedIcons,
 } from "store/game/gameSlice";
 import { heroList } from "utils/HeroList";
 import { getIconPath } from "utils/utilities";
@@ -25,20 +23,11 @@ enum GridState {
 
 function HeroGrid(): JSX.Element {
   const currentHeroes = useAppSelector(selectCurrentHeroes);
-  const invalidIcons = useAppSelector(selectInvalidIcons);
-  const selectedIcons = useAppSelector(selectSelectedIcons);
   const gameStatus = useAppSelector(selectGameStatus);
   const [gameRows, gameCols] = useAppSelector(selectGridRowsCols);
 
   const [loading, setLoading] = useState(true);
   const isAnimatingCountdownOut = useRef(false);
-
-  // Pre-compute these into a set so that each HeroIcon doesn't have to
-  const invalidIconsSet = useMemo(() => new Set(invalidIcons), [invalidIcons]);
-  const selectedIconsSet = useMemo(
-    () => new Set(selectedIcons),
-    [selectedIcons]
-  );
 
   // Loads new icons if the current ones are changed
   // Sets loading to true while icons are loading to display local placeholder
@@ -89,8 +78,6 @@ function HeroGrid(): JSX.Element {
                 : getIconPath(heroList[heroNumber].url)
             }
             heroNumber={heroNumber}
-            invalidIcons={invalidIconsSet}
-            selectedIcons={selectedIconsSet}
           />
         );
       }

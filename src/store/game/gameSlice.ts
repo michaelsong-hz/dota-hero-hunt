@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import {
   GameSettings,
@@ -265,10 +265,27 @@ export const { setRound, updatePlayersList, clientCountdown } =
 export const selectRound = (state: RootState): number => state.game.round;
 export const selectPlayers = (state: RootState): Record<string, PlayerState> =>
   state.game.players;
-export const selectSelectedIcons = (state: RootState): number[] =>
+
+const selectSelectedIconsList = (state: RootState): number[] =>
   state.game.selectedIcons;
-export const selectInvalidIcons = (state: RootState): number[] =>
+// Memoizes result and only recomputes it if the result of
+// selectSelectedIconsList changes
+export const selectSelectedIcons = createSelector(
+  [selectSelectedIconsList],
+  (selectedIcons) => {
+    return new Set(selectedIcons);
+  }
+);
+
+const selectInvalidIconsList = (state: RootState): number[] =>
   state.game.invalidIcons;
+export const selectInvalidIcons = createSelector(
+  [selectInvalidIconsList],
+  (invalidIcons) => {
+    return new Set(invalidIcons);
+  }
+);
+
 export const selectTargetHeroes = (state: RootState): number[] =>
   state.game.targetHeroes;
 export const selectCurrentHeroes = (state: RootState): number[][] =>

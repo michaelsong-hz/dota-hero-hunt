@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "hooks/useStore";
 import { GameStatus } from "models/GameStatus";
@@ -8,23 +8,29 @@ import {
   selectPlayerName,
 } from "store/application/applicationSlice";
 import { clientPeerSendAction } from "store/client/clientActions";
-import { selectGameStatus, selectTargetHeroes } from "store/game/gameSlice";
+import {
+  selectGameStatus,
+  selectInvalidIcons,
+  selectSelectedIcons,
+  selectTargetHeroes,
+} from "store/game/gameSlice";
 import { addSelectedIcon } from "store/host/hostThunks";
 import { appendTheme, isClient, isDevCheatsEnabled } from "utils/utilities";
 
 interface HeroIconProps {
   src: string;
   heroNumber: number;
-  invalidIcons: Set<number>;
-  selectedIcons: Set<number>;
 }
 
 function HeroIcon(props: HeroIconProps): JSX.Element {
-  const { src, heroNumber, invalidIcons, selectedIcons } = props;
+  const { src, heroNumber } = props;
 
   const isDark = useAppSelector(selectIsDark);
-  const gameStatus = useAppSelector(selectGameStatus);
   const playerNameHost = useAppSelector(selectPlayerName);
+
+  const gameStatus = useAppSelector(selectGameStatus);
+  const invalidIcons = useAppSelector(selectInvalidIcons);
+  const selectedIcons = useAppSelector(selectSelectedIcons);
   const targetHeroes = useAppSelector(selectTargetHeroes);
 
   const dispatch = useAppDispatch();
@@ -32,23 +38,26 @@ function HeroIcon(props: HeroIconProps): JSX.Element {
   const [isHighlightedValid, setIsHighlightedValid] = useState(false);
   const [isHighlightedInvalid, setIsHighlightedInvalid] = useState(false);
 
+  // Clear the selected icons between rounds
+  const prevGameStatus = useRef(gameStatus);
+  useEffect(() => {
+    if (
+      prevGameStatus.current !== GameStatus.PLAYING &&
+      gameStatus === GameStatus.PLAYING
+    ) {
+      setIsHighlightedValid(false);
+      setIsHighlightedInvalid(false);
+    }
+    prevGameStatus.current = gameStatus;
+  }, [gameStatus]);
+
   useEffect(() => {
     if (selectedIcons.has(heroNumber)) {
       setIsHighlightedValid(true);
     } else if (invalidIcons.has(heroNumber)) {
       setIsHighlightedInvalid(true);
-    } else if (isHighlightedValid) {
-      setIsHighlightedValid(false);
-    } else if (isHighlightedInvalid) {
-      setIsHighlightedInvalid(false);
     }
-  }, [
-    invalidIcons,
-    selectedIcons,
-    isHighlightedValid,
-    isHighlightedInvalid,
-    heroNumber,
-  ]);
+  }, [heroNumber, invalidIcons, selectedIcons]);
 
   function getImageWrapperClassName(): string {
     if (isHighlightedValid) {
