@@ -119,12 +119,12 @@ export function checkForSettingsErrors(
   } else if (currSettings.targetRoundScore > numHeroIcons) {
     settingsErrors.push([
       GameSettingErrors.INVALID_POINTS_TO_ADVANCE,
-      `The points to advance a round must not be larger than the total number of hero icons (${numHeroIcons}).`,
+      `The heroes per round must not be larger than the total number of hero icons (${numHeroIcons}).`,
     ]);
   } else if (currSettings.targetRoundScore <= 0) {
     settingsErrors.push([
       GameSettingErrors.INVALID_POINTS_TO_ADVANCE,
-      "The points to advance a round must be greater than 0.",
+      "The heroes per round must be greater than 0.",
     ]);
   }
 
