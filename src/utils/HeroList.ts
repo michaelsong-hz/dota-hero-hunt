@@ -55,6 +55,7 @@ export const heroList = [
   { name: "Luna", url: "Luna_minimap_icon.png" },
   { name: "Lycan", url: "Lycan_minimap_icon.png" },
   { name: "Magnus", url: "Magnus_minimap_icon.png" },
+  { name: "Marci", url: "Marci_minimap_icon.png" },
   { name: "Mars", url: "Mars_minimap_icon.png" },
   { name: "Medusa", url: "Medusa_minimap_icon.png" },
   { name: "Meepo", url: "Meepo_minimap_icon.png" },
