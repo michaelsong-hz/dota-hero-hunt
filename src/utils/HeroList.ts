@@ -75,6 +75,7 @@ export const heroList = [
   { name: "Phantom Assassin", url: "Phantom_Assassin_minimap_icon.png" },
   { name: "Phantom Lancer", url: "Phantom_Lancer_minimap_icon.png" },
   { name: "Phoenix", url: "Phoenix_minimap_icon.png" },
+  { name: "Primal Beast", url: "Primal_Beast_minimap_icon.webp" },
   { name: "Puck", url: "Puck_minimap_icon.png" },
   { name: "Pudge", url: "Pudge_minimap_icon.png" },
   { name: "Pugna", url: "Pugna_minimap_icon.png" },
