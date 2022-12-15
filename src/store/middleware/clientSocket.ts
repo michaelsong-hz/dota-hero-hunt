@@ -68,7 +68,8 @@ function createClientMiddleware(): Middleware {
                   }
                 );
 
-                hostConnection.on("data", (data: HostTypes) => {
+                hostConnection.on("data", (untypedData) => {
+                  const data: HostTypes = <HostTypes>untypedData;
                   if (data.type === HostTypeConstants.PLAYER_NAME_TAKEN) {
                     hostConnection.metadata = {
                       playerName: "",
@@ -88,7 +89,8 @@ function createClientMiddleware(): Middleware {
                   }
                 });
 
-                hostConnection.on("error", (error: PeerError) => {
+                hostConnection.on("error", (untypedError) => {
+                  const error: PeerError = <PeerError>untypedError;
                   // Check if we lost connection to the host - not a defined error type
                   // by peer js so we'll set our own
 
@@ -134,7 +136,8 @@ function createClientMiddleware(): Middleware {
               }
             });
 
-            peer.on("error", (error: PeerError) => {
+            peer.on("error", (untypedError) => {
+              const error: PeerError = <PeerError>untypedError;
               dispatch(clientForcefulDisconnect(error.type));
             });
             break;
@@ -147,7 +150,9 @@ function createClientMiddleware(): Middleware {
             if (peer && clientPeerSendAction.match(action)) {
               Object.keys(peer.connections).map((key: string) => {
                 if (peer)
-                  peer.connections[key].map(
+                  // Temporarily casting this while waiting for peerjs to make connections a map
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  (peer as any).connections[key].map(
                     (hostConnection: HostDataConnection) =>
                       hostConnection.send(action.payload)
                   );

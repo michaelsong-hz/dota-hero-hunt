@@ -2,14 +2,14 @@ import React from "react";
 import { Button, Container } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useAppSelector } from "hooks/useStore";
 import { selectIsDark } from "store/application/applicationSlice";
 import { appendTheme } from "utils/utilities";
 
 function PageNotFound(): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
   const isDark = useAppSelector(selectIsDark);
 
   return (
@@ -28,7 +28,7 @@ function PageNotFound(): JSX.Element {
           <Button
             size="lg"
             variant={appendTheme("primary", isDark)}
-            onClick={() => history.push("/")}
+            onClick={() => navigate("/")}
           >
             Return Home
           </Button>

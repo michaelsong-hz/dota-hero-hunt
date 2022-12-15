@@ -12,6 +12,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import RangeSlider from "react-bootstrap-range-slider";
+import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
 import { Link, useLocation } from "react-router-dom";
 import Switch from "react-switch";
 
@@ -52,7 +53,7 @@ function Header(): JSX.Element {
     setShowVolume(show);
   }
 
-  const renderVolumeTooltip = (props: unknown) => (
+  const renderVolumeTooltip = (props: OverlayInjectedProps) => (
     <Tooltip id="button-tooltip" className="tooltip" {...props}>
       <RangeSlider
         tooltipLabel={(currentValue) => `${currentValue}%`}
@@ -146,7 +147,7 @@ function Header(): JSX.Element {
             </div>
           </Button>
         </OverlayTrigger>
-        <Form inline className="header-switch-wrapper">
+        <Form className="header-switch-wrapper">
           <label>
             <Switch
               className={isDark ? "header-switch-on" : "header-switch-off"}

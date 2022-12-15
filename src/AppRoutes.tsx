@@ -1,6 +1,6 @@
 import { useMediaQuery } from "@react-hook/media-query";
 import React, { useRef } from "react";
-import { Switch, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { animated, useTransition } from "react-spring";
 
 import AboutPage from "components/AboutPage";
@@ -17,7 +17,7 @@ import { heroList } from "utils/HeroList";
 import { MediaQueries } from "utils/constants";
 import { getGlobalTransitions, getIconPath } from "utils/utilities";
 
-function Routes(): JSX.Element {
+function AppRoutes(): JSX.Element {
   const location = useLocation();
   const isSMPlus = useMediaQuery(MediaQueries.SM);
 
@@ -61,27 +61,17 @@ function Routes(): JSX.Element {
       <div>{getWinningIcons()}</div>
       {transitions((props, item) => (
         <animated.div style={props}>
-          <Switch location={item}>
-            <Route path="/play/:remoteHostID">
-              <GameClientPage />
-            </Route>
-            <Route path="/about">
-              <AboutPage />
-            </Route>
-            <Route exact path="/settings">
-              <LobbyView />
-            </Route>
-            <Route exact path="/">
-              <GameHostPage />
-            </Route>
-            <Route component={NotFoundPage}>
-              <NotFoundPage />
-            </Route>
-          </Switch>
+          <Routes location={item}>
+            <Route path="/play/:remoteHostID" element={<GameClientPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/settings" element={<LobbyView />} />
+            <Route path="/" element={<GameHostPage />} />
+            <Route element={<NotFoundPage />} />
+          </Routes>
         </animated.div>
       ))}
     </LoadStore>
   );
 }
 
-export default Routes;
+export default AppRoutes;

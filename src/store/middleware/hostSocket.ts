@@ -10,7 +10,7 @@ import {
   HostTypes,
 } from "models/MessageHostTypes";
 import { OtherErrorTypes } from "models/Modals";
-import { PeerJSErrorTypes } from "models/PeerErrors";
+import { PeerError, PeerJSErrorTypes } from "models/PeerErrors";
 import { APPLICATION_RESET } from "store/application/applicationConstants";
 import { selectPlayers, updatePlayersList } from "store/game/gameSlice";
 import {
@@ -102,8 +102,11 @@ function broadcastMessage(data: HostTypes) {
   if (peer) {
     Object.keys(peer.connections).map((key: string) => {
       if (peer)
-        peer.connections[key].map((clientConnection: ClientDataConnection) =>
-          clientConnection.send(data)
+        // Temporarily casting this while waiting for peerjs to make connections a map
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (peer as any).connections[key].map(
+          (clientConnection: ClientDataConnection) =>
+            clientConnection.send(data)
         );
     });
   }
@@ -195,7 +198,8 @@ function createHostMiddleware(): Middleware {
                 }
               });
 
-              incomingConn.on("data", (data: ClientTypes) => {
+              incomingConn.on("data", (untypedData) => {
+                const data: ClientTypes = <ClientTypes>untypedData;
                 onMessage(data, incomingConn, dispatch);
               });
 
@@ -253,7 +257,8 @@ function createHostMiddleware(): Middleware {
               }
             });
 
-            peer.on("error", (error) => {
+            peer.on("error", (untypedError) => {
+              const error: PeerError = <PeerError>untypedError;
               // Ignore if it was just losing connection to a fellow peer as it
               // is a non-fatal error
               if (error.type !== PeerJSErrorTypes.PEER_UNAVAILABLE) {

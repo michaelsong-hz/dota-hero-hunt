@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 
-import Routes from "Routes";
+import AppRoutes from "AppRoutes";
 import Header from "components/Header";
 import HelmetWrapper from "components/HelmetWrapper";
 import SharedModal from "components/Modals/SharedModal";
@@ -32,11 +32,11 @@ function App(): JSX.Element {
     <>
       <HelmetWrapper />
       <UpdateMessage />
-      <Router>
+      <BrowserRouter>
         <SharedModal />
         <Header />
-        <Routes />
-      </Router>
+        <AppRoutes />
+      </BrowserRouter>
     </>
   );
 }

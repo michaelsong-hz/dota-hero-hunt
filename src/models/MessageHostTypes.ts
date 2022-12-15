@@ -1,4 +1,4 @@
-import Peer from "peerjs";
+import { DataConnection } from "peerjs";
 
 import { GameSettings } from "./GameSettingsType";
 import { GameStatus } from "./GameStatus";
@@ -76,6 +76,6 @@ export type HostTypes =
       players: Record<string, PlayerState>;
     };
 
-export interface ClientDataConnection extends Peer.DataConnection {
+export interface ClientDataConnection extends DataConnection {
   send(data: HostTypes): void;
 }

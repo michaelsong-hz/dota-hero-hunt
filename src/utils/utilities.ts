@@ -1,5 +1,5 @@
 import { captureException, setContext } from "@sentry/react";
-import Peer from "peerjs";
+import { PeerJSOption } from "peerjs";
 import { UseTransitionProps } from "react-spring";
 
 import {
@@ -25,7 +25,7 @@ export function getIconPath(fileName: string): string {
   return `${prependCDN(pathName)}`;
 }
 
-export function getPeerConfig(): Peer.PeerJSOption {
+export function getPeerConfig(): PeerJSOption {
   return {
     host: process.env.REACT_APP_PEER_JS_HOST,
     port: parseInt(process.env.REACT_APP_PEER_JS_PORT || ""),

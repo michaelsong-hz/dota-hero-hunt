@@ -15,7 +15,7 @@ import {
   Dropdown,
   DropdownButton,
 } from "react-bootstrap";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Switch from "react-switch";
 
 import { useAppDispatch, useAppSelector } from "hooks/useStore";
@@ -37,7 +37,7 @@ import { StorageConstants } from "utils/constants";
 import { appendTheme, checkForSettingsErrors, isClient } from "utils/utilities";
 
 function GameSettings(): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const storeGameSettings = useAppSelector(selectGameSettings);
   const modifiedGameSettings = useAppSelector(selectHostModifiedGameSettings);
@@ -176,7 +176,7 @@ function GameSettings(): JSX.Element {
       dispatch(setSettings(getSettings()));
       localForage.setItem(StorageConstants.GAME_SETTINGS, getSettings());
 
-      history.push("/");
+      navigate("/");
     } else {
       settingsErrors.forEach((error) => {
         const [gameSettingsStatus, errorText] = error;
@@ -326,29 +326,18 @@ function GameSettings(): JSX.Element {
               disabled={disabled}
               title={getGridSizeText()}
               variant={appendTheme("secondary", isDark)}
+              onSelect={(e) => handleGridChange(e)}
             >
-              <Dropdown.Item
-                eventKey={GridSizeTypes.SMALL.toString()}
-                onSelect={(e) => handleGridChange(e)}
-              >
+              <Dropdown.Item eventKey={GridSizeTypes.SMALL.toString()}>
                 Small
               </Dropdown.Item>
-              <Dropdown.Item
-                eventKey={GridSizeTypes.MEDIUM.toString()}
-                onSelect={(e) => handleGridChange(e)}
-              >
+              <Dropdown.Item eventKey={GridSizeTypes.MEDIUM.toString()}>
                 Medium
               </Dropdown.Item>
-              <Dropdown.Item
-                eventKey={GridSizeTypes.LARGE_SQUARE.toString()}
-                onSelect={(e) => handleGridChange(e)}
-              >
+              <Dropdown.Item eventKey={GridSizeTypes.LARGE_SQUARE.toString()}>
                 Large
               </Dropdown.Item>
-              <Dropdown.Item
-                eventKey={GridSizeTypes.LARGE.toString()}
-                onSelect={(e) => handleGridChange(e)}
-              >
+              <Dropdown.Item eventKey={GridSizeTypes.LARGE.toString()}>
                 Large (Horizontal)
               </Dropdown.Item>
             </DropdownButton>

@@ -1,7 +1,7 @@
 import { init } from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 
 import { store } from "store/rootStore";
@@ -42,11 +42,10 @@ if (process.env.NODE_ENV === "production") {
   );
 }
 
-// TODO: Bootstrap 4 currently causes warnings to be thrown in strict mode
-// Investigate re-enabling strict mode after Bootstrap 5 is released
-ReactDOM.render(
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const root = createRoot(document.getElementById("root")!);
+root.render(
   <Provider store={store}>
     <App />
-  </Provider>,
-  document.getElementById("root")
+  </Provider>
 );

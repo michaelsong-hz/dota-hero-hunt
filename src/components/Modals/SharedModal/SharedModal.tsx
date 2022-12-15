@@ -1,7 +1,7 @@
 import { captureException, setContext } from "@sentry/react";
 import React from "react";
 import { Button } from "react-bootstrap";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import ErrorModal from "components/Modals/ErrorModal";
 import { useAppSelector, useAppDispatch } from "hooks/useStore";
@@ -15,7 +15,7 @@ import { resetApplication } from "store/application/applicationThunks";
 import { appendTheme } from "utils/utilities";
 
 function SharedModal(): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const modalToShow = useAppSelector(selectModalToShow);
   const isDark = useAppSelector(selectIsDark);
@@ -28,7 +28,7 @@ function SharedModal(): JSX.Element {
 
   function handleReturnHome() {
     handleHide();
-    history.push("/");
+    navigate("/");
   }
 
   function handleRefresh() {

@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "hooks/useStore";
 import {
@@ -18,7 +18,7 @@ type ErrorModalProps = {
 };
 
 function ErrorModal(props: ErrorModalProps): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const isDark = useAppSelector(selectIsDark);
   const modalCustomMessage = useAppSelector(selectModalCustomMessage);
@@ -34,7 +34,7 @@ function ErrorModal(props: ErrorModalProps): JSX.Element {
   function handleReturnHome() {
     handleHide();
     dispatch(resetApplication());
-    history.push("/");
+    navigate("/");
   }
 
   function getBodyText(): JSX.Element[] {

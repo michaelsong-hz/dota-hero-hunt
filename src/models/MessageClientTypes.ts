@@ -1,4 +1,4 @@
-import Peer from "peerjs";
+import { DataConnection } from "peerjs";
 
 // Definitions for messages from the client to the host
 export enum ClientTypeConstants {
@@ -10,7 +10,7 @@ export type ClientTypes = {
   selected: number;
 };
 
-export interface HostDataConnection extends Peer.DataConnection {
+export interface HostDataConnection extends DataConnection {
   send(data: ClientTypes): void;
   metadata: {
     playerName: string;
