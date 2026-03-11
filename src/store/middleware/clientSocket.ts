@@ -1,6 +1,6 @@
 import { Middleware, MiddlewareAPI, PayloadAction } from "@reduxjs/toolkit";
 import { captureException, captureMessage } from "@sentry/react";
-import Peer from "peerjs";
+import { Peer } from "peerjs";
 
 import { HostDataConnection } from "models/MessageClientTypes";
 import { HostTypeConstants, HostTypes } from "models/MessageHostTypes";
@@ -88,7 +88,7 @@ function createClientMiddleware(): Middleware {
                   }
                 });
 
-                hostConnection.on("error", (error: PeerError) => {
+                hostConnection.on("error", (error: any) => {
                   // Check if we lost connection to the host - not a defined error type
                   // by peer js so we'll set our own
 
@@ -134,7 +134,7 @@ function createClientMiddleware(): Middleware {
               }
             });
 
-            peer.on("error", (error: PeerError) => {
+            peer.on("error", (error: any) => {
               dispatch(clientForcefulDisconnect(error.type));
             });
             break;
@@ -145,9 +145,9 @@ function createClientMiddleware(): Middleware {
 
           case CLIENT_PEER_SEND:
             if (peer && clientPeerSendAction.match(action)) {
-              Object.keys(peer.connections).map((key: string) => {
+              Object.keys((peer as any).connections).map((key: string) => {
                 if (peer)
-                  peer.connections[key].map(
+                  (peer as any).connections[key].map(
                     (hostConnection: HostDataConnection) =>
                       hostConnection.send(action.payload)
                   );

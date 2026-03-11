@@ -1,0 +1,655 @@
+
+> dota-hero-hunt@0.6.5 start
+> vite
+
+
+  VITE v7.3.1  ready in 315 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: use --host to expose
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+1 │ @import "./variables.scss";
+  │         ^^^^^^^^^^^^^^^^^^
+  ╵
+    src/styles/index.scss 1:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+2 │ @import "./bootstrap-theme.scss";
+  │         ^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src/styles/index.scss 2:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+3 │ @import "./global.scss";
+  │         ^^^^^^^^^^^^^^^
+  ╵
+    src/styles/index.scss 3:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+   ╷
+14 │ @import "bootstrap/scss/bootstrap";
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    src/styles/index.scss 14:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+1 │ @import "@/styles/variables.scss";
+  │         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src/components/Header/header.scss 1:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+1 │ @import "@/styles/variables.scss";
+  │         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src/components/UpdateMessage/update-message.scss 1:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+1 │ @import "@/styles/variables.scss";
+  │         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src/components/Modals/SharedModal/shared-modal.scss 1:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+1 │ @import "@/styles/variables.scss";
+  │         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src/components/AboutPage/about-page.scss 1:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+1 │ @import "@/styles/variables.scss";
+  │         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src/components/GameShared/LobbyView/lobby-view.scss 1:9  root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use color.adjust instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+   ╷
+11 │   background-color: lighten($secondary-color-light, 20%);
+   │                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    src/components/UpdateMessage/update-message.scss 11:21  root stylesheet
+
+DEPRECATION WARNING [color-functions]: lighten() is deprecated. Suggestions:
+
+color.scale($color, $lightness: 36.8231046931%)
+color.adjust($color, $lightness: 20%)
+
+More info: https://sass-lang.com/d/color-functions
+
+   ╷
+11 │   background-color: lighten($secondary-color-light, 20%);
+   │                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    src/components/UpdateMessage/update-message.scss 11:21  root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use color.adjust instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+   ╷
+29 │   color: lighten($primary-color-dark, 20%);
+   │          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    src/components/UpdateMessage/update-message.scss 29:10  root stylesheet
+
+DEPRECATION WARNING [color-functions]: lighten() is deprecated. Suggestions:
+
+color.scale($color, $lightness: 24.8780487805%)
+color.adjust($color, $lightness: 20%)
+
+More info: https://sass-lang.com/d/color-functions
+
+   ╷
+29 │   color: lighten($primary-color-dark, 20%);
+   │          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    src/components/UpdateMessage/update-message.scss 29:10  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+1 │ @import "@/styles/variables.scss";
+  │         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src/components/GameShared/GamePage/game-page.scss 1:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+1 │ @import "@/styles/variables.scss";
+  │         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src/components/GameShared/ConnectedPlayers/connected-players.scss 1:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+1 │ @import "@/styles/variables.scss";
+  │         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src/components/GameShared/LobbyInvite/lobby-invite.scss 1:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+1 │ @import "@/styles/variables.scss";
+  │         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src/components/GameShared/Settings/settings.scss 1:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+8 │ @import "functions";
+  │         ^^^^^^^^^^^
+  ╵
+    node_modules/bootstrap/scss/bootstrap.scss 8:9  @import
+    src/styles/index.scss 14:9                      root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($level > 0): $black; else: $white)
+
+More info: https://sass-lang.com/d/if-function
+
+    ╷
+103 │   $color-base: if($level > 0, $black, $white);
+    │                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    node_modules/bootstrap/scss/_functions.scss 103:16  @import
+    node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+    src/styles/index.scss 14:9                          root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($return-calc == true): calc(#{$value1} + #{$value2}); else: $value1 + unquote(" + ") + $value2)
+
+More info: https://sass-lang.com/d/if-function
+
+    ╷
+123 │   @return if($return-calc == true, calc(#{$value1} + #{$value2}), $value1 + unquote(" + ") + $value2);
+    │           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    node_modules/bootstrap/scss/_functions.scss 123:11  @import
+    node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+    src/styles/index.scss 14:9                          root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($return-calc == true): calc(#{$value1} - #{$value2}); else: $value1 + unquote(" - ") + $value2)
+
+More info: https://sass-lang.com/d/if-function
+
+    ╷
+147 │   @return if($return-calc == true, calc(#{$value1} - #{$value2}), $value1 + unquote(" - ") + $value2);
+    │           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    node_modules/bootstrap/scss/_functions.scss 147:11  @import
+    node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+    src/styles/index.scss 14:9                          root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($dividend > 0 and $divisor > 0 or $dividend < 0 and $divisor < 0): 1; else: -1)
+
+More info: https://sass-lang.com/d/if-function
+
+    ╷
+151 │   $sign: if($dividend > 0 and $divisor > 0 or $dividend < 0 and $divisor < 0, 1, -1);
+    │          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    node_modules/bootstrap/scss/_functions.scss 151:10  @import
+    node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+    src/styles/index.scss 14:9                          root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use color.adjust instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+   ╷
+92 │     darken($primary-color-light, 10%),
+   │     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    src/components/GameShared/Settings/settings.scss 92:5  root stylesheet
+
+DEPRECATION WARNING [color-functions]: darken() is deprecated. Suggestions:
+
+color.scale($color, $lightness: -24.6376811594%)
+color.adjust($color, $lightness: -10%)
+
+More info: https://sass-lang.com/d/color-functions
+
+   ╷
+92 │     darken($primary-color-light, 10%),
+   │     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    src/components/GameShared/Settings/settings.scss 92:5  root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use color.adjust instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+   ╷
+93 │     darken($primary-color-light, 10%)
+   │     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    src/components/GameShared/Settings/settings.scss 93:5  root stylesheet
+
+DEPRECATION WARNING [color-functions]: darken() is deprecated. Suggestions:
+
+color.scale($color, $lightness: -24.6376811594%)
+color.adjust($color, $lightness: -10%)
+
+More info: https://sass-lang.com/d/color-functions
+
+   ╷
+93 │     darken($primary-color-light, 10%)
+   │     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    src/components/GameShared/Settings/settings.scss 93:5  root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use color.adjust instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+    ╷
+107 │     darken($primary-color-dark, 10%),
+    │     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    src/components/GameShared/Settings/settings.scss 107:5  root stylesheet
+
+DEPRECATION WARNING [color-functions]: darken() is deprecated. Suggestions:
+
+color.scale($color, $lightness: -51%)
+color.adjust($color, $lightness: -10%)
+
+More info: https://sass-lang.com/d/color-functions
+
+    ╷
+107 │     darken($primary-color-dark, 10%),
+    │     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    src/components/GameShared/Settings/settings.scss 107:5  root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use color.adjust instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+    ╷
+108 │     darken($primary-color-dark, 10%)
+    │     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    src/components/GameShared/Settings/settings.scss 108:5  root stylesheet
+
+DEPRECATION WARNING [color-functions]: darken() is deprecated. Suggestions:
+
+color.scale($color, $lightness: -51%)
+color.adjust($color, $lightness: -10%)
+
+More info: https://sass-lang.com/d/color-functions
+
+    ╷
+108 │     darken($primary-color-dark, 10%)
+    │     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    src/components/GameShared/Settings/settings.scss 108:5  root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use color.adjust instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+    ╷
+122 │     darken($secondary-color-light, 10%),
+    │     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    src/components/GameShared/Settings/settings.scss 122:5  root stylesheet
+
+DEPRECATION WARNING [color-functions]: darken() is deprecated. Suggestions:
+
+color.scale($color, $lightness: -21.8884120172%)
+color.adjust($color, $lightness: -10%)
+
+More info: https://sass-lang.com/d/color-functions
+
+    ╷
+122 │     darken($secondary-color-light, 10%),
+    │     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    src/components/GameShared/Settings/settings.scss 122:5  root stylesheet
+
+WARNING: 6 repetitive deprecation warnings omitted.
+Run in verbose mode to see all warnings.
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use map.merge instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+   ╷
+21 │   $grays: map-merge(
+   │ ┌─────────^
+22 │ │   (
+23 │ │     "100": $gray-100,
+24 │ │     "200": $gray-200,
+25 │ │     "300": $gray-300,
+26 │ │     "400": $gray-400,
+27 │ │     "500": $gray-500,
+28 │ │     "600": $gray-600,
+29 │ │     "700": $gray-700,
+30 │ │     "800": $gray-800,
+31 │ │     "900": $gray-900
+32 │ │   ),
+33 │ │   $grays
+34 │ │ );
+   │ └─^
+   ╵
+    node_modules/bootstrap/scss/_variables.scss 21:9  @import
+    node_modules/bootstrap/scss/bootstrap.scss 9:9    @import
+    src/styles/index.scss 14:9                        root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use map.merge instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+   ╷
+48 │   $colors: map-merge(
+   │ ┌──────────^
+49 │ │   (
+50 │ │     "blue":       $blue,
+51 │ │     "indigo":     $indigo,
+52 │ │     "purple":     $purple,
+53 │ │     "pink":       $pink,
+54 │ │     "red":        $red,
+55 │ │     "orange":     $orange,
+56 │ │     "yellow":     $yellow,
+57 │ │     "green":      $green,
+58 │ │     "teal":       $teal,
+59 │ │     "cyan":       $cyan,
+60 │ │     "white":      $white,
+61 │ │     "gray":       $gray-600,
+62 │ │     "gray-dark":  $gray-800
+63 │ │   ),
+64 │ │   $colors
+65 │ │ );
+   │ └─^
+   ╵
+    node_modules/bootstrap/scss/_variables.scss 48:10  @import
+    node_modules/bootstrap/scss/bootstrap.scss 9:9     @import
+    src/styles/index.scss 14:9                         root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use map.merge instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+   ╷
+77 │   $theme-colors: map-merge(
+   │ ┌────────────────^
+78 │ │   (
+79 │ │     "primary":    $primary,
+80 │ │     "secondary":  $secondary,
+81 │ │     "success":    $success,
+82 │ │     "info":       $info,
+83 │ │     "warning":    $warning,
+84 │ │     "danger":     $danger,
+85 │ │     "light":      $light,
+86 │ │     "dark":       $dark
+87 │ │   ),
+88 │ │   $theme-colors
+89 │ │ );
+   │ └─^
+   ╵
+    node_modules/bootstrap/scss/_variables.scss 77:16  @import
+    node_modules/bootstrap/scss/bootstrap.scss 9:9     @import
+    src/styles/index.scss 14:9                         root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use map.merge instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+    ╷
+138 │   $spacers: map-merge(
+    │ ┌───────────^
+139 │ │   (
+140 │ │     0: 0,
+141 │ │     1: ($spacer * .25),
+142 │ │     2: ($spacer * .5),
+143 │ │     3: $spacer,
+144 │ │     4: ($spacer * 1.5),
+145 │ │     5: ($spacer * 3)
+146 │ │   ),
+147 │ │   $spacers
+148 │ │ );
+    │ └─^
+    ╵
+    node_modules/bootstrap/scss/_variables.scss 138:11  @import
+    node_modules/bootstrap/scss/bootstrap.scss 9:9      @import
+    src/styles/index.scss 14:9                          root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use map.merge instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+    ╷
+152 │   $sizes: map-merge(
+    │ ┌─────────^
+153 │ │   (
+154 │ │     25: 25%,
+155 │ │     50: 50%,
+156 │ │     75: 75%,
+157 │ │     100: 100%,
+158 │ │     auto: auto
+159 │ │   ),
+160 │ │   $sizes
+161 │ │ );
+    │ └─^
+    ╵
+    node_modules/bootstrap/scss/_variables.scss 152:9  @import
+    node_modules/bootstrap/scss/bootstrap.scss 9:9     @import
+    src/styles/index.scss 14:9                         root stylesheet
+
+DEPRECATION WARNING [color-functions]: darken() is deprecated. Suggestions:
+
+color.scale($color, $lightness: -30%)
+color.adjust($color, $lightness: -15%)
+
+More info: https://sass-lang.com/d/color-functions
+
+    ╷
+178 │ $link-hover-color:                        darken($link-color, 15%) !default;
+    │                                           ^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    node_modules/bootstrap/scss/_variables.scss 178:43  @import
+    node_modules/bootstrap/scss/bootstrap.scss 9:9      @import
+    src/styles/index.scss 14:9                          root stylesheet
+
+DEPRECATION WARNING [color-functions]: lighten() is deprecated. Suggestions:
+
+color.scale($color, $lightness: 9.7081218274%)
+color.adjust($color, $lightness: 7.5%)
+
+More info: https://sass-lang.com/d/color-functions
+
+    ╷
+373 │ $table-dark-border-color:     lighten($table-dark-bg, 7.5%) !default;
+    │                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    node_modules/bootstrap/scss/_variables.scss 373:31  @import
+    node_modules/bootstrap/scss/bootstrap.scss 9:9      @import
+    src/styles/index.scss 14:9                          root stylesheet
+
+DEPRECATION WARNING [color-functions]: lighten() is deprecated. Suggestions:
+
+color.scale($color, $lightness: 50%)
+color.adjust($color, $lightness: 25%)
+
+More info: https://sass-lang.com/d/color-functions
+
+    ╷
+486 │ $input-focus-border-color:              lighten($component-active-bg, 25%) !default;
+    │                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    node_modules/bootstrap/scss/_variables.scss 486:41  @import
+    node_modules/bootstrap/scss/bootstrap.scss 9:9      @import
+    src/styles/index.scss 14:9                          root stylesheet
+
+DEPRECATION WARNING [color-functions]: lighten() is deprecated. Suggestions:
+
+color.scale($color, $lightness: 70%)
+color.adjust($color, $lightness: 35%)
+
+More info: https://sass-lang.com/d/color-functions
+
+    ╷
+551 │ $custom-control-indicator-active-bg:            lighten($component-active-bg, 35%) !default;
+    │                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    node_modules/bootstrap/scss/_variables.scss 551:49  @import
+    node_modules/bootstrap/scss/bootstrap.scss 9:9      @import
+    src/styles/index.scss 14:9                          root stylesheet
+
+DEPRECATION WARNING [color-functions]: lighten() is deprecated. Suggestions:
+
+color.scale($color, $lightness: 70%)
+color.adjust($color, $lightness: 35%)
+
+More info: https://sass-lang.com/d/color-functions
+
+    ╷
+626 │ $custom-range-thumb-active-bg:               lighten($component-active-bg, 35%) !default;
+    │                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    node_modules/bootstrap/scss/_variables.scss 626:46  @import
+    node_modules/bootstrap/scss/bootstrap.scss 9:9      @import
+    src/styles/index.scss 14:9                          root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+1 │ @import "@/styles/variables.scss";
+  │         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src/components/GameShared/HeroIconStarting/hero-icon-starting.scss 1:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+1 │ @import "@/styles/variables.scss";
+  │         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src/components/GameShared/HeroIcon/hero-icon.scss 1:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+1 │ @import "@/styles/variables.scss";
+  │         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src/components/GameShared/StatusBar/status-bar.scss 1:9  root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($dividend > 0 and $divisor > 0 or $dividend < 0 and $divisor < 0): 1; else: -1)
+
+More info: https://sass-lang.com/d/if-function
+
+   ╷
+53 │   $sign: if($dividend > 0 and $divisor > 0 or $dividend < 0 and $divisor < 0, 1, -1);
+   │          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    node_modules/bootstrap/scss/vendor/_rfs.scss 53:10  @import
+    node_modules/bootstrap/scss/_mixins.scss 6:9        @import
+    node_modules/bootstrap/scss/bootstrap.scss 10:9     @import
+    src/styles/index.scss 14:9                          root stylesheet
+
+DEPRECATION WARNING [abs-percent]: Passing percentage units to the global abs() function is deprecated.
+In the future, this will emit a CSS abs() function to be resolved by the browser.
+To preserve current behavior: math.abs(100%)
+To emit a CSS abs() now: abs(#{100%})
+More info: https://sass-lang.com/d/abs-percent
+
+   ╷
+54 │   $dividend: abs($dividend);
+   │              ^^^^^^^^^^^^^^
+   ╵
+    node_modules/bootstrap/scss/vendor/_rfs.scss 54:14             divide()
+    node_modules/bootstrap/scss/mixins/_grid.scss 66:15            row-cols()
+    node_modules/bootstrap/scss/mixins/_grid-framework.scss 43:13  @content
+    node_modules/bootstrap/scss/mixins/_breakpoints.scss 65:5      media-breakpoint-up()
+    node_modules/bootstrap/scss/mixins/_grid-framework.scss 32:5   make-grid-columns()
+    node_modules/bootstrap/scss/_grid.scss 72:3                    @import
+    node_modules/bootstrap/scss/bootstrap.scss 16:9                @import
+    src/styles/index.scss 14:9                                     root stylesheet
+
+WARNING: 369 repetitive deprecation warnings omitted.
+Run in verbose mode to see all warnings.
+
+9:32:34 PM [vite] (client) hmr update /src/components/GameHost/PlayerNameModal/PlayerNameModal.tsx
+9:32:34 PM [vite] (client) hmr update /src/components/Modals/ErrorModal/ErrorModal.tsx
+9:32:34 PM [vite] (client) page reload src/store/middleware/hostSocket.ts
+9:33:21 PM [vite] vite.config.ts changed, restarting server...
+9:33:21 PM [vite] server restarted.
