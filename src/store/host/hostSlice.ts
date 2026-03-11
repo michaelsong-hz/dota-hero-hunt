@@ -32,7 +32,7 @@ export interface HostState {
   hostID: string | null;
   isGeneratingLink: boolean;
   modifiedGameSettings: GameSettings; // Used when modifying settings
-  nextRoundTimer: NodeJS.Timer | null; // Used to start the next round
+  nextRoundTimer: any | null; // Used to start the next round
 }
 
 const initialGameSettingz: GameSettings = {

@@ -75,7 +75,7 @@ export const startGame = (): AppThunk => (dispatch, getState) => {
       return;
     }
 
-    let timer: NodeJS.Timer | undefined = undefined;
+    let timer: any = undefined;
     clearInterval(timer);
 
     // Wait on "Get Ready!" for 2 seconds, then start counting down from 3
@@ -274,7 +274,7 @@ export const addSelectedIcon =
           gameStatus = GameStatus.PLAYING_ROUND_END;
 
           if (nextRoundTimer) {
-            clearTimeout(nextRoundTimer);
+            clearTimeout(nextRoundTimer as any);
           }
           nextRoundTimer = setTimeout(
             () => dispatch(incrementRound()),
