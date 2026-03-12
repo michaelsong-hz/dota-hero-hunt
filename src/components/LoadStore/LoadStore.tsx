@@ -4,7 +4,7 @@ import { useAppSelector } from "hooks/useStore";
 import { selectSettingsLoaded } from "store/application/applicationSlice";
 
 // Wait for the player's settings to be retrieved before rendering
-const LoadStore: React.FC = ({ children }: { children?: ReactNode }) => {
+const LoadStore: React.FC<{ children?: ReactNode }> = ({ children }) => {
   const settingsLoaded = useAppSelector(selectSettingsLoaded);
 
   if (settingsLoaded) {

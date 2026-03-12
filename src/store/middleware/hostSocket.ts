@@ -100,10 +100,11 @@ function onMessage(
 
 function broadcastMessage(data: HostTypes) {
   if (peer) {
-    Object.keys(peer.connections).map((key: string) => {
+    Object.keys((peer as any).connections).map((key: string) => {
       if (peer)
-        peer.connections[key].map((clientConnection: ClientDataConnection) =>
-          clientConnection.send(data)
+        (peer as any).connections[key].map(
+          (clientConnection: ClientDataConnection) =>
+            clientConnection.send(data)
         );
     });
   }
@@ -129,7 +130,7 @@ function createHostMiddleware(): Middleware {
                 const incomingPlayerName = getPlayerNameFromConn(incomingConn);
                 const currentPlayers = { ...getState().game.players };
                 if (incomingVersion !== appVersion) {
-                  invalidConnLabels.add(incomingConn.label);
+                  invalidConnLabels.add(incomingConn.connectionId);
                   incomingConn.send({
                     type: HostTypeConstants.APP_VERSION_MISMATCH,
                     hostVersion: appVersion,
@@ -146,7 +147,7 @@ function createHostMiddleware(): Middleware {
                   for (const currPlayerName of Object.keys(currentPlayers)) {
                     currPlayerNames.push(currPlayerName);
                   }
-                  invalidConnLabels.add(incomingConn.label);
+                  invalidConnLabels.add(incomingConn.connectionId);
                   incomingConn.send({
                     type: HostTypeConstants.PLAYER_NAME_TAKEN,
                     currentPlayers: currPlayerNames,
@@ -195,13 +196,13 @@ function createHostMiddleware(): Middleware {
                 }
               });
 
-              incomingConn.on("data", (data: ClientTypes) => {
+              incomingConn.on("data", (data: any) => {
                 onMessage(data, incomingConn, dispatch);
               });
 
               incomingConn.on("close", () => {
                 // Remove player from player list on disconnect
-                if (!invalidConnLabels.has(incomingConn.label)) {
+                if (!invalidConnLabels.has(incomingConn.connectionId)) {
                   const playerToRemove = getPlayerNameFromConn(incomingConn);
                   const currPlayers = { ...getState().game.players };
                   delete currPlayers[playerToRemove];
@@ -213,11 +214,11 @@ function createHostMiddleware(): Middleware {
                 } else {
                   // Remove connection from connections with duplicated player
                   // names if they are in the list of duplicated player names
-                  invalidConnLabels.delete(incomingConn.label);
+                  invalidConnLabels.delete(incomingConn.connectionId);
                 }
               });
 
-              incomingConn.on("error", (err) => {
+              incomingConn.on("error", (err: any) => {
                 try {
                   setContext("Error From Peer", {
                     incomingConn: JSON.stringify(incomingConn),
@@ -253,7 +254,7 @@ function createHostMiddleware(): Middleware {
               }
             });
 
-            peer.on("error", (error) => {
+            peer.on("error", (error: any) => {
               // Ignore if it was just losing connection to a fellow peer as it
               // is a non-fatal error
               if (error.type !== PeerJSErrorTypes.PEER_UNAVAILABLE) {

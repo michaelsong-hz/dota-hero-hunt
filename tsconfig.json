@@ -1,8 +1,13 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
-    "target": "es5",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "*": ["src/*"]
+    },
+    "target": "ESNext",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["node", "vite/client", "vitest/globals"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,

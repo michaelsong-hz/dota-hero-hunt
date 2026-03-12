@@ -89,8 +89,13 @@ function ErrorModal(props: ErrorModalProps): JSX.Element {
       backdrop={isDismissible ? true : "static"}
       contentClassName={appendTheme("modal-content", isDark)}
     >
-      <Modal.Header>
-        <Modal.Title>{title}</Modal.Title>
+      <Modal.Header
+        closeButton={false}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
+        placeholder={undefined}
+      >
+        <Modal.Title as="h5">{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>{getBodyText()}</Modal.Body>
       <Modal.Footer>{getFooter()}</Modal.Footer>

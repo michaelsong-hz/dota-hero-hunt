@@ -1,13 +1,12 @@
 import { captureException, setContext } from "@sentry/react";
-import Peer from "peerjs";
 import { UseTransitionProps } from "react-spring";
 
 import {
   GameSettings,
   GameSettingErrors,
   GridSizeTypes,
-} from "models/GameSettingsType";
-import { ClientDataConnection } from "models/MessageHostTypes";
+} from "@/models/GameSettingsType";
+import { ClientDataConnection } from "@/models/MessageHostTypes";
 
 export function appendTheme(themeName: string, isDark: boolean): string {
   if (isDark) {
@@ -17,7 +16,7 @@ export function appendTheme(themeName: string, isDark: boolean): string {
 }
 
 export function prependCDN(resourceString: string): string {
-  return `${process.env.REACT_APP_CDN_URL}${resourceString}`;
+  return `${import.meta.env.VITE_CDN_URL}${resourceString}`;
 }
 
 export function getIconPath(fileName: string): string {
@@ -25,11 +24,11 @@ export function getIconPath(fileName: string): string {
   return `${prependCDN(pathName)}`;
 }
 
-export function getPeerConfig(): Peer.PeerJSOption {
+export function getPeerConfig(): any {
   return {
-    host: process.env.REACT_APP_PEER_JS_HOST,
-    port: parseInt(process.env.REACT_APP_PEER_JS_PORT || ""),
-    path: process.env.REACT_APP_PEER_JS_PATH,
+    host: import.meta.env.VITE_PEER_JS_HOST,
+    port: parseInt(import.meta.env.VITE_PEER_JS_PORT || ""),
+    path: import.meta.env.VITE_PEER_JS_PATH,
   };
 }
 
@@ -37,7 +36,7 @@ export function getPlayerNameFromConn(
   incomingConn: ClientDataConnection
 ): string {
   try {
-    return incomingConn.metadata.playerName;
+    return (incomingConn as any).metadata.playerName;
   } catch (err) {
     try {
       setContext("Invalid Connection Metadata", {
@@ -56,7 +55,7 @@ export function getPlayerNameFromConn(
 
 export function getVersionFromConn(incomingConn: ClientDataConnection): string {
   try {
-    return incomingConn.metadata.version;
+    return (incomingConn as any).metadata.version;
   } catch (err) {
     try {
       setContext("Invalid Connection Metadata", {
@@ -74,8 +73,8 @@ export function getVersionFromConn(incomingConn: ClientDataConnection): string {
 }
 
 export function getAppVersion(): string {
-  if (process.env.REACT_APP_VERSION) {
-    return process.env.REACT_APP_VERSION;
+  if (import.meta.env.VITE_VERSION) {
+    return import.meta.env.VITE_VERSION;
   }
   captureException(new Error("Env: REACT_APP_VERSION not set"));
   return "";
@@ -224,8 +223,8 @@ export function getGlobalTransitions(
 
 export function isDevCheatsEnabled(): boolean {
   if (
-    process.env.NODE_ENV === "development" &&
-    process.env.REACT_APP_DEV_CHEATS === "True"
+    import.meta.env.MODE === "development" &&
+    import.meta.env.VITE_DEV_CHEATS === "True"
   ) {
     return true;
   }

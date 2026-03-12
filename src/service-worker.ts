@@ -6,9 +6,9 @@ import { precacheAndRoute, createHandlerBoundToURL } from "workbox-precaching";
 import { PrecacheEntry } from "workbox-precaching/_types";
 import { registerRoute } from "workbox-routing";
 
-import { heroList } from "utils/HeroList";
-import { soundEffectList } from "utils/SoundEffectList";
-import { getIconPath, prependCDN } from "utils/utilities";
+import { heroList } from "./utils/HeroList";
+import { soundEffectList } from "./utils/SoundEffectList";
+import { getIconPath, prependCDN } from "./utils/utilities";
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -46,7 +46,7 @@ registerRoute(
     // Return true to signal that we want to use the handler.
     return true;
   },
-  createHandlerBoundToURL(process.env.PUBLIC_URL + "/index.html")
+  createHandlerBoundToURL(import.meta.env.BASE_URL + "/index.html")
 );
 
 // Adds static assets from the cdn to be pre-cached

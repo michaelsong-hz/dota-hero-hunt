@@ -52,7 +52,7 @@ function Header(): JSX.Element {
     setShowVolume(show);
   }
 
-  const renderVolumeTooltip = (props: unknown) => (
+  const renderVolumeTooltip = (props: any) => (
     <Tooltip id="button-tooltip" className="tooltip" {...props}>
       <RangeSlider
         tooltipLabel={(currentValue) => `${currentValue}%`}

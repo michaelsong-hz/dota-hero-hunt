@@ -113,8 +113,13 @@ function PlayerNameModal(): JSX.Element {
       contentClassName={appendTheme("modal-content", isDark)}
     >
       <Form onSubmit={handleSubmit}>
-        <Modal.Header>
-          <Modal.Title>Set Your Player Name</Modal.Title>
+        <Modal.Header
+          closeButton={false}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+          placeholder={undefined}
+        >
+          <Modal.Title as="h5">Set Your Player Name</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {!isPlayerNameSet && (

@@ -7,14 +7,14 @@ The source code for [dotaherohunt.com](https://dotaherohunt.com).
 You need to have `node js`, along with `npm` or `yarn` installed on your computer. Then, clone this repository and run `npm i` in the root directory. You will also need to create a `.env` file with the following contents:
 
 ```bash
-REACT_APP_VERSION=$npm_package_version
-REACT_APP_CDN_URL=https://cdn.dotaherohunt.com/
-REACT_APP_PEER_JS_HOST=localhost
-REACT_APP_PEER_JS_PATH=/myapp
-REACT_APP_PEER_JS_PORT=9000
+VITE_VERSION=$npm_package_version
+VITE_CDN_URL=https://cdn.dotaherohunt.com/
+VITE_PEER_JS_HOST=localhost
+VITE_PEER_JS_PATH=/myapp
+VITE_PEER_JS_PORT=9000
 
 # If you wish to enable cheats (only works in development mode)
-REACT_APP_DEV_CHEATS=True
+VITE_DEV_CHEATS=True
 ```
 
 You can now start the React development server using `npm start`.
