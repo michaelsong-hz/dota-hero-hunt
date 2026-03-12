@@ -5,8 +5,8 @@ import {
   GameSettings,
   GameSettingErrors,
   GridSizeTypes,
-} from "models/GameSettingsType";
-import { ClientDataConnection } from "models/MessageHostTypes";
+} from "@/models/GameSettingsType";
+import { ClientDataConnection } from "@/models/MessageHostTypes";
 
 export function appendTheme(themeName: string, isDark: boolean): string {
   if (isDark) {
